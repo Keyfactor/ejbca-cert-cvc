@@ -1,0 +1,37 @@
+<project name="cert-cvc" default="cert-cvc" basedir=".">
+
+    <property name="version" value="1.2.6"/>
+    
+    <path id="compile.classpath">
+    	<fileset dir="../ejbca/lib" includes="bcprov-jdk15.jar"/>
+    </path>
+
+	<target name="init">
+            <mkdir dir="build"/>
+	</target>
+
+	<target name="clean">
+            <delete dir="build"/>
+            <delete file="cert-cvc.jar"/>
+	</target>
+
+    <target name="compilecvc" depends="init" >
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1">
+            <classpath refid="compile.classpath" />
+            <src path="src/main" />
+        </javac>
+    </target>
+	
+    <target name="cert-cvc" depends="compilecvc">
+        <jar jarfile="cert-cvc.jar">
+        	<manifest>
+        	    <attribute name="Implementation-Title" value="EAC 1.11 Card Verifiable Certificate Library"/>
+        	    <attribute name="Implementation-Version" value="${version}"/>
+           	    <attribute name="Implementation-Vendor" value="Keijo Kurkinen, Swedish National Police Board"/>
+        	    <attribute name="License" value="LGPL"/>
+        	</manifest>
+            <fileset dir="build" includes="org/ejbca/**" />            	
+        </jar>
+    </target>
+
+</project>

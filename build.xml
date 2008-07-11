@@ -34,4 +34,21 @@
         </jar>
     </target>
 
+    <!-- =======================================================================    -->
+    <!-- Make a ZIP release file of CERT-CVC, and a SHA1 checksum of the release    -->
+	<!-- The ZIP file contains all the files used, but not temporary or compile files etc -->
+    <!-- =======================================================================    -->
+	<target name="ziprelease" description="CERT-CVC">
+		<antcall target="clean" />
+		<zip destfile="../cert-cvc-${version}.zip">
+		    <zipfileset dir="." prefix="cert-cvc-${version}" filemode="600" dirmode="700"> 
+		    	<include name="**/**" />
+		    	<exclude name="build/**" />
+		    </zipfileset>
+		</zip>
+        <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" forceOverwrite="yes"/>      
+        <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" property="certcvcSHA1"/>      
+        <echo message="SHA1 checksum: ${certcvcSHA1}" />     
+	</target>
+
 </project>

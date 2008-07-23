@@ -3,7 +3,7 @@
     <property name="version" value="1.2.6"/>
     
     <path id="compile.classpath">
-    	<fileset dir="../ejbca/lib" includes="bcprov-jdk15.jar"/>
+    	<fileset dir="lib" includes="bcprov-jdk15-140.jar"/>
     </path>
 
 	<target name="init">

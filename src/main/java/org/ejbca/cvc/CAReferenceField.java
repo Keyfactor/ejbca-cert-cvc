@@ -14,9 +14,7 @@ package org.ejbca.cvc;
 
 
 /**
- * Representerar f�ltet Certificate Authority Reference
- * Egentligen lagras bara en str�ng men p� detta s�tt f�s en bra 
- * validering av indata.
+ * Represents the CVC field 'Certificate Authority Reference'
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -25,18 +23,18 @@ public class CAReferenceField
       extends ReferenceField {
 
    /**
-    * Konstruktor som validerar de enskilda f�lten.
+    * Constructs a new instance from separate fields
     * 
-    * @param country - CountryCode enligt ISO 3166-1 ALPHA-2 (2 tecken)
-    * @param mnemonic - Holder Mnemonic (upp till 9 tecken)
-    * @param seq - Sequence Number (exakt 5 alfanumeriska tecken)
+    * @param country - CountryCode according to ISO 3166-1 ALPHA-2
+    * @param mnemonic - Holder Mnemonic (up to 9 characters)
+    * @param seq - Sequence Number (exactly 5 alphanumeric characters)
     */
    public CAReferenceField(String country, String mnemonic, String seq) {
       super(CVCTagEnum.CA_REFERENCE, country, mnemonic, seq);
    }
 
    /**
-    * Konstruktor f�r att avkoda byte-data
+    * Constructor for decoding DER-encoded data
     * @param data
     */
    public CAReferenceField(byte[] data) {

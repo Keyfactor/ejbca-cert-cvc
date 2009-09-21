@@ -13,6 +13,7 @@
 package org.ejbca.cvc.exception;
 
 /**
+ * Base class for CVC-specific exceptions
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

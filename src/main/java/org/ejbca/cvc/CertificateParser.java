@@ -21,8 +21,8 @@ import org.ejbca.cvc.exception.ParseException;
 
 
 /**
- * Klass f�r att avkoda en DER-kodad bytearray till ett CVCObject, t ex
- * CVCertificate eller godtyckligt CVCObject. 
+ * Class responsible for decoding a DER-encoded CVC object, like a
+ * CVCertificate or any other instance of CVCObject. 
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -30,12 +30,12 @@ import org.ejbca.cvc.exception.ParseException;
  */
 public class CertificateParser {
 
-   // Klassen ska inte instansieras
+   // Only static methods...
    private CertificateParser(){
    }
    
    /**
-    * Avkodar DER-kodad byte-array inneh�llande godtyckligt CVCObject
+    * Decodes a DER-encoded byte array containing any CVCObject
     * @param data
     * @return
     */
@@ -45,7 +45,7 @@ public class CertificateParser {
 
 
    /**
-    * Avkodar DER-kodad byte-array inneh�llande CVCertificate
+    * Decodes a DER-encoded byte array containing a CVCertificate
     * @param data
     * @return
     */
@@ -53,7 +53,7 @@ public class CertificateParser {
       return (CVCertificate)decode(data, CVCTagEnum.CV_CERTIFICATE);
    }
 
-   /** Skapar InputStreams och startar avkodning */
+   // Creates InputStreams and starts the decoding
    private static CVCObject decode(byte[] data, CVCTagEnum expectedTag) throws ParseException, ConstructionException {
       ByteArrayInputStream bin = null;
       try {
@@ -73,52 +73,52 @@ public class CertificateParser {
       }
    }
 
-   /** Utf�r sj�lva avkodningen av DER-kodat data  */
+   // Performs the actual decoding
    private static CVCObject decode(DataInputStream din, CVCTagEnum expectedTag) 
    throws IOException, ConstructionException {
-      // Taggen m�ste avkodas, kan best� av en eller tv� bytes
+      // First chunk to decode is the tag
       int tagValue = decodeTag(din);
       CVCTagEnum tag = findTagFromValue(tagValue);
 
-      // Validera att den f�rsta taggen �r korrekt
+      // Validate the tag if a specific one was expected here
       if( expectedTag!=null && tag!=expectedTag ){
          throw new IllegalArgumentException("Expected first tag " + expectedTag + " but found " + tag);
       }
 
+      // The second chunk to decode is the field length
       int length = CVCObject.decodeLength(din);
 
       if( tag.isSequence() ){
-         // Spara position f�r n�r datat f�r denna sekvens tar slut
+         // Save the position where data for this sequence ends
          int sequenceEnd = din.available() - length;
 
-         // Skapa r�tt instans av AbstractSequence
+         // Create correct instance of AbstractSequence
          AbstractSequence sequence = SequenceFactory.createSequence(tag);
          
-         // L�gg till subf�lt genom rekursion
+         // Add this sequence's subfields through recursion
          while( din.available() > sequenceEnd ) {
             sequence.addSubfield(decode(din, null));
          }
-         // Om vi har f�tt en GenericPublicKeyField s� m�ste vi
-         // skapa r�tt typ innan vi forts�tter
+         // If we got a GenericPublicKeyField we must map this 
+         // into an instance of CVCPublicKey before continuing
          if( sequence instanceof GenericPublicKeyField ){
             sequence = KeyFactory.createInstance((GenericPublicKeyField)sequence);
          }
          return sequence;
       }
       else {
-         // L�s upp byte-arrayen 
+         // OK, it's a data field so just parse it
          byte[] data = new byte[length];
          din.read(data, 0, length);
-         // Skapa och populera objektet fr�n bytearray
          return FieldFactory.decodeField(tag, data);
       }
    }
 
    
 
-   /* �vers�tter ett tag-v�rde till CVTag. Obs att det finns tv�
-    * taggar med samma v�rde (0x82). Denna kommer returnera den 
-    * f�rsta av dessa.
+   /* Maps a tag value to a specific CVCTagEnum. Note that there
+    * exists two tags with the same value (0x82)! In this case the
+    * first of these (EXPONENT) will be returned.
     */
    private static CVCTagEnum findTagFromValue(int tagvalue){
       CVCTagEnum wantedType = null;
@@ -137,8 +137,7 @@ public class CertificateParser {
    }
    
    /**
-    * L�ser tag fr�n input stream. Kan lagrs som en eller tv� bytes
-    * enligt kodning f�r ITU-T X.690
+    * Reads a tag value from the input stream. Encoded according to ITU-T X.690
     * @param din
     * @return
     */
@@ -146,7 +145,7 @@ public class CertificateParser {
       int tagValue = 0;
       int b1 = din.readUnsignedByte();
       if( (b1 & 0x1F) == 0x1F ){
-         // Det finns en byte till att l�sa
+         // There is another byte to read
          byte b2 = din.readByte();
          tagValue = (b1 << 8) + b2;
       }
@@ -155,6 +154,5 @@ public class CertificateParser {
       }
       return tagValue;
    }
-
-   
+  
 }

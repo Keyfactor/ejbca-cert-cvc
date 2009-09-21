@@ -14,9 +14,7 @@ package org.ejbca.cvc;
 
 
 /**
- * Representerar f�ltet Holder Reference.
- * Egentligen lagras bara en str�ng men p� detta s�tt f�s en bra 
- * validering av indata.
+ * Represents the field Certificate Holder Reference.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -25,11 +23,11 @@ public class HolderReferenceField
       extends ReferenceField {
 
    /**
-    * Konstruktor som validerar de enskilda f�lten.
+    * Constructs a new instance from separate field values
     * 
-    * @param country - CountryCode enligt ISO 3166-1 ALPHA-2 (2 tecken)
-    * @param mnemonic - Holder Mnemonic (upp till 9 tecken)
-    * @param seq - Sequence Number (exakt 5 alfanumeriska tecken)
+    * @param country - CountryCode according to ISO 3166-1 ALPHA-2 (2 characters)
+    * @param mnemonic - Holder Mnemonic (up to 9 characters)
+    * @param seq - Sequence Number (exactly 5 alphanumeric characters)
     */
    public HolderReferenceField(String country, String mnemonic, String seq) {
       super(CVCTagEnum.HOLDER_REFERENCE, country, mnemonic, seq);
@@ -37,7 +35,7 @@ public class HolderReferenceField
 
    
    /**
-    * Konstruktor f�r att avkoda byte-data
+    * Constructs a new instance by parsing DER-encoded data
     * @param data
     */
    public HolderReferenceField(byte[] data) {

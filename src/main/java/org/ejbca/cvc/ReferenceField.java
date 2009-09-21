@@ -17,9 +17,8 @@ import java.util.Locale;
 
 
 /**
- * Representerar f�lten Certificate Authority/Holder Reference.
- * Egentligen lagras bara en str�ng men p� detta s�tt f�r man 
- * b�ttre kontroll av de ing�ende f�lten.
+ * Base class for Certificate Authority/Holder Reference. Since the only
+ * difference between these two is the tag we can reuse code for them.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -32,11 +31,11 @@ public abstract class ReferenceField
    private String sequence = null;
 
    /**
-    * Konstruktor som validerar de enskilda f�lten.
+    * Constructs a new instance from separate fields
     * 
-    * @param country - CountryCode enligt ISO 3166-1 ALPHA-2 (2 tecken)
-    * @param mnemonic - Holder Mnemonic (upp till 9 tecken)
-    * @param seq - Sequence Number (exakt 5 alfanumeriska tecken)
+    * @param country - CountryCode according to ISO 3166-1 ALPHA-2 (2 characters)
+    * @param mnemonic - Holder Mnemonic (up to 9 characters)
+    * @param seq - Sequence Number (exactly 5 alphanumeric characters)
     */
    public ReferenceField(CVCTagEnum tag, String country, String mnemonic, String seq) {
       super(tag);
@@ -57,7 +56,7 @@ public abstract class ReferenceField
          throw new IllegalArgumentException("Sequence number must have length 5, was " + seq.length());
       }
       for( int i=0; i<seq.length(); i++ ){
-         // validera teckentyperna
+         // Validate character types
          char c = seq.charAt(i);
          if( !Character.isLetterOrDigit(c) ) {
             throw new IllegalArgumentException("Sequence number can only contain alphanumerics: " + seq);
@@ -71,7 +70,7 @@ public abstract class ReferenceField
 
 
    /**
-    * Konstruktor f�r att avkoda byte-data
+    * Constructs a new instance by parsing DER-encoded data
     * @param tag
     * @param data
     */
@@ -79,14 +78,14 @@ public abstract class ReferenceField
       super(tag);
       
       String dataStr = new String(data);
-      this.country  = dataStr.substring(0,2);  // Har alltid l�ngd 2
+      this.country  = dataStr.substring(0,2);  // Has always length = 2
       this.mnemonic = dataStr.substring(2, dataStr.length()-5);
-      this.sequence = dataStr.substring(dataStr.length()-5);  // Har alltid l�ngd 5
+      this.sequence = dataStr.substring(dataStr.length()-5);  // Has always length = 5
    }
    
    
    /**
-    * Returnerar v�rdet som en konkatenering av country, mnemonic och sequence
+    * Returns the value as a concatenation of country, mnemonic and sequence
     * @return
     */
    public String getConcatenated() {
@@ -94,7 +93,7 @@ public abstract class ReferenceField
    }
 
    /**
-    * Returnerar country
+    * Returns country
     * @return
     */
    public String getCountry() {
@@ -102,7 +101,7 @@ public abstract class ReferenceField
    }
 
    /**
-    * Returnerar mnemonic
+    * Returns mnemonic
     * @return
     */
    public String getMnemonic() {
@@ -110,7 +109,7 @@ public abstract class ReferenceField
    }
 
    /**
-    * Returnerar sequence
+    * Returns sequence
     * @return
     */
    public String getSequence() {
@@ -123,11 +122,11 @@ public abstract class ReferenceField
       return getConcatenated().getBytes();
    }
 
-   // Validerar landskod enligt ISO 3166
+   // Validates country code according to ISO 3166
    private boolean isValidCountry(String countryCode) {
       return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
    }
-   
+
    @Override
    public String valueAsText() {
       return country + "/" + mnemonic + "/" + sequence;

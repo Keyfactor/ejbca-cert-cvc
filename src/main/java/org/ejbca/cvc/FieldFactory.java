@@ -15,7 +15,7 @@ package org.ejbca.cvc;
 import java.io.IOException;
 
 /**
- * Fabrik f�r att skapa instanser av AbstractDataField fr�n en tag.
+ * Factory for creating instances of AbstractDataField from a tag.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -24,12 +24,13 @@ import java.io.IOException;
 public class FieldFactory {
 
    /**
-    * Skapar instans som motsvarar angiven tag, samt populerar objektet med DER-kodat data.
+    * Constructs a new instance and populates it with data from the supplied
+    * DER-encoded byte array.
     * @param tag
     * @param data
     * @return
     * @throws IOException
-    * @throws IllegalArgumentException om angiven tag motsvarar en sequence
+    * @throws IllegalArgumentException if the tag represents a sequence
     */
    public static AbstractDataField decodeField(CVCTagEnum tag, byte[] data) throws IOException {
       if( tag.isSequence() ) {

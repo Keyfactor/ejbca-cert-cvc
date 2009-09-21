@@ -12,6 +12,8 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -22,18 +24,17 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 
 import org.ejbca.cvc.exception.ConstructionException;
-
-
+import org.ejbca.cvc.util.BCECUtil;
 
 /**
- * Representerar ett CVC-request med en yttre signatur.
+ * Represents a CVC-request having an outer signature
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  *
  */
 public class CVCAuthenticatedRequest
-      extends AbstractSequence {
+      extends AbstractSequence implements Signable {
 
 
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
@@ -48,29 +49,63 @@ public class CVCAuthenticatedRequest
    }
 
    /**
-    * Defaultkonstruktorn ska ha begr�nsad synlighet
+    * Default constructor
     */
    CVCAuthenticatedRequest() {
       super(CVCTagEnum.REQ_AUTHENTICATION);
    }
 
    /**
-    * Skapar instans fr�n certifikat, caRef samt signatur
+    * Creates an instance 
     * @param cvcert
     * @param caReference
-    * @param signatureData
     */
-   public CVCAuthenticatedRequest(CVCertificate cvcert, CAReferenceField caReference, byte[] signatureData) 
+   public CVCAuthenticatedRequest(CVCertificate cvcert, CAReferenceField caReference) 
    throws ConstructionException {
       this();
       
       addSubfield(cvcert);
       addSubfield(caReference);
-      addSubfield(new ByteField(CVCTagEnum.SIGNATURE, signatureData));
    }
 
    /**
-    * Returnerar det inb�ddade requestet
+    * Adds signature
+    * @param signatureData
+    * @throws ConstructionException
+    */
+   public void setSignature(byte[] signatureData) throws ConstructionException {
+      addSubfield(new ByteField(CVCTagEnum.SIGNATURE, signatureData));
+   }
+
+   
+   /**
+    * Returns the data To Be Signed
+    */
+   public byte[] getTBS() throws ConstructionException {
+      try {
+         // The TBS for an authenticated request is from ECA 1.11 
+    	 // "The signature SHALL be created over the concatenation of the encoded CV Certificate
+    	 // and the encoded Certification Authority Reference (i.e. both including tag and length)."
+         ByteArrayOutputStream bout = new ByteArrayOutputStream();
+         DataOutputStream dout = new DataOutputStream(bout);
+    	 CVCertificate cert = getRequest();
+    	 cert.encode(dout);
+    	 CAReferenceField caref = getAuthorityReference();
+    	 caref.encode(dout);
+    	 dout.close();
+    	 byte[] res = bout.toByteArray();
+    	 return res;
+      }
+      catch( NoSuchFieldException e ){
+         throw new ConstructionException(e);
+      }
+      catch( IOException e ){
+         throw new ConstructionException(e);
+      }
+   }
+
+   /**
+    * Returns the embedded request (as an instance of CVCertificate)
     * @return
     */
    public CVCertificate getRequest() throws NoSuchFieldException {
@@ -78,7 +113,7 @@ public class CVCAuthenticatedRequest
    }
 
    /**
-    * Returnerar CA_REFERENCE
+    * Returns CA_REFERENCE
     * @return
     */
    public CAReferenceField getAuthorityReference() throws NoSuchFieldException {
@@ -86,7 +121,7 @@ public class CVCAuthenticatedRequest
    }
 
    /**
-    * Returnerar requestets signatur
+    * Returns signature
     * @return
     */
    public byte[] getSignature() throws NoSuchFieldException {
@@ -95,8 +130,7 @@ public class CVCAuthenticatedRequest
 
 
    /**
-    * Verifierar att objektet signerats med den privata nyckeln som 
-    * �r associerad med angiven publik nyckel.
+    * Verifies the signature
     * @param pubKey
     * @throws CertificateException
     * @throws NoSuchAlgorithmException
@@ -106,39 +140,41 @@ public class CVCAuthenticatedRequest
     */
    public void verify(PublicKey pubKey) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, SignatureException {
       try {
-         // M�ste hitta hashalgoritmen
+         // Must find the hash algorithm
          String algorithm = "";
          if( pubKey instanceof CVCPublicKey ){
-            // Om argumentet �r CVCPublicKey s� finns informationen d�r
+            // If pubKey is an instance of CVCPublicKey then the algorithm can be extracted
+         	// using its OID
             CVCPublicKey cvcKey = (CVCPublicKey)pubKey;
             algorithm = AlgorithmUtil.getAlgorithmName(cvcKey.getObjectIdentifier());
          }
          else {
-            // I annat fall antar vi att requestets inre signatur har samma
-            // hashalgoritm som den yttre!
+             // Otherwise we assume that the inner signature is calculated using the same 
+             // hash algorithm as the outer one!
             CVCPublicKey cvcKey = getRequest().getCertificateBody().getPublicKey();
             algorithm = AlgorithmUtil.getAlgorithmName(cvcKey.getObjectIdentifier());
          }
          Signature sign = Signature.getInstance(algorithm);
          
-         // Verifiera signatur
-         TBSData tbs = TBSData.getInstance(getRequest());
+         // Now verify the signature
          sign.initVerify(pubKey);
-         sign.update(tbs.getEncoded());
-         if( !sign.verify(getSignature()) ){
+         sign.update(getTBS());
+         // Now convert the CVC signature to a X9.62 signature
+         byte[] sig = BCECUtil.convertCVCSigToX962(algorithm, getSignature());
+         if( !sign.verify(sig) ){
             throw new SignatureException("Signature verification failed!");
          }
       }
       catch( NoSuchFieldException e ){
          throw new CertificateException("CV-Certificate is corrupt", e);
       }
-      catch( IOException e ){
+      catch( ConstructionException e ){
          throw new CertificateException("CV-Certificate is corrupt", e);
       }
    }
 
    /**
-    * Bekv�mlighetsmetod
+    * Helper method, returns this request as text
     */
    public String toString() {
       return getAsText("", true);

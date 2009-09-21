@@ -21,8 +21,7 @@ import java.util.Calendar;
 import junit.framework.TestCase;
 
 /**
- * Denna klass testar grundl�ggande funtionalitet f�r dataf�lt,
- * dvs arvtagare till AbstractDataField
+ * Tests basic functionality for AbstractDataField
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -30,7 +29,7 @@ import junit.framework.TestCase;
 public class TestDatafields
       extends TestCase implements CVCTest {
 
-   // Arrayer inneh�llande DER-kodning av l�ngdv�rden
+   // Arrays containing DER-encoded lengths
    private static final byte[] ENCODED_LENGTH_7    = new byte[]{ 0x07 };
    private static final byte[] ENCODED_LENGTH_127  = new byte[]{ 0x7F };
    private static final byte[] ENCODED_LENGTH_128  = new byte[]{ (byte)0x81, (byte)0x80 };
@@ -45,7 +44,7 @@ public class TestDatafields
    }
 
    
-   /** Kontroll: DER-kodning av l�ngd ska ske enligt s�rskilda regler */
+   /** Check: DER-encoding of length must be done by specific rules */
    public void testLengthEncoding() throws Exception {
       
       int len = 7;
@@ -66,7 +65,7 @@ public class TestDatafields
    }
 
    
-   /** Kontroll: L�ngdkodning ska avl�sas korrekt */
+   /** Check: Decoding of length */
    public void testReadLength() throws Exception {
       assertEquals(7,    readLength(ENCODED_LENGTH_7   ));
       assertEquals(127,  readLength(ENCODED_LENGTH_127 ));
@@ -74,7 +73,7 @@ public class TestDatafields
       assertEquals(1288, readLength(ENCODED_LENGTH_1288));
    }
 
-   // Hj�lpmetod som avkodar l�ngdv�rde fr�n en byte-array
+   // Helper method that decodes length value from a byte array
    private int readLength(byte[] buf) throws IOException {
       ByteArrayInputStream bin = null;
       try {
@@ -88,7 +87,7 @@ public class TestDatafields
       }
    }
 
-   /** Kontroll: trimning av byte-array inneb�r att inledande nollor tas bort */
+   /** Check: Trimming a byte array should remove all leading zeroes */
    public void testArrayTrim() throws Exception {
       byte[] data1 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x07 };
       byte[] data2 = new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -102,26 +101,26 @@ public class TestDatafields
    }
 
 
-   /** Kontroll: AuthorizationField ska tolka byte-v�rdet korrekt */
+   /** Check: Decoding of AuthorizationField  */
    public void testAuthorizationField() throws Exception {
-      AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // Detta betyder CVCA/DG3+DG4
+      AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // This means CVCA/DG3+DG4
       assertEquals(AuthorizationRoleEnum.CVCA, auth1.getRole());
       assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRight());
 
-      AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // Detta betyder CV-f/DG4
+      AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
       assertEquals(AuthorizationRoleEnum.DV_F, auth2.getRole());
       assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRight());
    }
 
    
-   /** Kontroll: Omvandling av HolderReference till/fr�n DER-kodning ska inte p�verka datat */ 
+   /** Check: Encoding/decoding of a HolderReference should not affect its data */ 
    public void testHolderReference() throws Exception {
       try {
          new HolderReferenceField("",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
          throw new Exception("Empty countryCode should throw IllegalArgumentException!");
       }
       catch( IllegalArgumentException e ){
-         // Detta �r f�rv�ntat undantag
+         // This is expected
       }
 
       try {
@@ -129,7 +128,7 @@ public class TestDatafields
          throw new Exception("Too long countryCode should throw IllegalArgumentException!");
       }
       catch( IllegalArgumentException e ){
-         // Detta �r f�rv�ntat undantag
+         // This is expected
       }
 
       try {
@@ -137,7 +136,7 @@ public class TestDatafields
          throw new Exception("Empty mnemonic should throw IllegalArgumentException!");
       }
       catch( IllegalArgumentException e ){
-         // Detta �r f�rv�ntat undantag
+         // This is expected
       }
 
       try {
@@ -145,7 +144,7 @@ public class TestDatafields
          throw new Exception("Empty sequence should throw IllegalArgumentException!");
       }
       catch( IllegalArgumentException e ){
-         // Detta �r f�rv�ntat undantag
+         // This is expected
       }
 
       HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE,HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
@@ -160,54 +159,53 @@ public class TestDatafields
    }
  
 
-   /** Kontroll: Testar IntegerField */
+   /** Check: Validate IntegerField */
    public void testIntegerField() throws Exception {
       try {
          new IntegerField(CVCTagEnum.PROFILE_IDENTIFIER, new byte[]{ 1,2,3,4,5 });
          throw new Exception("Too long byte array should throw IllegalArgumentException");
       }
       catch( IllegalArgumentException e ){
-         // H�r f�rv�ntas man hamna
+         // This is expected
       }
       IntegerField intField = new IntegerField(CVCTagEnum.PROFILE_IDENTIFIER, new byte[]{ (byte)0xA0, (byte)0xA0 });
       assertEquals("Decoced int", 41120, intField.getValue());
    }
 
 
-   /** Kontroll: Omvandling av DateField till/fr�n DER-kodning ska inte p�verka datat */
+   /** Check: Encoding/decoding of a DateField should not affect its data */
    public void testDateField() throws Exception {
       Calendar cal1 = Calendar.getInstance();
       cal1.set(Calendar.YEAR, 2011);
-      cal1.set(Calendar.MONTH, 0);   // Detta ska bli en etta i bytearrayen
+      cal1.set(Calendar.MONTH, 0);   // This should generate a '1' in the byte array
       cal1.set(Calendar.DAY_OF_MONTH, 31);
       String s1 = FORMAT_PRINTABLE.format(cal1.getTime());
 
       DateField date1 = new DateField(CVCTagEnum.EFFECTIVE_DATE, cal1.getTime());
       byte[] enc = date1.getEncoded();
       
-      // Referens: Varje siffra lagras som en egen byte
+      // Reference: Every figure is stored in its own byte
       byte[] dateRef = new byte[] { 0x01, 0x01, 0x00, 0x01, 0x03, 0x01 };
       
-      // J�mf�r byte f�r byte
+      // Compare byte by byte
       assertTrue("Byte arrays not equal", Arrays.equals(enc, dateRef));
-      
+
+      // Compare strings to avoid problems with seconds etc
       DateField date2 = new DateField(CVCTagEnum.EFFECTIVE_DATE, enc);
       Calendar cal2 = Calendar.getInstance();
       cal2.setTime(date2.getDate());
       String s2 = FORMAT_PRINTABLE.format(cal2.getTime());
-
-      // J�mf�r str�ngar s� att man slipper trassel med sekunder osv som �nd� inte �r relevant
       assertEquals(s1, s2);
    }
 
  
-   /** Kontroll: OID-v�rdet ska kodas p� ett s�rskilt s�tt */
+   /** Check: Encoding of the OID field */
    public void testOIDField() throws Exception {
       String oidValue = "1.2.3";
       OIDField oid1 = new OIDField(oidValue);
       byte[] der = oid1.getEncoded();
       
-      // F�rsta tv� siffrorna i OID kodas som 40*i1 + i2, d�refter i3, i4, ...
+      // First two numbers in the OID are encoded as 40*i1 + i2, the rest as i3, i4, ...
       byte[] oidRef = new byte[] { 0x2A, 0x03 };
       
       assertTrue("Byte arrays not equal", Arrays.equals(der,oidRef));

@@ -16,7 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
- * H�r finns bara en samling konstanter
+ * A collection of constants.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

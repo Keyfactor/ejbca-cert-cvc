@@ -13,8 +13,7 @@
 package org.ejbca.cvc.exception;
 
 /**
- * Undantag som kastas d� n�got fel uppst�tt vid konstruktion av
- * ett CVC-objekt.
+ * Exception indicating that something went wrong while constructing some CVC object.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

@@ -19,6 +19,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.ejbca.cvc.AuthorizationRoleEnum;
 import org.ejbca.cvc.CAReferenceField;
 import org.ejbca.cvc.CVCObject;
 import org.ejbca.cvc.CVCertificate;
@@ -28,7 +29,7 @@ import org.ejbca.cvc.HolderReferenceField;
 
 
 /**
- * Exempelkod f�r att generera ett CVCertificate
+ * Example code for generating a CVCertificate
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -39,29 +40,29 @@ public class GenerateCert {
 
    public static void main(String[] args) {
       try {
-         // Installera BC som provider 
+         // Install BC as security provider 
          Security.addProvider(new BouncyCastleProvider());
 
-         // Skaffa nytt nyckelpar
+         // Create a new key pair
          KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
          keyGen.initialize(1024, new SecureRandom());
          KeyPair keyPair = keyGen.generateKeyPair();
 
-         CAReferenceField caRef = new CAReferenceField("SE","CVCA-RPS","00111");
-         // H�r �r CA_REF samma som HOLDER_REF eftersom vi ska ha ett self-signed CVCA-cert
+         CAReferenceField caRef = new CAReferenceField("SE","PASS-CVCA","00111");
+         // Here we set CA_REF to the same value as HOLDER_REF since we want a self-signed CVCA-certificate
          HolderReferenceField holderRef = new HolderReferenceField(caRef.getCountry(), caRef.getMnemonic(), caRef.getSequence());
 
-
-         // Anropa den enklare metoden i CertificateGenerator
+         // Use the simpler method CertificateGenerator for this test purpose
          CVCertificate cvc = 
-            CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef);
+            CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef, "SHA1WithRSA", AuthorizationRoleEnum.IS);
 
          byte[] certData = cvc.getDEREncoded();
 
-         String filename = "C:/eBorder/cv_certs/mycert_6.cvcert";
+         // Write the certificate data to a file
+         String filename = "C:/cv_certs/mycert1.cvcert";
          FileHelper.writeFile(new File(filename), certData);
 
-         // Debug - l�s upp bin�rfile och parsa
+         // Test - read the file again and parse its contents
          certData = FileHelper.loadFile(new File(filename));
          CVCObject parsedObject = CertificateParser.parseCertificate(certData);
          System.out.println(parsedObject.getAsText(""));

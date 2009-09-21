@@ -12,47 +12,45 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-import org.ejbca.cvc.AlgorithmUtil;
-import org.ejbca.cvc.OIDField;
+import java.io.File;
+import java.security.PublicKey;
+import java.security.Security;
 
 import junit.framework.TestCase;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.ejbca.cvc.example.FileHelper;
+
 /**
- * Tests AlgorithmUtil
+ * Tests CVCRequest with outer signature
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
+ * @version $Id: TestCVCRequest.java 6030 2008-08-13 13:35:31Z keijox $
  */
-public class TestAlgorithmUtil 
-   extends TestCase implements CVCTest {
-   
+public class TestCVCRequestABSP
+      extends TestCase implements CVCTest {
+
 
    protected void setUp() throws Exception {
-      super.setUp();
+      // Install Bouncy Castle as security provider 
+      Security.addProvider(new BouncyCastleProvider());
    }
 
    protected void tearDown() throws Exception {
-      super.tearDown();
+      // Uninstallera BC 
+      Security.removeProvider("BC");
    }
 
-   
-   /** Check: Validate AlgorithmUtil */ 
-   public void testAlgorithmUtil() throws Exception {
-      String algorithmName1 = "SHA224withECDSA";
-      OIDField oid = AlgorithmUtil.getOIDField(algorithmName1);
-      assertEquals("OID values not equal", oid.getValue(), "0.4.0.127.0.7.2.2.2.2.2");
-      
-      String algorithmName2 = AlgorithmUtil.getAlgorithmName(oid);
-      assertEquals("algorithm names not equal", algorithmName1.toUpperCase(), algorithmName2);
-      
-      try {
-         AlgorithmUtil.getOIDField("NonExistingAlgorithm");
-         throw new Exception("Illegal algorithm name should throw IllegalArgumentException");
-      }
-      catch( IllegalArgumentException e ){
-         // This is expected
-      }
-      
+
+   /** Check: OID should have been set to a specific value */
+   public void testCVCRequestABSP() throws Exception {
+	      byte[] bytes = FileHelper.loadFile(new File("./src/test/resources/absp.cvcert"));
+	      CVCertificate cvc = (CVCertificate)CertificateParser.parseCVCObject(bytes);
+	      PublicKey pk = cvc.getCertificateBody().getPublicKey();
+	      bytes = FileHelper.loadFile(new File("./src/test/resources/absp.req"));
+	      CVCAuthenticatedRequest authreq = (CVCAuthenticatedRequest)CertificateParser.parseCVCObject(bytes);
+	      authreq.verify(pk);	      
    }
+
 
 }

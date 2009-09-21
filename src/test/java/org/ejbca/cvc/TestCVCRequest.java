@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
- * Tester specifika f�r CVCRequest
+ * Tests CVCRequest
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -32,17 +32,17 @@ public class TestCVCRequest
 
 
    protected void setUp() throws Exception {
-      // Installera BC som provider 
+      // Install Bouncy Castle as security provider 
       Security.addProvider(new BouncyCastleProvider());
    }
 
    protected void tearDown() throws Exception {
-      // Installera BC som provider 
+      // Uninstall BC 
       Security.removeProvider("BC");
    }
 
 
-   /** Kontroll: OID ska ha blivit satt till ett korrekt v�rde */
+   /** Check: OID should have been set to a specific value */
    public void testCVCRequestOID() throws Exception {
       String algorithmName = "SHA256withRSA";
 
@@ -52,16 +52,19 @@ public class TestCVCRequest
    }
 
 
-   /** Kontroll: CARef som skapas i CertificateGenerator ska ha f�tt samma v�rden som Holder Ref */
+   /** Check: CARef that is created in CertificateGenerator should been given the same values as Holder Ref */
    public void testCVCAuthorityReference() throws Exception {
       String algorithmName = "SHA1withRSA";
 
       CVCertificate certRequest = createTestRequest(algorithmName);
       String caRef = certRequest.getCertificateBody().getAuthorityReference().getConcatenated();
       assertEquals("CA_REF not equal", HR_COUNTRY_CODE+HR_HOLDER_MNEMONIC+HR_SEQUENCE_NO, caRef);
+
+      certRequest = createTestRequestNoCA(algorithmName);
+      assertNull("CAReference", certRequest.getCertificateBody().getAuthorityReference());
    }
 
-   /** Kontroll: Kodning till/fr�n DER ska inte p�verka inneh�llet */
+   /** Check: DER encoding/decoding of a Request should not affect the data */
    public void testEncoding() throws Exception {
       String algorithmName = "SHA1withRSA";
       CVCertificate certReq1 = createTestRequest(algorithmName);
@@ -75,7 +78,7 @@ public class TestCVCRequest
    }
 
    
-   /** Kontroll: DER-kodning av CVCAuthenticatedRequest ska inte p�verka datat */
+   /** Check: DER encoding/decoding of a CVCAuthenticatedRequest should not affect the data */
    public void testAuthRequest() throws Exception {
       String algorithmName = "SHA256WITHRSA";
       CVCAuthenticatedRequest authRequest = createTestAuthRequest(null, algorithmName);
@@ -86,11 +89,11 @@ public class TestCVCRequest
    }
    
    
-   /** Kontroll: Verifiera requestets yttre signatur */
+   /** Check: Verify a request's outer signature */
    public void testVerifyRequest() throws Exception {
       String algName = "SHA256WITHRSA";
 
-      // Skaffa nyckelpar f�r att l�gga p� yttre signatur
+      // Create key pair 
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
@@ -100,27 +103,42 @@ public class TestCVCRequest
    }
    
 
-   // Skapar ett request i form av ett CVCertificate
+   // Creates a request (CVCertificate)
    private CVCertificate createTestRequest(String algName) throws Exception {
-      // Skaffa nyckelpar f�r inre signatur
+      // Create key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
 
+      CAReferenceField caRef = new CAReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
       HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
 
-      // Anropa metod i CertificateGenerator
-      return CertificateGenerator.createRequest(keyPair, algName, holderRef);
+      // Call CertificateGenerator
+      return CertificateGenerator.createRequest(keyPair, algName, caRef, holderRef);
    }
 
-   // Skapar ett request i form av ett CVCAuthenticatedRequest
+   // Creates a request (CVCertificate) without caRef
+   private CVCertificate createTestRequestNoCA(String algName) throws Exception {
+      // Create key pair
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+      keyGen.initialize(1024, new SecureRandom());
+      KeyPair keyPair = keyGen.generateKeyPair();
+
+      CAReferenceField caRef = null;
+      HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
+
+      // Call CertificateGenerator
+      return CertificateGenerator.createRequest(keyPair, algName, caRef, holderRef);
+   }
+
+   // Creates a request (CVCAuthenticatedRequest)
    private CVCAuthenticatedRequest createTestAuthRequest(KeyPair signingKeyPair, String algName) throws Exception {
       CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
 
-      // Anropa metod i CertificateGenerator
+      // Call CertificateGenerator
       CVCertificate certReq = createTestRequest(algName);
 
-      // Skaffa nyckelpar f�r yttre signatur (om detta inte skickades i anropet)
+      // Create key pair for outer signature (unless sent as an argument)
       KeyPair signKeys = signingKeyPair;
       if( signKeys==null ){
          KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");

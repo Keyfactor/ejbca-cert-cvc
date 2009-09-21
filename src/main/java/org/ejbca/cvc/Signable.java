@@ -12,29 +12,21 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-import java.security.Provider;
+import org.ejbca.cvc.exception.ConstructionException;
 
 /**
- * This is our own Security Provider for CVC.
- * 
- * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
+ * Interface for signable classes, forcing them to implement
+ * a method for getting the data to be signed
+ * $Author: $ $Date: $
+ * $Revision: $
  */
-public class CVCProvider
-      extends Provider {
+public interface Signable {
 
-   static double version = 1.0;
-   // TODO: Text OK? 
-   static String INFO = "CVC Security Provider " + version + " (supports Card Verifiable Certificates for ePassports)";
-   
-   public static String PROVIDER_NAME = "CVC";
-
-
-   public CVCProvider() {
-      super(PROVIDER_NAME, version, INFO);
-
-      put("CertificateFactory.CVC", JDKCVCertificateFactory.class.getName());
-      put("Alg.Alias.CertificateFactory.CVC", "CVC");
-   }
+   /**
+    * Returns the data to be signed
+    * @return
+    * @throws ConstructionException
+    */
+   public byte[] getTBS() throws ConstructionException;
 
 }

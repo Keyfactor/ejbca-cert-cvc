@@ -26,7 +26,7 @@ public abstract class AbstractDataField
       extends CVCObject {
 
    /**
-    * Konstruktor, m�ste ange objektets tagg
+    * Constructor, must supply the tag
     * @param pType
     */
    public AbstractDataField(CVCTagEnum pType) {
@@ -34,15 +34,15 @@ public abstract class AbstractDataField
    }
 
    /**
-    * Genererar en DER-kodad bytearray av objektets data.
+    * Generates a DER-encoded byte array from this object
     * @return
     */
    protected abstract byte[] getEncoded();
 
    /**
-    * Genererar en DER-kodad bytearray av objektet, inklusive tagg och l�ngd.
-    * @param outstream att skriva till
-    * @return antalet skrivna bytes
+    * Generates a DER-encoded byte array from this object, including tag and length
+    * @param outstream to write to
+    * @return number of bytes written
     */
    @Override
    protected int encode(DataOutputStream out) throws IOException {
@@ -58,19 +58,19 @@ public abstract class AbstractDataField
 
 
    /**
-    * Returnerar f�ltet i textformat.
+    * Returns this field as text
     */
    @Override
    public String getAsText(String tab, boolean showTagNo) {
       StringBuffer sb = new StringBuffer();
-      // Denna konkatenerar str�ngen fr�n CVCObject med f�ltets data i textformat
+      // Concatenates CVCObject.getAsText() and this.valueAsText()
       sb.append(super.getAsText(tab, showTagNo)).append(valueAsText());
       return sb.toString();
    }
 
 
    /**
-    * Returnerar f�ltets data i textformat
+    * Returns this field's data as text
     * @return
     */
    protected abstract String valueAsText();

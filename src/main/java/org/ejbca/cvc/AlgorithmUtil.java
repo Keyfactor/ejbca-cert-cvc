@@ -15,8 +15,7 @@ package org.ejbca.cvc;
 import java.util.HashMap;
 
 /**
- * Utilityklass f�r att mappa fr�n str�ngidentifierare av typen "SHA1WITHRSA"
- * till v�r egen typ OIDFIeld.
+ * Utility for mapping a String of type "SHA1WITHRSA" to our own type OIDFIeld.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -24,34 +23,56 @@ import java.util.HashMap;
 public class AlgorithmUtil {
 
    private static HashMap<String, OIDField> algorithmMap = new HashMap<String, OIDField>();
+   private static HashMap<String, String> conversionMap = new HashMap<String, String>();
    
    static {
       algorithmMap.put("SHA1WITHRSA",          CVCObjectIdentifiers.id_TA_RSA_v1_5_SHA_1);
       algorithmMap.put("SHA256WITHRSA",        CVCObjectIdentifiers.id_TA_RSA_v1_5_SHA_256);
       algorithmMap.put("SHA1WITHRSAANDMGF1",   CVCObjectIdentifiers.id_TA_RSA_PSS_SHA_1);
       algorithmMap.put("SHA256WITHRSAANDMGF1", CVCObjectIdentifiers.id_TA_RSA_PSS_SHA_256);
-      
+      // Because CVC certificates does not use standard X9.62 signature encoding we have CVC variants of the ECDSA signature algorithms
+      // skip SHA1WITHCVC-ECDSA etc since we have to convert the signature manually to support HSM providers
       algorithmMap.put("SHA1WITHECDSA",        CVCObjectIdentifiers.id_TA_ECDSA_SHA_1);
       algorithmMap.put("SHA224WITHECDSA",      CVCObjectIdentifiers.id_TA_ECDSA_SHA_224);
       algorithmMap.put("SHA256WITHECDSA",      CVCObjectIdentifiers.id_TA_ECDSA_SHA_256);
    }
 
+   static {
+	   // Because CVC certificates does not use standard X9.62 signature encoding we have CVC variants of the ECDSA signature algorithms
+	   // We have these to make it easier for folks by letting them use the regular style algorithm names
+      // skip SHA1WITHCVC-ECDSA etc since we have to convert the signature manually to support HSM providers
+	   conversionMap.put("SHA1WITHECDSA",        "SHA1WITHECDSA");
+	   conversionMap.put("SHA224WITHECDSA",      "SHA224WITHECDSA");
+	   conversionMap.put("SHA256WITHECDSA",      "SHA256WITHECDSA");
+   }
+
    /**
-    * Returnerar OIDField associerad med 'algorithmName'
+    * Returns the OIDField associated with 'algorithmName'
     * @param algorithmName
     * @return
     */
    public static OIDField getOIDField(String algorithmName) {
-      OIDField oid = algorithmMap.get(algorithmName.toUpperCase());
+      OIDField oid = algorithmMap.get(convertAlgorithmNameToCVC(algorithmName));
       if( oid==null ) {
          throw new IllegalArgumentException("Unsupported algorithmName: " + algorithmName);
       }
       return oid;
    }
- 
+
+   /**
+    * Some (ECDSA) algorithms requires use of particular CVC-ECDSA algorithm names, so 
+    * we sue this conversion map to translate from regular (SHA1WithECDSA) names to CVC (SHA1WithCVC-ECDSA) names. 
+    */
+   public static String convertAlgorithmNameToCVC(String algorithmName) {
+	   String name = conversionMap.get(algorithmName.toUpperCase());
+	   if (name != null) {
+		   return name;
+	   }
+	   return algorithmName.toUpperCase();
+   }
    
    /**
-    * Returnerar algorithmName f�r given oid
+    * Returns algorithmName for a given OID
     * @param oid
     * @return
     */

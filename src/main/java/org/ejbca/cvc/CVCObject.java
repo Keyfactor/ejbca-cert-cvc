@@ -19,7 +19,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
- * Basklass f�r alla objekt i ett CV-certifikat (dataf�lt och sekvenser)
+ * Base class for all objects in a CV-certificate
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -40,7 +40,7 @@ public abstract class CVCObject
    private AbstractSequence parent;
 
    /**
-    * Konstruktor
+    * Constructor taking a tag
     * @param tag
     */
    public CVCObject(CVCTagEnum tag){
@@ -48,7 +48,7 @@ public abstract class CVCObject
    }
 
    /**
-    * Returnerar objektets tagg
+    * Returns the tag
     * @return
     */
    public CVCTagEnum getTag() {
@@ -56,7 +56,7 @@ public abstract class CVCObject
    }
 
    /**
-    * Returnerar parent, dvs den Sequence som objeketet �r underordnad
+    * Returns parent, that is, the AbstractSequence that contains this object (if any)
     * @return
     */
    public AbstractSequence getParent() {
@@ -64,7 +64,7 @@ public abstract class CVCObject
    }
 
    /**
-    * S�tter parent
+    * Sets the parent
     * @param parent
     */
    public void setParent(AbstractSequence parent) {
@@ -72,36 +72,35 @@ public abstract class CVCObject
    }
 
    /**
-    * Skriver objektet som en DER-kodad byte-array till 'out'
-    * @return Antal skrivna bytes
+    * Writes this object as a DER-encoded byte array to 'out'
+    * @return number of written bytes
     */
    protected abstract int encode(DataOutputStream out) throws IOException;
 
 
    /**
-    * DER-kodning f�r l�ngd enligt specifikationen f�r ITU-T X.690.
+    * DER-encodes field length according to ITU-T X.690.
     * @param lenValue
     * @return
     */
    protected static byte[] encodeLength(int lenValue){
       byte lenBytes = 0;
       if( lenValue>0x7F ){
-         // Antag f�rst att en byte r�cker f�r l�ngden
+         // Assume that one byte is sufficient for representing the length
          lenBytes = 1;
          if( lenValue>0xFF ) {
-            // Nej, tv� bytes kr�vs f�r att representera l�ngden.
-            // Obs att vi f�ruts�tter att l�ngden aldrig �r > 65535
+            // No, two bytes is required (assuming that the length is always <= 65535)
             lenBytes = 2;
          }
       }
       ByteBuffer bb = ByteBuffer.allocate(1 + lenBytes);
       if( lenBytes==0 ){
-         // V�rdet var s� litet att ingen l�ngdindikering beh�vs - skriv v�rdet direkt
+         // One byte is enough - write the length value directly
          bb.put(0, (byte)lenValue);
       }
       else {
-         // H�r kr�vs en indikering p� hur m�nga bytes l�ngden skrivits i.
-         // Det g�rs genom att s�tta h�gsta biten + bitar som motsvarar antal bytes.
+         // First write down how many bytes the length value requires.
+         // This is done by setting the MSB + bitmap representing the actual length
          bb.put(0, (byte)(0x80 + lenBytes));
          if( lenBytes==1 ) {
             bb.put(1, (byte)lenValue);
@@ -115,7 +114,7 @@ public abstract class CVCObject
 
 
    /**
-    * L�ser och avkodar DER-kodad l�ngd
+    * Reads and decodes a DER-encoded length value
     * @param in
     * @return
     */
@@ -123,28 +122,28 @@ public abstract class CVCObject
       int lenBytes = 1;
       int length = 0;
       int b1 = in.read();
-      if( b1>0x7F ) {  // Om bit 8 �r satt s� finns info om antal bytes h�r
+      if( b1>0x7F ) {  // If the MSB is set then the number of bytes is stored here
          lenBytes = b1 & 0xF;
          if( lenBytes==1 ) {
             length = in.readUnsignedByte();
          }
          else {
-            // Underf�rst�tt: lenBytes = 2 (kan teoriskt vara l�ngre men knappast i CVC-cert)
+            // Assumption: lenBytes = 2 (theoretically it could be longer but hardly in a CV-certificate)
             length = in.readShort();
          }
       }
       else {
-         // Nej, bit 8 var inte satt s� l�ngden st�r direkt i denna byte
+         // No, the MSB wasn't set so the length can be read directly from the current byte
          length = b1;
       }
       return length;
    }
    
    /**
-    * Ger en trimmad byte-array s� tillvida att inledande nollor
-    * tas bort. Om val = 0 s� returneras en nolla.
+    * Converts an Integer to a trimmed byte array.
     * @param val
     * @return
+    * @see trimByteArray(byte[]
     */
    protected static byte[] toByteArray(Integer intVal) {
       ByteBuffer bb = ByteBuffer.allocate(INT_LENGTH);
@@ -153,28 +152,27 @@ public abstract class CVCObject
    }
 
    /**
-    * Ger en trimmad byte-array s� tillvida att inledande nollor
-    * tas bort. Om val = 0 s� returneras en nolla.
+    * Converts a Long to a trimmed byte array.
     * @param val
     * @return
+    * @see trimByteArray(byte[]
     */
-   protected static byte[] toByteArray(Long intVal) {
+   protected static byte[] toByteArray(Long longVal) {
       ByteBuffer bb = ByteBuffer.allocate(LONG_LENGTH);
-      bb.putLong(intVal);
+      bb.putLong(longVal);
       return trimByteArray(bb.array());
    }
 
    /**
-    * Ger en trimmad byte-array s� tillvida att inledande nollor
-    * tas bort. Om 'data' endast inneh�ller nollor s� returneras 
-    * dock en byte 0x00.
+    * Trims a byte array meaning that leading bytes containing zeros have been removed. 
+    * However, if 'longVal' is zero then the array contains one zero.
     * @param val
     * @return
     */
    protected static byte[] trimByteArray(byte[] data) {
       boolean numberFound = false;
       int pos = 0;
-      // Hitta f�rsta f�rekomst av icke-noll
+      // Locate the first position of a non-zero
       for( pos=0; pos<data.length; pos++ ){
          numberFound = data[pos] != 0;
          if( numberFound )
@@ -183,11 +181,11 @@ public abstract class CVCObject
 
       byte[] result = null;
       if( !numberFound ){
-         // Det fanns endast nollor - returnera en nolla
+         // Only zeroes were found - return one zero
          result = new byte[]{ 0x00 };
       }
       else {
-         // Det fanns icke-nollor - ta bort ev. inledande
+         // Non-zero was found - remove leading zeroes
          result = new byte[data.length-pos];
          System.arraycopy(data, pos, result, 0, data.length-pos);
       }
@@ -196,7 +194,7 @@ public abstract class CVCObject
 
 
    /**
-    * Samma som getAsText("", true). 
+    * Same as getAsText("", true). 
     * @param tab
     * @return
     */
@@ -205,7 +203,7 @@ public abstract class CVCObject
    }
 
    /**
-    * Samma som getAsText("", boolean). 
+    * Same as getAsText("", boolean). 
     * @param tab
     * @return
     */
@@ -214,7 +212,7 @@ public abstract class CVCObject
    }
 
    /**
-    * Samma som getAsText(String, true). 
+    * Same as  getAsText(String, true). 
     * @param tab
     * @return
     */
@@ -223,17 +221,18 @@ public abstract class CVCObject
    }
 
    /**
-    * Skapar en textuell beskrivning av objektets tagg. Subklasser
-    * b�r anropa denna och sedan konkatenera med utskrift av sj�lva datat.
-    * @param tab ev indentering
-    * @param showTagNo styr ifall taggv�rdet ska skrivas ut eller ej
+    * Creates a textual representation of this object's tag. Subclasses should
+    * call this method and then concatenate with the textual representation of
+    * the subclasses' value.
+    * @param tab supply some whitespace if indentation is wanted
+    * @param showTagNo if 'true' then the hex tag value is printed also
     * @return
     */
    public String getAsText(String tab, boolean showTagNo) {
       StringBuffer sb = new StringBuffer();
       sb.append(tab);
       if( showTagNo ){
-         // Denna skapar str�ngen [TAB]0xFF[SPACE]TAG_NAME[SPACE]
+         // Creates the string [TAB]0xFF[SPACE]TAG_NAME[SPACE]
          sb.append(Integer.toHexString(getTag().getValue())).append(" ");
       }
       sb.append(getTag().name()).append("  ");

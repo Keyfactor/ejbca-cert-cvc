@@ -20,7 +20,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * Liten fabrik f�r att skapa instanser av CVCPublicKey
+ * Tiny factory for creating instances of (subclasses to) CVCPublicKey
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -28,29 +28,30 @@ import org.ejbca.cvc.exception.ConstructionException;
 public class KeyFactory {
 
    /**
-    * Skapar instans fr�n en befintlig PublicKey samt namnet p� hash-algoritm
+    * Constructs instance from a PublicKey and a hash algorithm
     * @param pubKey
     * @param algorithmName @see AlgorithmUtil
+    * @param authRole role of certificate holder (affects creation of PublicKeyEC instances)
     * @return
     */
-   static CVCPublicKey createInstance(PublicKey pubKey, String algorithmName) throws ConstructionException {
+   public static CVCPublicKey createInstance(PublicKey pubKey, String algorithmName, AuthorizationRoleEnum authRole) throws ConstructionException {
       
       if( pubKey instanceof CVCPublicKey ){
-         // �r redan av f�rv�ntad typ
+         // Object is already of the expected type
          return (CVCPublicKey)pubKey;
       }
 
-      // I annat f�r vi utnyttja algorithmName f�r att hitta OID
-      // som i sin tur identifierar typ av nyckel (RSA eller EC)
+      // Here we can use algorithmName to the find the corresponding OID
+      // which in turn identifies the type of key (RSA or EC)
       CVCPublicKey cvcPublicKey = null;
       OIDField oid = AlgorithmUtil.getOIDField(algorithmName);
       if( oid.getValue().startsWith(CVCObjectIdentifiers.id_TA_RSA) ){
-         // Det �r RSA
+         // It's RSA
          cvcPublicKey = new PublicKeyRSA(oid, (RSAPublicKey)pubKey);
       }
       else if( oid.getValue().startsWith(CVCObjectIdentifiers.id_TA_ECDSA) ){
-         // Det �r EC
-         cvcPublicKey = new PublicKeyEC(oid, (ECPublicKey)pubKey);
+         // It's EC
+         cvcPublicKey = new PublicKeyEC(oid, (ECPublicKey)pubKey, authRole);
       }
       else {
          throw new IllegalArgumentException("Unknown key type: " + oid);
@@ -59,7 +60,7 @@ public class KeyFactory {
    }
 
    /**
-    * Skapar instans fr�n en GenericPublicKeyField (dvs vid parsning av DER-kodat data)
+    * Constructs instance from a GenericPublicKeyField (i e when parsing DER-encoded data)
     * @param genericKey
     * @return
     */
@@ -87,9 +88,9 @@ public class KeyFactory {
    }
 
    /**
-    * L�gger till nytt bytef�lt med tagg 'toTag' med data fr�n f�lt 'fromTag',
-    * om denna inte redan finns. Kan endast anv�ndas i de fall tv� taggar har
-    * samma v�rde. Speciall�sning som b�r arbetas bort!
+    * Special helper method that deals with the problem that two different 
+    * public key tags have the same value. 
+    * TODO: This handling is subject for improvement!
     * @param fromTag
     * @param toTag
     * @param generic
@@ -100,10 +101,10 @@ public class KeyFactory {
       }
       ByteField field = (ByteField)generic.getOptionalSubfield(toTag);
       if( field==null ){
-         // F�ltet fanns inte - kolla om det andra f�ltet finns att kopiera
+         // OK, the field hasn't been added - check if 'fromTag' is available
          field = (ByteField)generic.getOptionalSubfield(fromTag);
          if( field!=null ) {
-            // Ok, skapa en kopia av datat med en annan tagg
+            // Yes, copy the value and add it as 'toTag'
             generic.addSubfield(new ByteField(toTag, field.getData()));
          }
       }

@@ -23,7 +23,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 
 /**
- * En wrapper av CVCertificate som extendar java.security.cert.Certificate
+ * Wrapper of CVCertificate that extends java.security.cert.Certificate
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -34,7 +34,7 @@ public class CardVerifiableCertificate
    private CVCertificate cvc;
 
    /**
-    * Konstruerar instans fr�n en CVCertificate
+    * Constructs an instance from a CVCertificate
     * @param cvc
     */
    public CardVerifiableCertificate(CVCertificate cvc) {
@@ -43,7 +43,7 @@ public class CardVerifiableCertificate
    }
    
    /**
-    * Returnerar inb�ddat CVCertificate
+    * Returns embedded CVCertificate
     * @return
     */
    public CVCertificate getCVCertificate() {

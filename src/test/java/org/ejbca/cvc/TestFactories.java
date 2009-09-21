@@ -25,7 +25,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * Testar Factory-klasser
+ * Tests Factory classes
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -35,17 +35,17 @@ public class TestFactories
    
 
    protected void setUp() throws Exception {
-      // Installera BC som provider 
+      // Install Bouncy Castle as security provider 
       Security.addProvider(new BouncyCastleProvider());
    }
 
    protected void tearDown() throws Exception {
-      // Avinstallera BC som provider
+      // Uninstall BC
       Security.removeProvider("BC");
    }
 
    
-   /** Kontroll: validera FieldFactory */ 
+   /** Check: validate FieldFactory */ 
    public void testFieldFactory() throws Exception {
       AbstractDataField field = 
          FieldFactory.decodeField(CVCTagEnum.COFACTOR_F, new byte[]{ 0x01, 0x01, 0x01, 0x01 });
@@ -63,16 +63,16 @@ public class TestFactories
          throw new Exception("A sequence-type tag should throw IllegalArgumentException");
       }
       catch (IllegalArgumentException e) {
-         // H�r f�rv�ntas vi hamna
+         // This is expected
       }
    }
 
    
-   /** Kontroll: validera KeyFactory */ 
+   /** Check: validate KeyFactory */ 
    public void testKeyFactory() throws Exception {
       GenericPublicKeyField genKey = new GenericPublicKeyField();
       
-      // Skapa f�rst en ofullst�ndig GenericPublicKeyField
+      // First create an incomplete GenericPublicKeyField
       OIDField oid = AlgorithmUtil.getOIDField("SHA256WITHRSA");
       genKey.addSubfield(oid);
       try {
@@ -80,43 +80,43 @@ public class TestFactories
          throw new Exception("Incomplete instance of GenericPublicKeyField should throw ParseException");
       }
       catch(ConstructionException e){
-         // H�r f�rv�ntas man hamna
+         // This is expected
       }
 
-      // L�gg till f�lt f�r RSA
+      // Add fields for RSA
       BigInteger modulus = new BigInteger(new byte[] {0x01, 0x02, 0x03, 0x04});
       genKey.addSubfield(new ByteField(CVCTagEnum.MODULUS, modulus.toByteArray()));
       genKey.addSubfield(new ByteField(CVCTagEnum.EXPONENT, modulus.toByteArray()));
 
-      // Skapa objekt och j�mf�r
+      // Create public key object and compare
       CVCPublicKey cvcPubkey = KeyFactory.createInstance(genKey);
       assertTrue("cvcPubkey not a PublicKeyRSA", (cvcPubkey instanceof PublicKeyRSA));
       PublicKeyRSA rsa1 = (PublicKeyRSA)cvcPubkey;
 
-      assertEquals("Modulus fields differ", modulus, rsa1.getModulus());
-      assertEquals("OIDs differ", oid, rsa1.getObjectIdentifier());
+      assertEquals("Modulus field", modulus, rsa1.getModulus());
+      assertEquals("OID", oid, rsa1.getObjectIdentifier());
       
       
-      // Skaffa nytt nyckelpar
+      // Create new key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
 
       String algorithm = "SHA256WITHRSA";
-      CVCPublicKey cvcKey2 = KeyFactory.createInstance(keyPair.getPublic(), algorithm);
+      CVCPublicKey cvcKey2 = KeyFactory.createInstance(keyPair.getPublic(), algorithm, null);
       assertTrue("cvcKey not instanceof PublicKeyRSA", (cvcKey2 instanceof PublicKeyRSA));
       
       PublicKeyRSA rsa2 = (PublicKeyRSA)cvcKey2;
       assertEquals("Algorithm name differs", algorithm, AlgorithmUtil.getAlgorithmName(rsa2.getObjectIdentifier()));
       
 
-      // Detta ska returnera exakt samma instans (och algoritmnamnet kommer inte anv�ndas)
-      CVCPublicKey cvcPubkey2 = KeyFactory.createInstance(cvcPubkey, "DummyAlgorithm");
+      // This should return the exact same instance
+      CVCPublicKey cvcPubkey2 = KeyFactory.createInstance(cvcPubkey, "DummyAlgorithm", null);
       assertTrue("CVCPublicKey objects not same instance", cvcPubkey2==cvcPubkey);
    }
 
    
-   /** Kontroll: validera SequenceFactory */
+   /** Check: validate SequenceFactory */
    public void testSequenceFactory() throws Exception {
       AbstractSequence seq = SequenceFactory.createSequence(CVCTagEnum.CV_CERTIFICATE);
       assertTrue("seq not instance of CVCertificate", (seq instanceof CVCertificate));
@@ -126,7 +126,7 @@ public class TestFactories
          throw new Exception("A datafield-type tag should throw IllegalArgumentException");
       }
       catch( IllegalArgumentException e){
-         // H�r ska man hamna
+         // This is expected
       }
    }
 

@@ -22,18 +22,16 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 
 import org.ejbca.cvc.exception.ConstructionException;
-
-
+import org.ejbca.cvc.util.BCECUtil;
 
 /**
  * 
- * Ett Card Verifyable Certificate i enlighet med specifikation f�r EAC 1.11.
+ * Represents a Card Verifiable Certificate according to the specification for EAC 1.11.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
- *
+ * @version $Id: CVCertificate.java 5999 2008-08-12 15:41:09Z keijox $
  */
-public class CVCertificate extends AbstractSequence {
+public class CVCertificate extends AbstractSequence implements Signable {
 
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
       CVCTagEnum.CERTIFICATE_BODY, 
@@ -47,36 +45,37 @@ public class CVCertificate extends AbstractSequence {
 
 
    /**
-    * Default konstruktor
+    * Default constructor
     */
    CVCertificate(){
       super(CVCTagEnum.CV_CERTIFICATE);
    }
 
-   
-
    /**
-    * Skapar instans av en CVCRequestBody samt dess signatur
+    * Creates an instance from a CVCertificateBody
     * @param body
-    * @param signatureData
-    * @throws IllegalArgumentException om n�got argument �r null
+    * @throws IllegalArgumentException if the argument is null
     */
-   CVCertificate(CVCertificateBody body, byte[] signatureData) throws ConstructionException {
+   public CVCertificate(CVCertificateBody body) throws ConstructionException {
       this();
       
       if( body==null ){
          throw new IllegalArgumentException("body is null");
       }
-      if( signatureData==null || signatureData.length==0 ){
-         throw new IllegalArgumentException("signatureData is null or empty");
-      }
-
       addSubfield(body);
+   }
+
+   /**
+    * Adds signature data
+    * @param signatureData
+    * @throws ConstructionException
+    */
+   public void setSignature(byte[] signatureData) throws ConstructionException {
       addSubfield(new ByteField(CVCTagEnum.SIGNATURE, signatureData));
    }
 
    /**
-    * Returnerar inb�ddad CertificateBody
+    * Returns the embedded CertificateBody
     * @return
     */
    public CVCertificateBody getCertificateBody() throws NoSuchFieldException {
@@ -84,44 +83,59 @@ public class CVCertificate extends AbstractSequence {
    }
 
    /**
-    * Returnerar certifikatets signatur
+    * Returns the signature
     * @return
     */
    public byte[] getSignature() throws NoSuchFieldException {
       return ((ByteField)getSubfield(CVCTagEnum.SIGNATURE)).getData();
    }
 
+   /**
+    * Returns the data To Be Signed
+    */
+   public byte[] getTBS() throws ConstructionException {
+      try {
+         return getCertificateBody().getDEREncoded();
+      }
+      catch( IOException e ){
+         throw new ConstructionException(e);
+      }
+      catch( NoSuchFieldException e ){
+         throw new ConstructionException(e);
+      }
+   }
+
 
    /**
-    * Returnerar certifikatet som text
+    * Returns the certificate in text format
     */
    public String toString() {
       return getAsText("");
    }
 
-
    /**
-    * Verifierar certifikatets signatur
+    * Verifies the signature
     */
    public void verify(PublicKey key, String provider) throws CertificateException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
       try {
-         // Kolla upp OID, d�r kodas hash-algoritmen ocks�
+         // Lookup the OID, the hash-algorithm can be found through it
          OIDField oid = getCertificateBody().getPublicKey().getObjectIdentifier();
-         Signature sign = Signature.getInstance(AlgorithmUtil.getAlgorithmName(oid), provider);
+         String algorithm = AlgorithmUtil.getAlgorithmName(oid);
+         Signature sign = Signature.getInstance(algorithm, provider);
          
-         // Verifiera signatur
-         TBSData tbs = TBSData.getInstance(getCertificateBody());
-
+         // Verify the signature
          sign.initVerify(key);
-         sign.update(tbs.getEncoded());
-         if( !sign.verify(getSignature()) ){
+         sign.update(getTBS());
+         // Now convert the CVC signature to a X9.62 signature
+         byte[] sig = BCECUtil.convertCVCSigToX962(algorithm, getSignature());
+         if( !sign.verify(sig) ){
             throw new SignatureException("Signature verification failed!");
          }
       }
       catch( NoSuchFieldException e ){
          throw new CertificateException("CV-Certificate is corrupt", e);
       }
-      catch( IOException e ){
+      catch( ConstructionException e ){
          throw new CertificateException("CV-Certificate is corrupt", e);
       }
    }

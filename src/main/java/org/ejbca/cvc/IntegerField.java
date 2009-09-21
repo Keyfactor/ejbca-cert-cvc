@@ -15,7 +15,7 @@ package org.ejbca.cvc;
 import java.math.BigInteger;
 
 /**
- * Klassen representerar ett integer-f�lt
+ * Represents a generic field of type Integer
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -25,9 +25,8 @@ public class IntegerField
 
    private int intValue;
 
-
    /**
-    * Skapar instans fr�n tagg och int-v�rde
+    * Constructs a new instance from a tag and an int
     * @param tag
     * @param value
     */
@@ -37,8 +36,8 @@ public class IntegerField
    }
 
    /**
-    * Skapar instans fr�n tagg och bytearray. Obs att om arrayens l�ngd 
-    * �verstiger 4 (antal bytes i en int) s� kastas IllegalArgumentException.
+    * Constructs a new instance by parsing DER-encoded data. 
+    * If the length of data is > 4 then IllegalArgumentException is thrown.
     * @param tag
     * @param data
     */

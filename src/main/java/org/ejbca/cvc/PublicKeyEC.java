@@ -20,13 +20,14 @@ import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.EllipticCurve;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bouncycastle.jce.ECPointUtil;
 import org.ejbca.cvc.exception.ConstructionException;
 
 /**
- * CVC:s implementation av ECPublicKey
+ * Implements handling of a public key of Elliptic Curve type.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -34,7 +35,9 @@ import org.ejbca.cvc.exception.ConstructionException;
 public class PublicKeyEC
       extends CVCPublicKey implements ECPublicKey {
  
-   /** V�rde f�r att indikera kodning av okomprimerad Point */
+   static final long serialVersionUID = 1L;  // TODO: Fix better value
+
+   /** Byte value indicating the start of an uncompressed Point data array */
    public static final byte  UNCOMPRESSED_POINT_TAG = 0x04;
 
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
@@ -47,12 +50,8 @@ public class PublicKeyEC
       CVCTagEnum.PUBLIC_POINT_Y,
       CVCTagEnum.COFACTOR_F
    };
-
-//   private String          objectIdentifier;
-//   private ECParameterSpec ecParameterSpec;
-//   private ECPoint         wPoint;   // 'Public point'
-
    
+
    @Override
    CVCTagEnum[] getAllowedFields() {
       return allowedFields;
@@ -60,12 +59,12 @@ public class PublicKeyEC
 
    
    /**
-    * Skapar instans fr�n en GenericPublicKeyField
+    * Creates an instance from a GenericPublicKeyField
     * @param genericKey
     * @throws NoSuchFieldException
     */
    public PublicKeyEC(GenericPublicKeyField genericKey) throws ConstructionException, NoSuchFieldException {
-      // Plocka ut alla f�lt som kan ing� i PublicKeyEC
+      // Copy all fields for a PublicKeyEC
       addSubfield(genericKey.getSubfield(CVCTagEnum.OID));
       addSubfield(genericKey.getOptionalSubfield(CVCTagEnum.MODULUS));
       addSubfield(genericKey.getOptionalSubfield(CVCTagEnum.COEFFICIENT_A));
@@ -77,47 +76,58 @@ public class PublicKeyEC
    }
 
    /**
-    * Skapar instans fr�n en OIDField samt PublicKey
+    * Creates an instance from an OIDField and a java.security.interfaces.ECPublicKey
     * @param oid
     * @param pubKey
+    * @param authRole role of certificate holder. If null or 'CVCA' all subfields are added,
+    * otherwise only the required ones.
     */
-   public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC) throws ConstructionException {
+   public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC, AuthorizationRoleEnum authRole) throws ConstructionException {
       super();
 
       addSubfield(oid);
-      
-      ECParameterSpec ecParameterSpec  = pubKeyEC.getParams();
-      ECField ecField = ecParameterSpec.getCurve().getField();
-      if( ecField instanceof ECFieldFp ){
-         ECFieldFp fp = (ECFieldFp)ecField;
-         addSubfield(new ByteField(CVCTagEnum.MODULUS,         trimByteArray(fp.getP().toByteArray())));
-      }
-      // TODO: Kan ecField vara av typen ECFieldF2m? Vad �r modulus d�??
 
-      addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_A,      trimByteArray(ecParameterSpec.getCurve().getA().toByteArray())));
-      addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_B,      trimByteArray(ecParameterSpec.getCurve().getB().toByteArray())));
-      addSubfield(new ByteField(CVCTagEnum.BASE_POINT_G,       encodePoint(ecParameterSpec.getGenerator())));
-      addSubfield(new ByteField(CVCTagEnum.BASE_POINT_R_ORDER, trimByteArray(ecParameterSpec.getOrder().toByteArray())));
+      ECParameterSpec ecParameterSpec  = pubKeyEC.getParams();
+      boolean addAllParams = (authRole==null || authRole==AuthorizationRoleEnum.CVCA);
+      if( addAllParams ){
+         ECField ecField = ecParameterSpec.getCurve().getField();
+         if( ecField instanceof ECFieldFp ){
+            ECFieldFp fp = (ECFieldFp)ecField;
+            addSubfield(new ByteField(CVCTagEnum.MODULUS,         trimByteArray(fp.getP().toByteArray())));
+         }
+         // TODO: Can ecField be of type ECFieldF2m? Then what is the modulus?
+
+         addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_A,      trimByteArray(ecParameterSpec.getCurve().getA().toByteArray())));
+         addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_B,      trimByteArray(ecParameterSpec.getCurve().getB().toByteArray())));
+         addSubfield(new ByteField(CVCTagEnum.BASE_POINT_G,       encodePoint(ecParameterSpec.getGenerator())));
+         addSubfield(new ByteField(CVCTagEnum.BASE_POINT_R_ORDER, trimByteArray(ecParameterSpec.getOrder().toByteArray())));
+      }
+
       addSubfield(new ByteField(CVCTagEnum.PUBLIC_POINT_Y,     encodePoint(pubKeyEC.getW())));
-      addSubfield(new IntegerField(CVCTagEnum.COFACTOR_F,      ecParameterSpec.getCofactor()));
+
+      if( addAllParams ){
+         addSubfield(new IntegerField(CVCTagEnum.COFACTOR_F,      ecParameterSpec.getCofactor()));
+      }
    }
 
 
    /**
-    * �verlagrad metod f�r att kunna styra vilka f�lt som ska med vi DER-kodning.
-    * Enligt EAC Spec 1.11: 
-    * CVCRequest m�ste ha alla parametrar, CVCA-cert _kan_ ha det, �vriga ska ej ha
+    * Overridden method that enables us to control exactly which fields that are
+    * included when DER-encoding.
+    * According to EAC Spec 1.11: 
+    * CVCRequest must contain all fields, CVCA-certificate may have all, others must 
+    * only have the required fields.
     */
    @Override
    protected List<CVCObject> getEncodableFields() {
       try {
          ArrayList<CVCObject> list = new ArrayList<CVCObject>();
-         // Denna �r alltid med
+         // This field is always present
          list.add(getSubfield(CVCTagEnum.OID));
    
-         boolean addParameters = false;
+         boolean addAllParams = false;
          
-         // En f�rsta f�ruts�ttning �r att vi har en spec att utg� ifr�n
+         // First of all we must have an ECParameterSpec to read from
          ECParameterSpec ecParameterSpec = getParams();
          if( ecParameterSpec!=null ){
             AbstractSequence parent = getParent();
@@ -125,30 +135,30 @@ public class PublicKeyEC
                try {
                   CVCObject cvcObj = ((CVCertificateBody)parent).getOptionalSubfield(CVCTagEnum.HOLDER_AUTH_TEMPLATE);
                   if( cvcObj==null ){
-                     // Ingen HOLDER_AUTH_TEMPLATE - Antagande: Det �r ett CVCRequest
-                     addParameters = true;
+                     // No HOLDER_AUTH_TEMPLATE - assumption: We're building a CVCRequest
+                     addAllParams = true;
                   }
                   else {
-                     // HOLDER_AUTH_TEMPLATE finns, d� b�r det vara ett CVCertificate. Kolla rollen
+                     // HOLDER_AUTH_TEMPLATE exists, so it should be a CVCertificate. Check if role is CVCA
                      AuthorizationField authField = ((CVCAuthorizationTemplate)cvcObj).getAuthorizationField();
-                     addParameters = (authField!=null && authField.getRole()==AuthorizationRoleEnum.CVCA);
+                     addAllParams = (authField!=null && authField.getRole()==AuthorizationRoleEnum.CVCA);
                   }
                }
                catch( NoSuchFieldException e ){
-                  // Inget att g�ra
+                  // Nothing to do...
                }
             }
             else if( parent==null ){
-               // Detta kan vara bra under utveckling - test att DER-koda bara sj�lva nyckeln
-                addParameters = true;
+               // This could be useful during development - enables DER-encoding of the public key alone
+               addAllParams = true;
             }
          }
-         if( addParameters ){
+         if( addAllParams ){
             ECField ecField = ecParameterSpec.getCurve().getField();
             if( ecField instanceof ECFieldFp ){
                list.add(getSubfield(CVCTagEnum.MODULUS));
             }
-            // TODO: Kan ecField vara av typen ECFieldF2m? Vad �r modulus d�??
+            // TODO: Can ecField be of type ECFieldF2m? Then what is the modulus?
    
             list.add(getSubfield(CVCTagEnum.COEFFICIENT_A));
             list.add(getSubfield(CVCTagEnum.COEFFICIENT_B));
@@ -156,33 +166,33 @@ public class PublicKeyEC
             list.add(getSubfield(CVCTagEnum.BASE_POINT_R_ORDER));
          }
          
-         // Denna ska alltid med
+         // This field is always present
          list.add(getSubfield(CVCTagEnum.PUBLIC_POINT_Y));
          
-         if( addParameters ){
+         if( addAllParams ){
             list.add(getSubfield(CVCTagEnum.COFACTOR_F));
          }
          return list;
       }
       catch( NoSuchFieldException e ){
-         // Instansen har inte skapats korrekt
+         // This instance has not been created correctly
          throw new IllegalStateException(e);
       }
    }
 
 
    public String getAlgorithm() {
-      return "ECDSA";  // TODO: Kolla denna
+      return "ECDSA";  // TODO: This OK?
    }
 
 
    public String getFormat() {
-      return "CVC";  // TODO: Kolla denna
+      return "CVC";  // TODO: This OK?
    }
 
 
    public ECParameterSpec getParams() {
-      // Plocka fram subf�lten och  bygg upp spec-instansen i runtime
+      // Fetch the subfields and construct the ECParameterSpec
       ECParameterSpec ecParameterSpec = null;
       ByteField modulus       = (ByteField)getOptionalSubfield(CVCTagEnum.MODULUS);
       ByteField coefficient_a = (ByteField)getOptionalSubfield(CVCTagEnum.COEFFICIENT_A);
@@ -215,7 +225,7 @@ public class PublicKeyEC
          return decodePoint(public_point_y.getData());
       }
       catch( NoSuchFieldException e ){
-         // Instansen har inte skapats korrekt
+          // This instance has not been created correctly
          throw new IllegalStateException(e);
       }
    }
@@ -230,12 +240,45 @@ public class PublicKeyEC
       byte[] pointX = trimByteArray(ecPoint.getAffineX().toByteArray());
       byte[] pointY = trimByteArray(ecPoint.getAffineY().toByteArray());
 
-      // Egentligen �r pointX.length = pointY.length
-      byte[] encoded = new byte[1 + pointX.length + pointY.length];
+      // pointX.length should be equal to pointY.length...
+      // Below is a tad bit too much logic to handle this edge case...but what to do. It's easy to understand at least 
+      // and in the general case (about 99.5% of all keys) the if clauses will rapidly return false.
+      int addxlen = 0;
+      int addylen = 0;
+      if (pointX.length != pointY.length) {
+    	  // differing lengths, we need 0 padding
+    	  if (pointY.length < pointX.length) {
+    		  addylen = pointX.length - pointY.length;
+    	  }
+    	  if (pointX.length < pointY.length) {
+    		  addxlen = pointY.length - pointX.length;
+    	  }
+      }
+      byte[] encoded = new byte[1 + pointX.length + pointY.length+addxlen+addylen];
+      // Add 0x04, required tag by the encoding
       encoded[0] = UNCOMPRESSED_POINT_TAG;
-      System.arraycopy(pointX, 0, encoded, 1, pointX.length);
-      System.arraycopy(pointY, 0, encoded, 1+pointX.length, pointY.length);
-
+      int pos = 1;
+      // If x was larger than y we need to pad x on the left with 0
+      // If we must pad with more than two bytes, this key must be seriously f..ed up so leave it and let it break instead.
+      if ((addxlen != 0) && (addxlen < 3)) {
+          byte[] zeroes = new byte[addxlen];
+          Arrays.fill(zeroes, (byte)0);
+          System.arraycopy(zeroes, 0, encoded, pos, addxlen);
+          pos = pos + addxlen;
+      }
+      // Add the affineX
+      System.arraycopy(pointX, 0, encoded, pos, pointX.length);
+      pos = pos + pointX.length;
+      // If y was larger than x we need to pad y on the left with 0
+      // If we must pad with more than two bytes, this key must be seriously f..ed up so leave it and let it break instead.
+      if ((addylen != 0) && (addylen < 3)) {
+          byte[] zeroes = new byte[addylen];
+          Arrays.fill(zeroes, (byte)0);
+          System.arraycopy(zeroes, 0, encoded, pos, addylen);
+          pos = pos + addylen;
+      }      
+      // Add the affineY
+      System.arraycopy(pointY, 0, encoded, pos, pointY.length);
       return encoded;
    }
 
@@ -255,7 +298,7 @@ public class PublicKeyEC
       System.arraycopy(data, 1, xEnc, 0, xEnc.length);
       System.arraycopy(data, xEnc.length + 1, yEnc, 0, yEnc.length);
       
-      return new ECPoint(new BigInteger(xEnc), new BigInteger(yEnc));
+      return new ECPoint(new BigInteger(1, xEnc), new BigInteger(1, yEnc));
    }
 
 }

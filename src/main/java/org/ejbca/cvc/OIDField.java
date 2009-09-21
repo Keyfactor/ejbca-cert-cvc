@@ -19,7 +19,7 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.OIDTokenizer;
 
 /**
- * Klassen representerar Object Identifier
+ * Represents Object Identifier
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -35,7 +35,7 @@ public class OIDField
    }
 
    /**
-    * Konstruktor som tag id-v�rdet som str�ng
+    * Constructs a new instance from a String (the oid value)
     * @param id
     */
    OIDField(String id) {
@@ -44,7 +44,7 @@ public class OIDField
    }
 
    /**
-    * Konstruktor f�r att avkoda byte-data
+    * Constructs a new instance by parsing DER-encoded data
     * @param data
     */
    OIDField(byte[] data) {
@@ -64,8 +64,8 @@ public class OIDField
       ArrayList<byte[]> byteArray = new ArrayList<byte[]>();
       int totalLength = 0;
       
-      // Om OID best�r av integers i1, i2, ..., iN
-      // F�rsta byten i DER-arrayen kodas som 40*i1 + i2, d�refter i3, ..., iN
+      // OID is encoded as integers i1, i2, ..., iN
+      // First byte is encoded as 40*i1 + i2, others as i3, ..., iN
       byte[] tmpArr = toByteArray(
          Integer.parseInt(tok.nextToken()) * 40 + 
          Integer.parseInt(tok.nextToken()) );
@@ -78,7 +78,7 @@ public class OIDField
          totalLength += tmpArr.length;
       }
 
-      // Allokera svarsarray
+      // Allocate and set byte array
       byte[] result = new byte[totalLength];
       int pos = 0;
       for( byte[] arr : byteArray ){
@@ -99,9 +99,6 @@ public class OIDField
    }
 
    @Override
-   /**
-    * Returnerar true om id-str�ngarna �r lika
-    */
    public boolean equals(Object other){
       if( other instanceof OIDField ){
          return id.equals(((OIDField)other).getValue());

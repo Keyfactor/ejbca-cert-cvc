@@ -19,7 +19,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * CVC:s implementation av RSAPublicKey
+ * Implements handling of a public key of RSA type.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -39,13 +39,13 @@ public class PublicKeyRSA
    }
 
    /**
-    * Skapar instans fr�n en GenericPublicKeyField
+    * Constructs an instance from a GenericPublicKeyField
     * @param genericKey
     * @throws NoSuchFieldException
     */
    PublicKeyRSA(GenericPublicKeyField genericKey) throws ConstructionException, NoSuchFieldException {
       ByteField modulusField = (ByteField)genericKey.getSubfield(CVCTagEnum.MODULUS);
-      modulusField.setShowBitLength(true);  // Vi vill se denna l�ngd vid utskrift
+      modulusField.setShowBitLength(true);  // We want to see this when printing as text
 
       addSubfield(genericKey.getSubfield(CVCTagEnum.OID));
       addSubfield(modulusField);
@@ -54,7 +54,7 @@ public class PublicKeyRSA
 
 
    /**
-    * Skapar instans fr�n en OIDField samt PublicKey
+    * Constructs an instance from OIDField and RSAPublicKey
     * @param oid
     * @param pubKey
     */
@@ -72,7 +72,7 @@ public class PublicKeyRSA
    }
 
    public String getFormat() {
-      return "CVC";   // TODO: Kolla denna
+      return "CVC";   // TODO: This OK?
    }
 
    public BigInteger getPublicExponent() {
@@ -81,7 +81,7 @@ public class PublicKeyRSA
          return new BigInteger(1, exp.getData());
       }
       catch( NoSuchFieldException e ){
-         // Instansen har inte skapats korrekt
+         // This object has not been created correctly?
          throw new IllegalStateException(e);
       }
    }
@@ -92,7 +92,7 @@ public class PublicKeyRSA
          return new BigInteger(1, exp.getData());
       }
       catch( NoSuchFieldException e ){
-         // Instansen har inte skapats korrekt
+         // This object has not been created correctly?
          throw new IllegalStateException(e);
       }
    }

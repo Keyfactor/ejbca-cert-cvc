@@ -18,7 +18,7 @@ import org.ejbca.cvc.util.StringConverter;
 
 
 /**
- * Generellt f�lt f�r att lagra bin�rdata.
+ * Generic field representing binary data (or Octet String)
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -31,7 +31,7 @@ public class ByteField
    private boolean showBitLength = false;
 
    /**
-    * Skapar instans med endast tagg
+    * Constructor taking tag
     * @param tag
     */
    ByteField(CVCTagEnum tag) {
@@ -39,7 +39,7 @@ public class ByteField
    }
 
    /**
-    * Skapar instans med tagg och data
+    * Constructor taking tag and data
     * @param tag
     * @param data
     */
@@ -48,8 +48,8 @@ public class ByteField
    }
 
    /**
-    * Skapar instans d�r man �ven kan ange ifall bitl�ngd ska visas
-    * vid utskrift till text.
+    * Constructor taking tag, data and flag indicating if data length should be
+    * shown in valueAsText()
     * @param tag
     * @param data
     * @param showBitLength
@@ -62,19 +62,23 @@ public class ByteField
 
    
    /**
-    * Returnerar flagga f�r 'showBitLen'
+    * Returns flag for 'showBitLen'
     * @return
     */
    public boolean isShowBitLength() {
       return showBitLength;
    }
 
+   /**
+    * Sets flag 'showBitLen'
+    * @param showBitLength - if true then valueAsText() will add an entry showing the length in bits
+    */
    public void setShowBitLength(boolean showBitLength) {
       this.showBitLength = showBitLength;
    }
 
    /**
-    * Returnerar f�ltets data.
+    * Returns the data.
     * @return
     */
    public byte[] getData() {
@@ -89,7 +93,7 @@ public class ByteField
    @Override
    protected String valueAsText() {
       String lenInfo = "";
-      // Kolla om l�ngd i antal bitar ska visas
+      // Check if length in bits should be shown
       if( showBitLength ){
          int bitLength = 0;
          if( data!=null ){

@@ -15,7 +15,7 @@ package org.ejbca.cvc;
 import org.ejbca.cvc.util.StringConverter;
 
 /**
- * Klassen representerar f�lt f�r 'Roles and access rights' i CVC.
+ * Represents field 'Roles and access rights' i CVC.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -33,7 +33,7 @@ public class AuthorizationField
    }
 
    /**
-    * Konstruktor som tar de enskilda f�lten som argument
+    * Constructor taking AuthorizationRoleEnum and AccessRightEnum 
     * @param role
     * @param rights
     */
@@ -44,7 +44,7 @@ public class AuthorizationField
    }
 
    /**
-    * Konstruktor f�r att avkoda byte-data
+    * Constructor for decoding DER-encoded data
     * @param data
     */
    AuthorizationField(byte[] data){
@@ -57,7 +57,7 @@ public class AuthorizationField
    }
 
    /**
-    * Returnerar roll
+    * Returns role
     * @return
     */
    public AuthorizationRoleEnum getRole() {
@@ -65,7 +65,7 @@ public class AuthorizationField
    }
 
    /**
-    * Returnerar beh�righet till datagrupper
+    * Returns access rights
     * @return
     */
    public AccessRightEnum getAccessRight() {
@@ -101,7 +101,7 @@ public class AuthorizationField
    }
 
    
-   /* �vers�tter bytev�rde till AuthorizationRole */
+   /* Translates a byte to AuthorizationRole */
    private AuthorizationRoleEnum getRoleFromByte(byte b){
       byte testVal = (byte)(b & 0xC0);
       AuthorizationRoleEnum foundRole = null;
@@ -114,7 +114,7 @@ public class AuthorizationField
       return foundRole;
    }
 
-   /* �vers�tter bytev�rde till AccessRight */
+   /* Translates a byte to AccessRight */
    private AccessRightEnum getRightsFromByte(byte b){
       byte testVal = (byte)(b & 0x03);
       AccessRightEnum foundRight = null;

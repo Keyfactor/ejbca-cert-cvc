@@ -22,22 +22,29 @@ import java.io.IOException;
 
 
 /**
- * Klass f�r att l�sa eller skriva filer.
+ * Utility for reading and writing files.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
 public class FileHelper {
 
-
    /**
-    * Laddar en (bin�r) fil fr�n disk
+    * Loads a file
+    * @param path
     * @return
+    * @throws IOException
     */
    public static byte[] loadFile(String path) throws IOException {
       return loadFile(new File(path));
    }
 
+   /**
+    * Loads a file
+    * @param file
+    * @return
+    * @throws IOException
+    */
    public static byte[] loadFile(File file) throws IOException {
       byte[] dataBuffer = null;
       FileInputStream inStream = null;
@@ -69,41 +76,7 @@ public class FileHelper {
    }
 
    /**
-    * Laddar textfil fr�n disk
-    * @param file
-    * @return
-    * @throws IOException
-    */
-   public static String loadTextFile(File file) throws IOException {
-      BufferedReader input = null;
-      StringBuffer sb = new StringBuffer();
-      try {
-         int lines = 0;
-         input = new BufferedReader(new FileReader(file));
-         String line = null;
-         String newLine = System.getProperty("line.separator");
-         while( (line=input.readLine())!=null ){
-            lines++;
-            sb.append(line);
-            sb.append(newLine);
-         }
-         System.out.println("Read " + file.getName() +", " + lines + " lines");
-      }
-      finally {
-         try {
-            if (input!= null)
-               input.close();
-         }
-         catch (IOException e1) {
-            System.out.println("loadFile - error when closing: " + e1);
-         }
-      }
-      return sb.toString();
-   }
-
-
-   /**
-    * Skriver data till en fil
+    * Writes data to a file
     * @param file
     * @param data
     * @throws IOException

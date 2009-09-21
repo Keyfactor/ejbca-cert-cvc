@@ -27,8 +27,8 @@ import org.ejbca.cvc.HolderReferenceField;
 
 
 /**
- * Exempelkod f�r att generera ett CVCRequest med yttre signatur,
- * dvs 'certificate renewal'.
+ * Example code for generating a CVC request having an outer signature,
+ * i e request used for certificate renewal.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -39,29 +39,29 @@ public class GenerateRequest {
 
    public static void main(String[] args) {
       try {
-         // Installera BC som provider 
+         // Install Bouncy Castle as security provider 
          Security.addProvider(new BouncyCastleProvider());
 
-         // Skaffa nytt nyckelpar
+         // Create a new key pair
          KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
          keyGen.initialize(1024, new SecureRandom());
          KeyPair keyPair = keyGen.generateKeyPair();
 
-         /* Certificate Authority Reference ska identifiera publika nyckeln som anv�ndes i det f�rra requestet  */
-         CAReferenceField previousHolderRef = new CAReferenceField("SE","ABSP","00008");
-         /* Certificate Holder Reference ska r�knas upp d� ett nytt nyckelpar anv�nds */
-         HolderReferenceField holderRef = new HolderReferenceField("SE","ABSP","00009");
+         /* Certificate Authority Reference shall identify the public key in the last request */
+         CAReferenceField previousHolderRef = new CAReferenceField("SE","PASSRD1","00008");
+         /* Certificate Holder Reference is incremented to reflect the new key pair */
+         HolderReferenceField holderRef = new HolderReferenceField("SE","PASSRD1","00009");
 
          String algorithmName = "SHA256WITHRSAANDMGF1";
 
-         // Anropa metod i CertificateGenerator
+         // Call CertificateGenerator
          CVCertificate request = CertificateGenerator.createRequest(keyPair, algorithmName, holderRef);
          System.out.println(request.getAsText());
 
          CVCAuthenticatedRequest authRequest = CertificateGenerator.createAuthenticatedRequest(request, keyPair, algorithmName, previousHolderRef);
          System.out.println(authRequest.getAsText());
          
-         FileHelper.writeFile(new File("C:/eBorder/cv_certs/request5_auth.cvcert"), authRequest.getDEREncoded());
+         FileHelper.writeFile(new File("C:/cv_certs/request1.cvcert"), authRequest.getDEREncoded());
       }
       catch( Exception e ){
          e.printStackTrace();

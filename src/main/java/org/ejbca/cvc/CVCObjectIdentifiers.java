@@ -13,7 +13,7 @@
 package org.ejbca.cvc;
 
 /**
- * Objektidentifierare f�r CVC
+ * Object identifiers for the CVC library
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

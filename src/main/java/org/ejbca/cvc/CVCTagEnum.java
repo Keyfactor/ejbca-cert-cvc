@@ -13,7 +13,7 @@
 package org.ejbca.cvc;
 
 /**
- * Definition av de applikationsspecifika taggarna i ett CV-certifikat.
+ * Definitions of the applications specific tags in CV-certificates.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -21,7 +21,7 @@ package org.ejbca.cvc;
  */
 public enum CVCTagEnum {
 
-   // Certifikatf�lt
+   // Certificate fields
    CV_CERTIFICATE         (0x7F21, true),
    CERTIFICATE_BODY       (0x7F4E, true),
    PROFILE_IDENTIFIER     (0x5F29),
@@ -36,14 +36,14 @@ public enum CVCTagEnum {
    CA_REFERENCE           (0x42),
    REQ_AUTHENTICATION     (0x67,   true),
 
-   // Holder Authorization Template-f�lt
+   // Fields for Holder Authorization Template
    ROLE_AND_ACCESS_RIGHTS (0x53),
 
-   // Public Key-f�lt
+   // Fields for Public Key
    MODULUS                (0x81),
    EXPONENT               (0x82),
-   // Endast EC
-   COEFFICIENT_A          (0x82),  // Obs samma v�rde som EXPONENT...
+   // Only for EC
+   COEFFICIENT_A          (0x82),  // Note: this has the same value as EXPONENT...
    COEFFICIENT_B          (0x83),
    BASE_POINT_G           (0x84),
    BASE_POINT_R_ORDER     (0x85),
@@ -64,7 +64,7 @@ public enum CVCTagEnum {
    }
 
    /**
-    * Returnerar taggens numeriska v�rde. 
+    * Returns the value of the tag 
     * @return
     */
    public int getValue(){
@@ -72,14 +72,13 @@ public enum CVCTagEnum {
    }
 
    /**
-    * Returnerar indikering ifall detta f�lt �r av primitiv 
-    * typ eller inneh�ller subf�lt (CompositeField).
+    * Returns flag indicating if this field is a Sequence
     * @return
     */
    public boolean isSequence() {
-      // Enligt ITU-T X.690 ska bit 6 i f�rsta byten av tv� 
-      // vara 0 d� kodningen anses primitiv.
-      // OBS Detta fungerar inte pga REQ_AUTHENTICATION som har v�rdet 0x67!
+      // According to ITU-T X.690: if bit 6 in the first of two bytes 
+      // is 0 then the encoding is 'primitive'.
+      // Note: this doesn't work here because REQ_AUTHENTICATION has a value of 0x67!
       //return ((value >>> 8) & 0x20) != 0;
       return isSequence;
    }

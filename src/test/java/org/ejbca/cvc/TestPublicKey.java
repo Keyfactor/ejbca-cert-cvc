@@ -35,7 +35,7 @@ import org.ejbca.cvc.util.StringConverter;
 
 
 /**
- * Klassen utf�r tester specifika f�r PublicKey-klasser
+ * Tests PublicKey classes
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -44,24 +44,24 @@ public class TestPublicKey
    extends TestCase implements CVCTest {
 
    protected void setUp() throws Exception {
-      // Installera BC som provider 
+      // Install Bouncy Castle as security provider 
       Security.addProvider(new BouncyCastleProvider());
    }
 
    protected void tearDown() throws Exception {
-      // Installera BC som provider 
+      // Uninstall BC 
       Security.removeProvider("BC");
    }
 
    
-   /** Kontroll: Kodning till/fr�n DER ska inte p�verka data */
+   /** Check: DER encoding/decoding must not affect data */
    public void testPubliKeyField() throws Exception {
-      // Skaffa nytt nyckelpar
+      // Create new key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
 
-      PublicKeyRSA rsa1 = (PublicKeyRSA)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHRSA");
+      PublicKeyRSA rsa1 = (PublicKeyRSA)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHRSA", null);
       byte[] der = rsa1.getEncoded();
 
       CVCObject cvcObj = CertificateParser.parseCVCObject(der);
@@ -69,7 +69,7 @@ public class TestPublicKey
 
       RSAPublicKey rsaKey = (RSAPublicKey)keyPair.getPublic();
 
-      RSAPublicKey rsa2 = (RSAPublicKey)cvcObj;  // Denna castning ska ocks� g� bra
+      RSAPublicKey rsa2 = (RSAPublicKey)cvcObj;  // This casting should be successful
       assertEquals("Key modulus", rsaKey.getModulus(), rsa2.getModulus());
       assertEquals("Key exponent", rsaKey.getPublicExponent(), rsa2.getPublicExponent());
       assertEquals("Key algorithm", "RSA", rsa2.getAlgorithm());
@@ -79,49 +79,45 @@ public class TestPublicKey
    }
 
    
-   /** Kontroll: Vissa modulus-v�rden har orsakat problem med inledande nollor i byte array */
+   /** Check: Some modulus values has caused problems with leading zeroes when encoding */
    public void testParseAndCreate() throws Exception {
       byte[] keydata = FileHelper.loadFile(new File("./src/test/resources/PUBLIC_KEY_RSA1024.cvc"));
       CVCPublicKey publicKey1 = (CVCPublicKey)CertificateParser.parseCVCObject(keydata);
 
-      // Skapa cert
+      // Create certificate
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
       CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
       HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
 
-      // Anropa metod i CertificateGenerator
+      // Call CertificateGenerator
       CVCertificate cvc = 
-         CertificateGenerator.createTestCertificate(publicKey1, keyPair.getPrivate(), caRef, holderRef );
+         CertificateGenerator.createTestCertificate(publicKey1, keyPair.getPrivate(), caRef, holderRef, "SHA1WithRSA", AuthorizationRoleEnum.IS );
       
-      // J�mf�r som text - ska vara identiska
+      // Compare as text - these should be identical
       CVCPublicKey publicKey2 = cvc.getCertificateBody().getPublicKey();
       assertEquals("Public keys as text differ", publicKey1.getAsText(""), publicKey2.getAsText(""));
 
    }
    
 
-   /** Kontroll: Skapa cvc-nyckel fr�n genererad nyckel, DER-kodad bytearray ska d� inte ha inledande nollor */
+   /** Check: Create CVC public key from a java public key - the encoded modulus should not have ant leading zeroes */
    public void testModulusValue() throws Exception {
-      // Skapa nyckel med java.security
+      // Create key pair using java.security
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
       
-      PublicKeyRSA rsaKey = (PublicKeyRSA)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHRSA");
+      PublicKeyRSA rsaKey = (PublicKeyRSA)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHRSA", null);
       byte[] modulusData = ((ByteField)rsaKey.getSubfield(CVCTagEnum.MODULUS)).getData();
       assertTrue("Leading zero found in modulus", modulusData[0]!=0);
    }
 
 
-   /** Kontroll: Skapa och parsa EC-nyckel korrekt */
+   /** Check: Validate methods specific for Elliptic Curve public keys */
    public void testPublicKeyEC() throws Exception {
-//      byte[] derdata = FileHelper.loadFile(new File("C:/eBorder/specimen/ECC/GO_CVCA_EC256.cvcert"));
-//      CVCertificate cert = CertificateParser.parseCertificate(derdata);
-//      System.out.println(cert);
-      
-      // Testa kodning av ECPoint till byte-array
+      // Test encoding of a ECPoint
       String expectedByteStr = "04013579024680";
       BigInteger affineX = new BigInteger("13579", 16);
       BigInteger affineY = new BigInteger("24680", 16);
@@ -129,23 +125,45 @@ public class TestPublicKey
       byte[] data = PublicKeyEC.encodePoint(point);
       assertEquals("Encoded ECPoint", expectedByteStr, StringConverter.byteToHex(data));
       
-      // Testa avkodning av ECPoint
+      // Test decoding of a ECPoint
       ECPoint decodedPoint = PublicKeyEC.decodePoint(new BigInteger(expectedByteStr,16).toByteArray());
       assertEquals("AffineX", affineX, decodedPoint.getAffineX());
 
-      // Skapa nyckel med BouncyCastle (1.36 st�djer l�ngder 192, 239 och 256)...
-      // Se org.bouncycastle.jce.provider.JDKKeyPairGenerator.EC
+      // Test with a point with an affineY that is one byte shorted than the affineX, should be 0 padded on the left
+      String x = "9FDAB8773ADEE1735BB58E8D0A81C29924EC3F94D9F4B182E887CBDC7CDDD357";
+      String y = "D758F858BF3C84575E93D13D072AD9255CD47F18F40A262F43A237132B55A1";
+      expectedByteStr = "04"+x+"00"+y;
+      affineX = new BigInteger(x, 16);
+      affineY = new BigInteger(y, 16);
+      point = new ECPoint(affineX, affineY);
+      data = PublicKeyEC.encodePoint(point);
+      String result = StringConverter.byteToHex(data);
+      assertEquals("Encoded ECPoint", expectedByteStr, result);
+
+      // Test with a point with an affineX that is one byte shorted than the affineY, should be 0 padded on the left
+      x = "9FDAB8773ADEE1735BB58E8D0A81C29924EC3F94D9F4B182E887CBDC7CDDD3";
+      y = "57D758F858BF3C84575E93D13D072AD9255CD47F18F40A262F43A237132B55A1";
+      expectedByteStr = "04"+"00"+x+y;
+      affineX = new BigInteger(x, 16);
+      affineY = new BigInteger(y, 16);
+      point = new ECPoint(affineX, affineY);
+      data = PublicKeyEC.encodePoint(point);
+      result = StringConverter.byteToHex(data);
+      assertEquals("Encoded ECPoint", expectedByteStr, result);
+
+      // Create key with BouncyCastle (v1.36 supports key lengths 192, 239 and 256)...
+      // See org.bouncycastle.jce.provider.JDKKeyPairGenerator.EC
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
       keyGen.initialize(239, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
       
-      PublicKeyEC ecKey = (PublicKeyEC)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHECDSA");
+      PublicKeyEC ecKey = (PublicKeyEC)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHECDSA", null);
       assertTrue("ECParams is null", ecKey.getParams()!=null );
       assertEquals("Cofactor", 1, ecKey.getParams().getCofactor());
    }
 
 
-   /** Kontroll: Dom�nparametrar ska bara komma med vid DER-kodning i vissa fall */
+   /** Check: Domain parameters shall be included when encoding only in specific cases */
    public void testPublicKeyECFields() throws Exception {
       CVCertificateBody bodyIS = createBody(AuthorizationRoleEnum.IS);
       CVCertificateBody bodyCVCA = createBody(AuthorizationRoleEnum.CVCA);
@@ -154,16 +172,16 @@ public class TestPublicKey
       CVCObject cvcObjCVCA = CertificateParser.parseCVCObject(bodyCVCA.getDEREncoded());
       assertTrue("CVCObj not a CVCertificateBody", cvcObjIS.getTag()==CVCTagEnum.CERTIFICATE_BODY);
 
-      // Endast tv� subf�lt f�rv�ntas i IS-cert
+      // IS certificate must contain only two EC public key subfields
       PublicKeyEC ecKey1 = (PublicKeyEC)((CVCertificateBody)cvcObjIS).getPublicKey();
       assertEquals("Number of PublicKey subfields", 2, ecKey1.getSubfields().size());
 
-      // �tta subf�lt f�rv�ntas i ett CVCA-cert
+      // CVCA certificate must contain all eight EC public key subfields
       PublicKeyEC ecKey2 = (PublicKeyEC)((CVCertificateBody)cvcObjCVCA).getPublicKey();
       assertEquals("Number of PublicKey subfields", 8, ecKey2.getSubfields().size());
 
 
-      // Skapa ett request
+      // Create a request
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
       keyGen.initialize(256, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
@@ -172,14 +190,13 @@ public class TestPublicKey
             "SHA256WITHECDSA",
             new HolderReferenceField("SE", "KLMNOPQ", "00001")
       );
-      // �tta subf�lt f�rv�ntas i ett CVC-request
+      // All EC public key subfields must be present in a CVC-request
       CVCPublicKey pubKey = req.getCertificateBody().getPublicKey();
       assertEquals("Number of EC subfields", 8, pubKey.getSubfields().size());
    }
 
    
    private KeyPair createECKeyPair() throws Exception {
-      // Ett annat s�tt att skapa nyckeln
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
 
       EllipticCurve curve = new EllipticCurve(
@@ -199,7 +216,7 @@ public class TestPublicKey
    
    private CVCertificateBody createBody(AuthorizationRoleEnum roleEnum) throws Exception {
       KeyPair keyPair = createECKeyPair();
-      PublicKeyEC ecKey = (PublicKeyEC)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHECDSA");
+      PublicKeyEC ecKey = (PublicKeyEC)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHECDSA", roleEnum);
 
       return new  CVCertificateBody(
             new CAReferenceField("SE", "ABCDEF", "00001"),

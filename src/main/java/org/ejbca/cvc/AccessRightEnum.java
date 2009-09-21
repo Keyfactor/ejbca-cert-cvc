@@ -13,8 +13,7 @@
 package org.ejbca.cvc;
 
 /**
- * Representerar Access Rights avseende 
- * l�sbeh�righet till datagrupperna DG3, DG4.
+ * Represents Access Rights regarding ePassport data groups DG3, DG4.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -35,7 +34,7 @@ public enum AccessRightEnum {
    }
 
    /**
-    * Returnerar v�rdet som en bitmapp.
+    * Returns the tag as a bitmap
     * @return
     */
    public byte getValue(){

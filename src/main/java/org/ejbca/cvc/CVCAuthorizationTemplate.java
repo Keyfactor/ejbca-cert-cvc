@@ -16,7 +16,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * Representerar f�ltet 'Certificate Holder Authorization Template'
+ * Represents the field 'Certificate Holder Authorization Template'
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -36,14 +36,14 @@ public class CVCAuthorizationTemplate
    }
 
    /**
-    * Default konstruktor
+    * Default constructor
     */
    CVCAuthorizationTemplate(){
       super(CVCTagEnum.HOLDER_AUTH_TEMPLATE);
    }
    
    /**
-    * Konstruktor som s�tter f�lten
+    * Constructor taking the individual fields
     * @param role
     * @param rights
     */
@@ -56,7 +56,7 @@ public class CVCAuthorizationTemplate
 
 
    /**
-    * Returnerar Object Identifier i str�ngformat
+    * Returns the Object Identifier as a String
     * @return
     */
    public String getObjectIdentifier() throws NoSuchFieldException {
@@ -64,7 +64,7 @@ public class CVCAuthorizationTemplate
    }
 
    /**
-    * Returnerar AuthorizationField
+    * Returns AuthorizationField
     * @return
     */
    public AuthorizationField getAuthorizationField() throws NoSuchFieldException {

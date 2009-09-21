@@ -13,7 +13,7 @@
 package org.ejbca.cvc;
 
 /**
- * Definitioner av roll som anges i CVC.
+ * Definitions of roles in CVC.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -34,7 +34,7 @@ public enum AuthorizationRoleEnum {
    }
    
    /**
-    * Returnerar v�rdet som en bitmapp.
+    * Returns the value as a bitmap
     * @return
     */
    public byte getValue(){

@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.security.PublicKey;
 
 /**
- * Klassen representerar sekvensen Public Key
+ * Represents the sequence Public Key
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -30,7 +30,7 @@ public abstract class CVCPublicKey
       super(CVCTagEnum.PUBLIC_KEY);
    }
 
-   // Implementerar java.security.PublicKey
+   // Implements java.security.PublicKey
    public byte[] getEncoded() {
       byte[] data = null;
       try {
@@ -43,7 +43,7 @@ public abstract class CVCPublicKey
    }
 
    /**
-    * Returnerar Object Identifier
+    * Returns Object Identifier
     * @return
     */
    public OIDField getObjectIdentifier() throws NoSuchFieldException {

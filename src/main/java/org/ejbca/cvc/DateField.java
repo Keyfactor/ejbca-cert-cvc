@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Klass som hanterar datum som ett f�lt i CV-certifikatet
+ * Represents a CVC field of type Date
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -26,11 +26,10 @@ import java.util.Date;
  */
 public class DateField extends AbstractDataField {
 
-   /* L�ngden p� array f�r datum �r alltid sex tecken */
+   /* The length of the array is always the same */
    private static final int  DATE_ARRAY_SIZE = 6;
    
-   /* Datumformat f�r att plocka fram det relevanta */
-   //private static final DateFormat FORMAT_YEAR_TO_DAY  = new SimpleDateFormat("yyMMdd");
+   /* Date format when returning this object as text */
    private static final DateFormat FORMAT_PRINTABLE    = new SimpleDateFormat("yyyy-MM-dd");
 
 
@@ -41,7 +40,7 @@ public class DateField extends AbstractDataField {
    }
 
    /**
-    * Konstruktor som tar en Date
+    * Constructs a new instance from tag and Date
     * @param type
     * @param date
     */
@@ -51,7 +50,7 @@ public class DateField extends AbstractDataField {
       Calendar cal = Calendar.getInstance();
       cal.setTime(date);
 
-      // St�da bort tidsinformationen
+      // Remove time part
       int year  = cal.get(Calendar.YEAR);
       int month = cal.get(Calendar.MONTH);
       int day   = cal.get(Calendar.DAY_OF_MONTH);
@@ -61,7 +60,7 @@ public class DateField extends AbstractDataField {
    }
 
    /**
-    * Konstruktor f�r att avkoda DER-kodat data
+    * Constructs instance by decoding DER-encoded data
     * @param type
     * @param data
     */
@@ -81,7 +80,7 @@ public class DateField extends AbstractDataField {
    }
    
    /**
-    * Returnerar datumet
+    * Returns the date
     * @return
     */
    public Date getDate() {
@@ -90,7 +89,7 @@ public class DateField extends AbstractDataField {
 
    
    /**
-    * Kodar datum s� att varje siffra i '080407' lagras som en egen byte
+    * Encodes the date value so that every number in '080407' is stored as an individual byte
     * @param date
     * @return
     */
@@ -100,8 +99,8 @@ public class DateField extends AbstractDataField {
       
       Calendar cal = Calendar.getInstance();
       cal.setTime(date);
-      int year  = cal.get(Calendar.YEAR) - 2000; // �ret kodas som 08, 09, 10 ...
-      int month = cal.get(Calendar.MONTH) + 1;   // M�nad kodas som 1,2, ... ,12
+      int year  = cal.get(Calendar.YEAR) - 2000; // Year is encoded as 08, 09, 10 ...
+      int month = cal.get(Calendar.MONTH) + 1;   // Month is encoded as 1,2, ... ,12
       int day   = cal.get(Calendar.DAY_OF_MONTH);
 
       dateArr[0] = (byte)(year / 10);

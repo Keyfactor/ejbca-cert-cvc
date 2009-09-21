@@ -19,7 +19,7 @@ import org.ejbca.cvc.CertificateParser;
 
 
 /**
- * Exempelkod f�r att parsa en DER-kodad bytearray
+ * Example code for parsing a DER-encoded byte array
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -28,7 +28,7 @@ public class Parse {
 
 
    public static void main(String[] args) {
-      File file = new File("C:/dev/eborder_view/cert/IMPL/SEDORIS7-DV.cvcert");
+      File file = new File("C:/cv_certs/mycert1.cvcert");
       
       try {
          byte[] certData = FileHelper.loadFile(file);

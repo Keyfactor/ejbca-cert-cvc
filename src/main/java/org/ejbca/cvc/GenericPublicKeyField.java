@@ -14,8 +14,7 @@ package org.ejbca.cvc;
 
 
 /**
- * Detta �r en generisk public-key klass som endast hanteras medans man 
- * parsar upp en byte-array inneh�llande en nyckel av typen RSA eller EC.
+ * Generic public key class that is only used while parsing DER-encoded data.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -24,6 +23,7 @@ public class GenericPublicKeyField
       extends AbstractSequence {
 
 
+   // This declares all subfields that may be added to this Sequence.
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
       CVCTagEnum.OID,
       CVCTagEnum.MODULUS, 
@@ -43,16 +43,6 @@ public class GenericPublicKeyField
 
    GenericPublicKeyField() {
       super(CVCTagEnum.PUBLIC_KEY);
-   }
-
-   /**
-    * Hj�lpmetod f�r att enklare f� tag p� ett visst f�lt
-    * @param tag
-    * @return
-    * @throws NoSuchFieldException
-    */
-   AbstractDataField getField(CVCTagEnum tag) throws NoSuchFieldException {
-      return (AbstractDataField)getSubfield(tag);
    }
 
 }

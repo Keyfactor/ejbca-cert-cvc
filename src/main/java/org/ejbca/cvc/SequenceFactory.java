@@ -14,7 +14,7 @@ package org.ejbca.cvc;
 
 
 /**
- * Fabrik f�r att skapa sekvenser, dvs objekt i certifikatet som inneh�ller andra objekt.
+ * Factory for creating sequences, that is certificate objects containing subfields
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -23,10 +23,10 @@ package org.ejbca.cvc;
 public class SequenceFactory {
 
    /**
-    * Skapar instans av AbstractSequence baserat p� angiven tag.
+    * Constructs a new instance of a subclass to AbstractSequence
     * @param tag
     * @return
-    * @throws IllegalArgumentException om angiven tag inte motsvarar en sequence
+    * @throws IllegalArgumentException if the supplied tag does not represent a sequence
     */
    public static AbstractSequence createSequence(CVCTagEnum tag) {
       if( !tag.isSequence() ) {

@@ -18,7 +18,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * Klassen representerar CertificateBody i CV Certificate.
+ * Represents a CertificateBody
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -43,14 +43,14 @@ public class CVCertificateBody
    }
 
    /**
-    * Skapar en tom instans
+    * Creates an empty instance
     */
    CVCertificateBody() {
       super(CVCTagEnum.CERTIFICATE_BODY);
    }
 
    /**
-    * Skapar instans avsedd f�r CertificateRequest
+    * Creates an instance suitable for CertificateRequest
     * @param authorityReference
     * @param publicKey
     * @param holderReference
@@ -63,10 +63,8 @@ public class CVCertificateBody
    {
       this();
 
-      // Validera att n�dv�ndiga f�lt �r satta
-      if( authorityReference==null ){
-         throw new IllegalArgumentException("authorityReference is null");
-      }
+      // All arguments must be set, except authorityReference which is
+      // optional in requests
       if( publicKey==null ){
          throw new IllegalArgumentException("publicKey is null");
       }
@@ -74,7 +72,7 @@ public class CVCertificateBody
          throw new IllegalArgumentException("holderReference is null");
       }
 
-      // L�gg till subf�lten
+      // Add subfields
       addSubfield(new IntegerField(CVCTagEnum.PROFILE_IDENTIFIER, CVC_VERSION ));
       addSubfield(authorityReference);
       
@@ -83,7 +81,7 @@ public class CVCertificateBody
    }
 
    /**
-    * Skapar instans avsedd f�r Certificate
+    * Creates an instance suitable for a CVCertificate
     * @param authorityReference
     * @param publicKey
     * @param holderReference
@@ -116,14 +114,14 @@ public class CVCertificateBody
          throw new IllegalArgumentException("validTo is null");
       }
       
-
+      // Add subfields
       addSubfield(new CVCAuthorizationTemplate(authRole, accessRight));
       addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
       addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
    }
 
    /**
-    * Returnerar CVCAuthorizationTemplate
+    * Returns CVCAuthorizationTemplate
     * @return
     */
    public CVCAuthorizationTemplate getAuthorizationTemplate() throws NoSuchFieldException {
@@ -131,7 +129,7 @@ public class CVCertificateBody
    }
 
    /**
-    * Returnerar 'Effective Date' 
+    * Returns 'Effective Date' 
     * @return
     */
    public Date getValidFrom() throws NoSuchFieldException {
@@ -139,7 +137,7 @@ public class CVCertificateBody
    }
 
    /**
-    * Returnerar 'Expiration Date' 
+    * Returns 'Expiration Date' 
     * @return
     */
    public Date getValidTo() throws NoSuchFieldException {
@@ -147,9 +145,8 @@ public class CVCertificateBody
    }
    
    /**
-    * Returnerar v�rdet f�r 'Certificate Authority Reference'
-    * Eftersom f�ltet inte �r obligatoriskt i ett Request s� returneras null
-    * om f�ltet saknas ist�llet f�r att kasta NoSuchFieldException.
+    * Returns 'Certificate Authority Reference'
+    * Since this field is optional in a CVCRequest this method may return null
     * @return
     */
    public CAReferenceField getAuthorityReference() throws NoSuchFieldException {
@@ -157,7 +154,7 @@ public class CVCertificateBody
    }
 
    /**
-    * Returnerar publika nyckeln
+    * Returns the public key
     * @return
     */
    public CVCPublicKey getPublicKey() throws NoSuchFieldException {
@@ -165,7 +162,7 @@ public class CVCertificateBody
    }
 
    /**
-    * Returnerar v�rdet f�r 'Certificate Holder Reference'
+    * Returns 'Certificate Holder Reference'
     * @return
     */
    public HolderReferenceField getHolderReference() throws NoSuchFieldException {

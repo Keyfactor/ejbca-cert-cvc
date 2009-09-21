@@ -25,8 +25,7 @@ import org.ejbca.cvc.exception.ConstructionException;
 
 
 /**
- * Klassen representerar ett CVC-f�lt som �r en sequence,
- * dvs best�r av en samling subf�lt.
+ * Represents a CVC sequence, i e contains one or more subfields
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -38,7 +37,7 @@ public abstract class AbstractSequence extends CVCObject {
    private List<CVCTagEnum> allowedFields;
 
    /**
-    * Enda konstruktorn, kr�ver identifierare i form av tagg
+    * Constructor, must supply the tag
     * @param type
     */
    AbstractSequence(CVCTagEnum type){
@@ -47,9 +46,9 @@ public abstract class AbstractSequence extends CVCObject {
    }
 
    /**
-    * L�gger till ett subf�lt. Om argumentet �r null h�nder ingenting.
+    * Adds a subfield to this sequence. Nothing happens if the argument is null.
     * @param field
-    * @throws IllegalArgumentException om subf�lten inte �r till�tet i denna sequence
+    * @throws IllegalArgumentException if the supplied field is not allowed in this sequence.
     */
    void addSubfield(CVCObject field) throws ConstructionException {
       if( field!=null ){
@@ -70,18 +69,18 @@ public abstract class AbstractSequence extends CVCObject {
 
 
    /**
-    * Returnerar array med alla till�tna taggar i denna sequence,
-    * sorterade i den ordning de ska komma vid DER-kodning
+    * Returns tags for all allowed subfields, in the same order as they
+    * appear when DER-encoded
     * @return
     */
    abstract CVCTagEnum[] getAllowedFields();
    
 
    /**
-    * H�mtar visst subf�lt
+    * Returns a mandatory subfield
     * @param fieldTag
     * @return
-    * @throws NoSuchFieldException om angivet f�lt inte kunde hittas
+    * @throws NoSuchFieldException if the subfield hasn't been added
     */
    CVCObject getSubfield(CVCTagEnum fieldTag) throws NoSuchFieldException {
       CVCObject subfield = subfields.get(fieldTag);
@@ -95,16 +94,16 @@ public abstract class AbstractSequence extends CVCObject {
 
 
    /**
-    * H�mtar visst subf�lt som inte �r obligatoriskt (inget Exception kastas).
+    * Returns optional subfield (no Exception is thrown).
     * @param tag
-    * @return AbstractDataField eller null om f�ltet inte hittas
+    * @return AbstractDataField or null if the field hasn't been added
     */
    CVCObject getOptionalSubfield(CVCTagEnum tag) {
       return subfields.get(tag);
    }
 
    /**
-    * Returnerar alla tillagda subf�lt
+    * Returns all added subfields
     * @return
     */
    Collection<CVCObject> getSubfields() {
@@ -113,10 +112,10 @@ public abstract class AbstractSequence extends CVCObject {
 
    @Override
    public int encode(DataOutputStream pOut) throws IOException {
-      // Iterera �ver subf�lten och summera l�ngderna, skriv sedan detta i headern
+      // Iterate over the subfields, sum up the lengths and write it the header
       
-      // Skaffa en lokal DataOutputStream att skriva subf�lten i,
-      // detta f�r att h�lla koll p� sammanlagd l�ngd.
+      // Get a local DataOutputStream to write the subfields to,
+      // so we know have many bytes we have written
       ByteArrayOutputStream bout = new ByteArrayOutputStream();
       DataOutputStream dout = new DataOutputStream(bout);
       int seqLength = 0;
@@ -136,9 +135,7 @@ public abstract class AbstractSequence extends CVCObject {
 
    
    /**
-    * �Verlagringsbar metod som returnerar de f�lt som ska
-    * DER-kodas. Returnerar som default alla f�lt som �r icke-null,
-    * i den ordning som getAllowedFields() returnerat.
+    * Returns all subfields for DER-encoding
     * @return
     */
    protected List<CVCObject> getEncodableFields() {
@@ -146,7 +143,7 @@ public abstract class AbstractSequence extends CVCObject {
    }
 
    /**
-    * Hj�lpmetod f�r att skapa en DER-kodad bytearray.
+    * Helper for creating a DER-encoded byte array.
     * @return
     * @throws IOException
     */
@@ -169,8 +166,7 @@ public abstract class AbstractSequence extends CVCObject {
    }
 
    /**
-    * Returnerar objektet som en str�ngbeskrivning,
-    * inklusive tagg-v�rden
+    * Returns this object as text, including tag value
     * @param tab
     * @return
     */
@@ -192,7 +188,7 @@ public abstract class AbstractSequence extends CVCObject {
    }
 
    
-   // Returnerar en lista med subf�lt sorterade i best�md ordning
+   // Returns a List of ordered subfields
    private List<CVCObject> getOrderedSubfields() {
       List<CVCObject> orderedList = new ArrayList<CVCObject>();
       for( CVCTagEnum tag : allowedFields ){

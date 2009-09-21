@@ -13,6 +13,7 @@
 package org.ejbca.cvc;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
@@ -36,9 +37,10 @@ import org.ejbca.cvc.CardVerifiableCertificate;
 import org.ejbca.cvc.CertificateGenerator;
 import org.ejbca.cvc.CertificateParser;
 import org.ejbca.cvc.HolderReferenceField;
+import org.ejbca.cvc.example.FileHelper;
 
 /**
- * Tester specifika f�r CVCertificate
+ * Tests specific for CV Certificates
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
@@ -48,17 +50,17 @@ public class TestCVCertificate
 
 
    protected void setUp() throws Exception {
-      // Installera BC som provider 
+      // Install Bouncy Castle as security provider 
       Security.addProvider(new BouncyCastleProvider());
    }
 
    protected void tearDown() throws Exception {
-      // Installera BC som provider 
+      // Uninstall BC 
       Security.removeProvider("BC");
    }
 
 
-   /** Kontroll: Skapande av testcert + kodning till/fr�n DER ska inte p�verka inneh�llet */
+   /** Check: DER-encoding/decoding of a CVCertificate should not affect its data */
    public void testEncoding() throws Exception {
 
       CVCertificate cert1 = createTestCertificate();
@@ -78,9 +80,9 @@ public class TestCVCertificate
    }
 
    
-   /** Kontroll: signaturen f�r ett skapat CardVerifiableCertificate ska g� att verifiera */
+   /** Check: The CVCertificate signature should be verifiable */
    public void testVerifyCertificate() throws Exception {
-      // Skaffa nytt nyckelpar
+      // Create new key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
@@ -88,9 +90,9 @@ public class TestCVCertificate
       CAReferenceField caRef         = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
       HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
 
-      // Detta blir ett self-signed certifikat
+      // This will create a self-signed certificate
       CVCertificate cert = 
-         CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef);
+         CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef, "SHA1WithRSA", AuthorizationRoleEnum.IS);
       cert.verify(keyPair.getPublic(), "BC");
       
       CardVerifiableCertificate cvc = new CardVerifiableCertificate(cert);
@@ -98,15 +100,15 @@ public class TestCVCertificate
    }
 
 
-   /** Kontroll: En certifikatkedja ska g� att verifiera */
+   /** Check: Verify certificate chain */
    public void testVerifyCertificateChain() throws Exception {
-      // Skaffa nyckelpar f�r CA
+      // Create key pair for CA
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair ca_KeyPair = keyGen.generateKeyPair();
 
-      // Simulera ett IS-cert som signerats av CA
-      // Skaffa nytt nyckelpar
+      // Simulate an IS certificate that has been signed by CA
+      // Create new key pair
       keyGen.initialize(1024, new SecureRandom());
       KeyPair is_KeyPair = keyGen.generateKeyPair();
       CAReferenceField caRef         = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
@@ -132,13 +134,14 @@ public class TestCVCertificate
          throw new Exception("Verifying with holder's public key should not work!");
       }
       catch( SignatureException e ){
-         // Detta ska d�remot g� bra
+         // This is expected
+
          is_cert.verify(ca_KeyPair.getPublic(), "BC");
       }
    }
    
    
-   /** Kontroll: DER-kodat CV-certifikat ska kunna genereras fr�n en CertificateFactory */
+   /** Check: Validate CVCProvider */
    public void testSecurityProvider() throws Exception {
       Security.addProvider(new CVCProvider());
 
@@ -157,10 +160,18 @@ public class TestCVCertificate
       Security.removeProvider("CVC");
    }
 
+	public void testExternalCert()throws Exception {
+	      byte[] bytes = FileHelper.loadFile(new File("./src/test/resources/GO_CVCA_RSA2008.cvcert"));
+	      CVCertificate cvc = (CVCertificate)CertificateParser.parseCVCObject(bytes);
+	      CardVerifiableCertificate cvcacert = new CardVerifiableCertificate(cvc);
+	      System.out.println("CERT\n: "+cvcacert.toString());
+	      cvcacert.verify(cvc.getCertificateBody().getPublicKey(), "BC");
 
-   // Hj�lpmetod f�r att skapa ett cert
+	}
+
+   // Helper for creating a test certificate
    private CVCertificate createTestCertificate() throws Exception {
-      // Skaffa nytt nyckelpar
+      // Create new key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
@@ -168,8 +179,8 @@ public class TestCVCertificate
       CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
       HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
 
-      // Anropa metod i CertificateGenerator
-      return CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef);
+      // Call CertificateGenerator
+      return CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef, "SHA1WithRSA", AuthorizationRoleEnum.IS);
    }
 
 }

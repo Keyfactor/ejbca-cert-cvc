@@ -13,7 +13,7 @@
 package org.ejbca.cvc.exception;
 
 /**
- * Undantag som kastas d� byte-data inte gick att tolka.
+ * Exception indicating that a byte array could not be parsed as a CVC object
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

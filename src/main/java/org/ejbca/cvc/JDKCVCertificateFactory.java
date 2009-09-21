@@ -28,10 +28,10 @@ import org.ejbca.cvc.exception.ParseException;
 
 
 /**
- * class for dealing with CVC certificates.
+ * Class for dealing with CVC certificates.
  * <p>
  * At the moment this will deal with binary encoded CVC certificates. Only one CVC certificate can be in the input stream passed.
- * BC JDKX509CertificateFactory was used as template for this class.
+ * Bouncy Castle's JDKX509CertificateFactory was used as template for this class.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$

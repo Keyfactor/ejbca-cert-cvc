@@ -17,8 +17,8 @@ import org.ejbca.cvc.exception.ConstructionException;
 /**
  * Interface for signable classes, forcing them to implement
  * a method for getting the data to be signed
- * $Author: $ $Date: $
- * $Revision: $
+ *
+ * @version $Id$
  */
 public interface Signable {
 

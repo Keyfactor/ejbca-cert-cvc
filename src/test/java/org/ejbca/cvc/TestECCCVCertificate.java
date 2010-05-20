@@ -34,7 +34,7 @@ import org.ejbca.cvc.example.FileHelper;
  * Tests specific for ECC CV Certificates
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id: TestCVCertificate.java 5876 2008-07-11 12:41:03Z anatom $
+ * @version $Id$
  */
 public class TestECCCVCertificate
 extends TestCase implements CVCTest {

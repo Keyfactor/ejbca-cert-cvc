@@ -29,7 +29,7 @@ import org.ejbca.cvc.util.BCECUtil;
  * Represents a Card Verifiable Certificate according to the specification for EAC 1.11.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id: CVCertificate.java 5999 2008-08-12 15:41:09Z keijox $
+ * @version $Id$
  */
 public class CVCertificate extends AbstractSequence implements Signable {
 

@@ -25,7 +25,7 @@ import org.ejbca.cvc.example.FileHelper;
  * Tests CVCRequest with outer signature
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id: TestCVCRequest.java 6030 2008-08-13 13:35:31Z keijox $
+ * @version $Id$
  */
 public class TestCVCRequestABSP
       extends TestCase implements CVCTest {

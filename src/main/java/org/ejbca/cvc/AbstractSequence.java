@@ -33,6 +33,8 @@ import org.ejbca.cvc.exception.ConstructionException;
  */
 public abstract class AbstractSequence extends CVCObject {
 
+   private static final long serialVersionUID = 1L;
+	
    private HashMap<CVCTagEnum, CVCObject> subfields = new HashMap<CVCTagEnum, CVCObject>();
    private List<CVCTagEnum> allowedFields;
 

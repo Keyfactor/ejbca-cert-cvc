@@ -25,7 +25,10 @@ import java.io.IOException;
 public abstract class AbstractDataField
       extends CVCObject {
 
-   /**
+	private static final long serialVersionUID = 1L;
+
+
+/**
     * Constructor, must supply the tag
     * @param pType
     */

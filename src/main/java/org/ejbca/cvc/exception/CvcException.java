@@ -18,8 +18,10 @@ package org.ejbca.cvc.exception;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class CvcException
-      extends Exception {
+public class CvcException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
    /**
     * @see Exception
     */

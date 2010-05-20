@@ -122,7 +122,7 @@ public class TestPublicKey
       BigInteger affineX = new BigInteger("13579", 16);
       BigInteger affineY = new BigInteger("24680", 16);
       ECPoint point = new ECPoint(affineX, affineY);
-      byte[] data = PublicKeyEC.encodePoint(point);
+      byte[] data = PublicKeyEC.encodePoint(point, null);
       assertEquals("Encoded ECPoint", expectedByteStr, StringConverter.byteToHex(data));
       
       // Test decoding of a ECPoint
@@ -136,7 +136,7 @@ public class TestPublicKey
       affineX = new BigInteger(x, 16);
       affineY = new BigInteger(y, 16);
       point = new ECPoint(affineX, affineY);
-      data = PublicKeyEC.encodePoint(point);
+      data = PublicKeyEC.encodePoint(point, null);
       String result = StringConverter.byteToHex(data);
       assertEquals("Encoded ECPoint", expectedByteStr, result);
 
@@ -147,7 +147,7 @@ public class TestPublicKey
       affineX = new BigInteger(x, 16);
       affineY = new BigInteger(y, 16);
       point = new ECPoint(affineX, affineY);
-      data = PublicKeyEC.encodePoint(point);
+      data = PublicKeyEC.encodePoint(point, null);
       result = StringConverter.byteToHex(data);
       assertEquals("Encoded ECPoint", expectedByteStr, result);
 
@@ -156,10 +156,15 @@ public class TestPublicKey
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
       keyGen.initialize(239, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
-      
+
       PublicKeyEC ecKey = (PublicKeyEC)KeyFactory.createInstance(keyPair.getPublic(), "SHA1WITHECDSA", null);
       assertTrue("ECParams is null", ecKey.getParams()!=null );
       assertEquals("Cofactor", 1, ecKey.getParams().getCofactor());
+      // Test conversion using Curve parameter as well, even if it's a regular key with no strange sizes.
+      data = PublicKeyEC.encodePoint(ecKey.getParams().getGenerator(), ecKey.getParams().getCurve());
+      result = StringConverter.byteToHex(data);
+      expectedByteStr = "04"+"0FFA963CDCA8816CCC33B8642BEDF905C3D358573D3F27FBBD3B3CB9AAAF"+"7DEBE8E4E90A5DAE6E4054CA530BA04654B36818CE226B39FCCB7B02F1AE";
+      assertEquals("Encoded ECPoint", expectedByteStr, result);
    }
 
 

@@ -20,6 +20,8 @@ import java.util.Calendar;
 
 import junit.framework.TestCase;
 
+import org.ejbca.cvc.exception.ParseException;
+
 /**
  * Tests basic functionality for AbstractDataField
  * 
@@ -41,6 +43,20 @@ public class TestDatafields
 
    protected void tearDown() throws Exception {
       super.tearDown();
+   }
+
+   public void testParseError() throws Exception {
+	 try {
+		 CertificateParser.parseCertificate(new byte[] {'1','2','3','4','5'});  // Something unparseable
+		 fail("ParseException should have been thrown");
+	 }
+	 catch (ParseException e) {
+		 // Ok!
+	 }
+	 catch (Exception e) {
+		 // Not Ok!
+	     fail("ParseException should have been thrown, not " + e);
+	 }
    }
 
    
@@ -190,12 +206,24 @@ public class TestDatafields
       // Compare byte by byte
       assertTrue("Byte arrays not equal", Arrays.equals(enc, dateRef));
 
-      // Compare strings to avoid problems with seconds etc
+      // Compare strings to avoid problems with seconds, minutes from current time etc
       DateField date2 = new DateField(CVCTagEnum.EFFECTIVE_DATE, enc);
       Calendar cal2 = Calendar.getInstance();
       cal2.setTime(date2.getDate());
       String s2 = FORMAT_PRINTABLE.format(cal2.getTime());
       assertEquals(s1, s2);
+      // Also test the time part, should be all zeroes
+      assertEquals(0, cal2.get(Calendar.HOUR_OF_DAY));
+      assertEquals(0, cal2.get(Calendar.MINUTE));
+      assertEquals(0, cal2.get(Calendar.SECOND));
+
+      DateField date3 = new DateField(CVCTagEnum.EXPIRATION_DATE, enc);
+      Calendar cal3 = Calendar.getInstance();
+      cal3.setTime(date3.getDate());
+      // The time part should be 'maximum' in this case
+      assertEquals(23, cal3.get(Calendar.HOUR_OF_DAY));
+      assertEquals(59, cal3.get(Calendar.MINUTE));
+      assertEquals(59, cal3.get(Calendar.SECOND));
    }
 
  
@@ -210,8 +238,15 @@ public class TestDatafields
       
       assertTrue("Byte arrays not equal", Arrays.equals(der,oidRef));
 
-      OIDField oid2 = new OIDField(der);
-      assertEquals("Parsed oid not equal", oidValue, oid2.getValue());
+      OIDField oidDec = new OIDField(der);
+      assertEquals("Parsed oid not equal", oidValue, oidDec.getValue());
+
+      // Test 2, OID with values > 128
+      String oidValue2 = "2.16.840.1.113719.1.1.4.1.2";      
+      OIDField oid2 = new OIDField(oidValue2);
+      byte[] oidRef2 = new byte[] { 0x60, (byte)0x86, 0x48, 0x01, (byte)0x86, (byte)0xF8, 0x37, 0x01, 0x01, 0x04, 0x01, 0x02 };
+      byte[] der2 = oid2.getEncoded();
+      assertTrue("Byte arrays(2) not equal", Arrays.equals(der2, oidRef2));
    }
    
 }

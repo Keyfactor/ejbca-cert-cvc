@@ -31,21 +31,21 @@ public class ParseException
    /**
     * @see Exception
     */
-   public ParseException(String msg) {
+   public ParseException(final String msg) {
       super(msg);
    }
 
    /**
     * @see Exception
     */
-   public ParseException(Throwable t){
+   public ParseException(final Throwable t){
       super(t);
    }
 
    /**
     * @see Exception
     */
-   public ParseException(String msg, Throwable t){
+   public ParseException(final String msg, final Throwable t){
       super(msg, t);
    }
 

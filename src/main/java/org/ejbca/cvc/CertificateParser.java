@@ -75,14 +75,14 @@ public class CertificateParser {
 
    // Performs the actual decoding
    private static CVCObject decode(DataInputStream din, CVCTagEnum expectedTag) 
-   throws IOException, ConstructionException {
+   throws IOException, ConstructionException, ParseException {
       // First chunk to decode is the tag
       int tagValue = decodeTag(din);
       CVCTagEnum tag = findTagFromValue(tagValue);
 
       // Validate the tag if a specific one was expected here
       if( expectedTag!=null && tag!=expectedTag ){
-         throw new IllegalArgumentException("Expected first tag " + expectedTag + " but found " + tag);
+         throw new ParseException("Expected first tag " + expectedTag + " but found " + tag);
       }
 
       // The second chunk to decode is the field length
@@ -120,7 +120,7 @@ public class CertificateParser {
     * exists two tags with the same value (0x82)! In this case the
     * first of these (EXPONENT) will be returned.
     */
-   private static CVCTagEnum findTagFromValue(int tagvalue){
+   private static CVCTagEnum findTagFromValue(int tagvalue) throws ParseException{
       CVCTagEnum wantedType = null;
       for( CVCTagEnum type : CVCTagEnum.values() ){
          if( type.getValue()==tagvalue ){
@@ -132,7 +132,7 @@ public class CertificateParser {
          return wantedType;
       }
       else {
-         throw new IllegalArgumentException("Unknown CVC tag value " + Integer.toHexString(tagvalue));
+         throw new ParseException("Unknown CVC tag value " + Integer.toHexString(tagvalue));
       }
    }
    

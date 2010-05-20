@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SignatureException;
+import java.util.Locale;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -17,22 +18,25 @@ import org.bouncycastle.asn1.DERSequence;
  *  
  * @version $Id$
  */
-public class BCECUtil
+public final class BCECUtil
 {
-	   public static byte[] convertX962SigToCVC(String algorithmName, byte[] xsig) throws IOException {
+	/** private constructor this is a static utility class */
+	private BCECUtil() {}
+	
+	   public static byte[] convertX962SigToCVC(final String algorithmName, final byte[] xsig) throws IOException {
 		   // Only do this if it's an ECDSA algorithm
-		   if (!algorithmName.toUpperCase().contains("ECDSA")) {
+		   if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
 			   return xsig;
 		   }
 		   // Read r and s from asn.1 encoded x9.62 signature
-	       ASN1InputStream aIn = new ASN1InputStream(xsig);
-	       ASN1Sequence seq = (ASN1Sequence)aIn.readObject();
-	       BigInteger r = ((DERInteger)seq.getObjectAt(0)).getValue();
-	       BigInteger s = ((DERInteger)seq.getObjectAt(1)).getValue();
+	       final ASN1InputStream aIn = new ASN1InputStream(xsig);
+	       final ASN1Sequence seq = (ASN1Sequence)aIn.readObject();
+	       final BigInteger r = ((DERInteger)seq.getObjectAt(0)).getValue();
+	       final BigInteger s = ((DERInteger)seq.getObjectAt(1)).getValue();
 
 	       // Write r and s to not asn.1 encoded cvc signature
-	       byte[] first = makeUnsigned(r);
-	       byte[] second = makeUnsigned(s);
+	       final byte[] first = makeUnsigned(r);
+	       final byte[] second = makeUnsigned(s);
 	       byte[] res;
 
 	       if (first.length > second.length)
@@ -50,25 +54,25 @@ public class BCECUtil
 	       return res;
 	   }
 
-	   public static byte[] convertCVCSigToX962(String algorithmName, byte[] xsig) throws SignatureException {
+	   public static byte[] convertCVCSigToX962(final String algorithmName, final byte[] xsig) throws SignatureException {
 		   // Only do this if it's an ECDSA algorithm
-		   if (!algorithmName.toUpperCase().contains("ECDSA")) {
+		   if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
 			   return xsig;
 		   }
 		   // Read r and s from non asn.1 encoded CVC signature
-           byte[] first = new byte[xsig.length / 2];
-           byte[] second = new byte[xsig.length / 2];
+           final byte[] first = new byte[xsig.length / 2];
+           final byte[] second = new byte[xsig.length / 2];
 
            System.arraycopy(xsig, 0, first, 0, first.length);
            System.arraycopy(xsig, first.length, second, 0, second.length);
 
-           BigInteger r = new BigInteger(1, first);
-           BigInteger s = new BigInteger(1, second);
+           final BigInteger r = new BigInteger(1, first);
+           final BigInteger s = new BigInteger(1, second);
 
 	       // Write r and s to asn.1 encoded X9.62 signature
-           ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-           DEROutputStream dOut = new DEROutputStream(bOut);
-           ASN1EncodableVector v = new ASN1EncodableVector();
+           final ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+           final DEROutputStream dOut = new DEROutputStream(bOut);
+           final ASN1EncodableVector v = new ASN1EncodableVector();
 
            v.add(new DERInteger(r));
            v.add(new DERInteger(s));
@@ -82,19 +86,16 @@ public class BCECUtil
            return bOut.toByteArray();
 	   }
 
-	   private static byte[] makeUnsigned(BigInteger val)
+	   private static byte[] makeUnsigned(final BigInteger val)
 	   {
 	       byte[] res = val.toByteArray();
 
 	       if (res[0] == 0)
 	       {
-	           byte[] tmp = new byte[res.length - 1];
-
+	           final byte[] tmp = new byte[res.length - 1];
 	           System.arraycopy(res, 1, tmp, 0, tmp.length);
-
-	           return tmp;
+	           res = tmp;
 	       }
-
 	       return res;
 	   }
 

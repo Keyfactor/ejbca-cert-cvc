@@ -1,6 +1,14 @@
+1.2.11
+-----
+- Fixed slight chance that EC public points would still be wrongly encoded (1 out of 2^16). Patch from Mark Baaijens of Ministerie van Binnenlandse Zaken en Koninkrijksrelaties, Netherlands.
+- parseCertificate() does not throw IllegalArgumentException anymore but throws ParseException instead)
+
 1.2.10
 -----
 - Fixed encoding of EC public points in the edge cases where affineX.length != affineY.length. Cone by adding the required left zero padding.
+- Fixed returning of date field so returning expire date returns <day> 23.59.59, insdead of <day> 00.00.00. 
+  When comparing dates expire date means that the CV certificate is valid for the whole of the <day> (CVC expire date only contains day resolution).
+- Support for OIDs with numbers > 128. 
 
 1.2.9
 -----

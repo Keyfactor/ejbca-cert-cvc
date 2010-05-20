@@ -31,21 +31,21 @@ public class ConstructionException
    /**
     * @see Exception
     */
-   public ConstructionException(String msg) {
+   public ConstructionException(final String msg) {
       super(msg);
    }
   
    /**
     * @see Exception
     */
-   public ConstructionException(Throwable t) {
+   public ConstructionException(final Throwable t) {
       super(t);
    }
 
    /**
     * @see Exception
     */
-   public ConstructionException(String msg, Throwable t) {
+   public ConstructionException(final String msg, final Throwable t) {
       super(msg, t);
    }
 

@@ -99,11 +99,11 @@ public class PublicKeyEC
 
          addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_A,      trimByteArray(ecParameterSpec.getCurve().getA().toByteArray())));
          addSubfield(new ByteField(CVCTagEnum.COEFFICIENT_B,      trimByteArray(ecParameterSpec.getCurve().getB().toByteArray())));
-         addSubfield(new ByteField(CVCTagEnum.BASE_POINT_G,       encodePoint(ecParameterSpec.getGenerator())));
+         addSubfield(new ByteField(CVCTagEnum.BASE_POINT_G,       encodePoint(ecParameterSpec.getGenerator(), ecParameterSpec.getCurve())));
          addSubfield(new ByteField(CVCTagEnum.BASE_POINT_R_ORDER, trimByteArray(ecParameterSpec.getOrder().toByteArray())));
       }
 
-      addSubfield(new ByteField(CVCTagEnum.PUBLIC_POINT_Y,     encodePoint(pubKeyEC.getW())));
+      addSubfield(new ByteField(CVCTagEnum.PUBLIC_POINT_Y,     encodePoint(pubKeyEC.getW(), ecParameterSpec.getCurve())));
 
       if( addAllParams ){
          addSubfield(new IntegerField(CVCTagEnum.COFACTOR_F,      ecParameterSpec.getCofactor()));
@@ -233,54 +233,53 @@ public class PublicKeyEC
    /**
     * Uncompressed encoding of a ECPoint according to BSI-TR-03111 chapter 3.1.1:
     * 0x04 || enc(X) || enc(Y)
-    * @param ecPoint
+    * @param ecPoint the point to encode
+    * @param curve the curve used to get the field size, or null. If curve is given we can accurately decide the field size. 
+    * If null is given we take the field size to be the largest of affineX.length and affineY.length, which will work in the majority of cases but might randomly produce the wrong result (a chance of 1 over 2^16).
     * @return
     */
-   public static byte[] encodePoint(ECPoint ecPoint) {
-      byte[] pointX = trimByteArray(ecPoint.getAffineX().toByteArray());
-      byte[] pointY = trimByteArray(ecPoint.getAffineY().toByteArray());
+   public static byte[] encodePoint(ECPoint ecPoint, EllipticCurve curve) {
+	  byte[] pointX = trimByteArray(ecPoint.getAffineX().toByteArray());
+	  byte[] pointY = trimByteArray(ecPoint.getAffineY().toByteArray());
 
-      // pointX.length should be equal to pointY.length...
-      // Below is a tad bit too much logic to handle this edge case...but what to do. It's easy to understand at least 
-      // and in the general case (about 99.5% of all keys) the if clauses will rapidly return false.
-      int addxlen = 0;
-      int addylen = 0;
-      if (pointX.length != pointY.length) {
-    	  // differing lengths, we need 0 padding
-    	  if (pointY.length < pointX.length) {
-    		  addylen = pointX.length - pointY.length;
-    	  }
-    	  if (pointX.length < pointY.length) {
-    		  addxlen = pointY.length - pointX.length;
-    	  }
-      }
-      byte[] encoded = new byte[1 + pointX.length + pointY.length+addxlen+addylen];
-      // Add 0x04, required tag by the encoding
-      encoded[0] = UNCOMPRESSED_POINT_TAG;
-      int pos = 1;
-      // If x was larger than y we need to pad x on the left with 0
-      // If we must pad with more than two bytes, this key must be seriously f..ed up so leave it and let it break instead.
-      if ((addxlen != 0) && (addxlen < 3)) {
-          byte[] zeroes = new byte[addxlen];
-          Arrays.fill(zeroes, (byte)0);
-          System.arraycopy(zeroes, 0, encoded, pos, addxlen);
-          pos = pos + addxlen;
-      }
-      // Add the affineX
-      System.arraycopy(pointX, 0, encoded, pos, pointX.length);
-      pos = pos + pointX.length;
-      // If y was larger than x we need to pad y on the left with 0
-      // If we must pad with more than two bytes, this key must be seriously f..ed up so leave it and let it break instead.
-      if ((addylen != 0) && (addylen < 3)) {
-          byte[] zeroes = new byte[addylen];
-          Arrays.fill(zeroes, (byte)0);
-          System.arraycopy(zeroes, 0, encoded, pos, addylen);
-          pos = pos + addylen;
-      }      
-      // Add the affineY
-      System.arraycopy(pointY, 0, encoded, pos, pointY.length);
-      return encoded;
-   }
+	  int n = 0;
+	  if (curve != null) {
+		  // get fieldsize in bytes (+7 to round up and >>3 to divide by 8)
+		  n = (curve.getField().getFieldSize() + 7) >> 3;
+	  } else {
+		  // Normally n is the curve field size and pointX and pointY has length n.
+		  // This will simply try to use this size in case we don't have access to the curve.
+		  n = pointX.length > pointY.length ? pointX.length : pointY.length;
+	  }
+		  
+	  // In case pointX.length or pointY.length greater 
+	  // the points will be trimmed to the length n
+		  
+	  // pointX.length and pointY.length should be equal to n
+	  int paddingX_length = 0;
+	  int paddingY_length = 0;
+		  
+	  // If the length of x was smaller than n we need to pad x on the left with 0
+	  if(pointX.length < n)
+		paddingX_length = n - pointX.length;
+					
+	  // If the length of y was smaller than n we need to pad y on the left with 0	
+	  if(pointY.length < n)
+		paddingY_length = n - pointY.length;
+			
+	  // the resulting array should be two times n (n << 1) plus 1
+	  byte[] encoded = new byte[1 + (n << 1)];
+	  // Initialize result with all zeros (needed for the padding)
+	  Arrays.fill(encoded, (byte)0x00);
+		  
+	  // Add 0x04, required tag by the encoding
+	  encoded[0] = UNCOMPRESSED_POINT_TAG;
+		  
+	  System.arraycopy(pointX, 0, encoded, 1+paddingX_length, n-paddingX_length);
+	  System.arraycopy(pointY, 0, encoded, 1+n+paddingY_length, n-paddingY_length);
+		  
+	  return encoded;
+   } 
 
    /**
     * Decodes an uncompressed ECPoint. First byte must be 0x04, otherwise

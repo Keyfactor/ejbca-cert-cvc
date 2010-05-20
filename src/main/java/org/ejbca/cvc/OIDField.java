@@ -12,11 +12,10 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.OIDTokenizer;
 
 /**
  * Represents Object Identifier
@@ -25,8 +24,7 @@ import org.bouncycastle.asn1.OIDTokenizer;
  * @version $Id$
  *
  */
-public class OIDField
-      extends AbstractDataField {
+public class OIDField extends AbstractDataField {
 
    private String id;
 
@@ -59,33 +57,20 @@ public class OIDField
   
    @Override
    protected byte[] getEncoded() {
-      OIDTokenizer tok = new OIDTokenizer(id);
+	  byte[] encoding = null;
+	  try {
+		  // This will give the entire field in encoded format (starting with tag and length)
+		  byte[] derField = new DERObjectIdentifier(id).getEncoded();
 
-      ArrayList<byte[]> byteArray = new ArrayList<byte[]>();
-      int totalLength = 0;
-      
-      // OID is encoded as integers i1, i2, ..., iN
-      // First byte is encoded as 40*i1 + i2, others as i3, ..., iN
-      byte[] tmpArr = toByteArray(
-         Integer.parseInt(tok.nextToken()) * 40 + 
-         Integer.parseInt(tok.nextToken()) );
-      byteArray.add(tmpArr);
-      totalLength += tmpArr.length;
-
-      while (tok.hasMoreTokens()) {
-         tmpArr = toByteArray(Long.parseLong(tok.nextToken()));
-         byteArray.add(tmpArr);
-         totalLength += tmpArr.length;
-      }
-
-      // Allocate and set byte array
-      byte[] result = new byte[totalLength];
-      int pos = 0;
-      for( byte[] arr : byteArray ){
-         System.arraycopy(arr, 0, result, pos, arr.length);
-         pos += arr.length;
-      }
-      return result;
+		  // Skip the first two bytes, they will be added later. Note: In theory, Length could
+		  // involve more than one byte, but for an OID it seems highly unlikely.
+		  encoding = new byte[derField.length-2];
+		  System.arraycopy(derField, 2, encoding, 0, encoding.length);
+		  return encoding;
+	  }
+	  catch( IOException e ){
+		  throw new RuntimeException(e.getMessage());
+	  }
    }
 
 
@@ -107,4 +92,5 @@ public class OIDField
          return false;
       }
    }
+
 }

@@ -73,9 +73,18 @@ public class DateField extends AbstractDataField {
       int month = data[2]*10 + data[3] - 1; // Java month index starts with 0...
       int day   = data[4]*10 + data[5];
 
+      // Now create a Date instance using the decoded values
       Calendar cal = Calendar.getInstance();
       cal.clear();
-      cal.set(year, month, day);
+      if( type==CVCTagEnum.EFFECTIVE_DATE ){
+    	  cal.set(year, month, day, 0, 0, 0);
+      }
+      else {  // EXPIRE_DATE
+    	  // Validity is inclusive this date, so to make sure that
+    	  // a Date comparison gives the expected result we add a
+    	  // time component
+    	  cal.set(year, month, day, 23, 59, 59);
+      }
       date = cal.getTime();
    }
    

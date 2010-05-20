@@ -30,21 +30,21 @@ public class CvcException
    /**
     * @see Exception
     */
-   public CvcException(String msg) {
+   public CvcException(final String msg) {
       super(msg);
    }
 
    /**
     * @see Exception
     */
-   public CvcException(Throwable t){
+   public CvcException(final Throwable t){
       super(t);
    }
 
    /**
     * @see Exception
     */
-   public CvcException(String msg, Throwable t){
+   public CvcException(final String msg, final Throwable t){
       super(msg, t);
    }
 }

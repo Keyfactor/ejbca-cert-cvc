@@ -54,11 +54,11 @@ public enum CVCTagEnum {
    private int value;
    private boolean isSequence;
 
-   private CVCTagEnum(int value) {
+   private CVCTagEnum(final int value) {
       this(value, false);
    }
 
-   private CVCTagEnum(int value, boolean isSequence) {
+   private CVCTagEnum(final int value, final boolean isSequence) {
       this.value = value;
       this.isSequence = isSequence;
    }

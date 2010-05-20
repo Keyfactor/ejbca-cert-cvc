@@ -34,37 +34,38 @@ import org.ejbca.cvc.HolderReferenceField;
  * @version $Id$
  *
  */
-public class GenerateRequest {
+public final class GenerateRequest {
 
+	private GenerateRequest() {}
 
-   public static void main(String[] args) {
+   public static void main(final String[] args) {
       try {
          // Install Bouncy Castle as security provider 
          Security.addProvider(new BouncyCastleProvider());
 
          // Create a new key pair
-         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+         final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
          keyGen.initialize(1024, new SecureRandom());
-         KeyPair keyPair = keyGen.generateKeyPair();
+         final KeyPair keyPair = keyGen.generateKeyPair();
 
          /* Certificate Authority Reference shall identify the public key in the last request */
-         CAReferenceField previousHolderRef = new CAReferenceField("SE","PASSRD1","00008");
+         final CAReferenceField previousHolderRef = new CAReferenceField("SE","PASSRD1","00008");
          /* Certificate Holder Reference is incremented to reflect the new key pair */
-         HolderReferenceField holderRef = new HolderReferenceField("SE","PASSRD1","00009");
+         final HolderReferenceField holderRef = new HolderReferenceField("SE","PASSRD1","00009");
 
-         String algorithmName = "SHA256WITHRSAANDMGF1";
+         final String algorithmName = "SHA256WITHRSAANDMGF1";
 
          // Call CertificateGenerator
          CVCertificate request = CertificateGenerator.createRequest(keyPair, algorithmName, holderRef);
-         System.out.println(request.getAsText());
+         System.out.println(request.getAsText()); // NOPMD
 
          CVCAuthenticatedRequest authRequest = CertificateGenerator.createAuthenticatedRequest(request, keyPair, algorithmName, previousHolderRef);
-         System.out.println(authRequest.getAsText());
+         System.out.println(authRequest.getAsText()); // NOPMD
          
          FileHelper.writeFile(new File("C:/cv_certs/request1.cvcert"), authRequest.getDEREncoded());
       }
       catch( Exception e ){
-         e.printStackTrace();
+         e.printStackTrace(); // NOPMD
       }
    }
 

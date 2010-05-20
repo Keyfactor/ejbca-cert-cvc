@@ -35,7 +35,7 @@ import org.ejbca.cvc.util.BCECUtil;
  * @version $Id$
  *
  */
-public class CertificateGenerator {
+public final class CertificateGenerator {
 
    // Only static methods...
    private CertificateGenerator(){

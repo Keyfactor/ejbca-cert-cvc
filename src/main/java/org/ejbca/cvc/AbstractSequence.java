@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ejbca.cvc.exception.ConstructionException;
 
@@ -35,14 +36,14 @@ public abstract class AbstractSequence extends CVCObject {
 
    private static final long serialVersionUID = 1L;
 	
-   private HashMap<CVCTagEnum, CVCObject> subfields = new HashMap<CVCTagEnum, CVCObject>();
-   private List<CVCTagEnum> allowedFields;
+   private final Map<CVCTagEnum, CVCObject> subfields = new HashMap<CVCTagEnum, CVCObject>();
+   private final List<CVCTagEnum> allowedFields;
 
    /**
     * Constructor, must supply the tag
     * @param type
     */
-   AbstractSequence(CVCTagEnum type){
+   AbstractSequence(final CVCTagEnum type){
       super(type);
       this.allowedFields = Arrays.asList(getAllowedFields());
    }
@@ -52,7 +53,7 @@ public abstract class AbstractSequence extends CVCObject {
     * @param field
     * @throws IllegalArgumentException if the supplied field is not allowed in this sequence.
     */
-   void addSubfield(CVCObject field) throws ConstructionException {
+   void addSubfield(final CVCObject field) throws ConstructionException {
       if( field!=null ){
          if( allowedFields.contains(field.getTag() )) {
             if( subfields.containsKey(field.getTag()) ){
@@ -75,7 +76,7 @@ public abstract class AbstractSequence extends CVCObject {
     * appear when DER-encoded
     * @return
     */
-   abstract CVCTagEnum[] getAllowedFields();
+   protected abstract CVCTagEnum[] getAllowedFields();
    
 
    /**
@@ -84,13 +85,12 @@ public abstract class AbstractSequence extends CVCObject {
     * @return
     * @throws NoSuchFieldException if the subfield hasn't been added
     */
-   CVCObject getSubfield(CVCTagEnum fieldTag) throws NoSuchFieldException {
-      CVCObject subfield = subfields.get(fieldTag);
-      if( subfield!=null ){
-         return subfield;
-      }
-      else {
-         throw new NoSuchFieldException("Could not find subfield " + fieldTag);
+   CVCObject getSubfield(final CVCTagEnum fieldTag) throws NoSuchFieldException {
+      final CVCObject subfield = subfields.get(fieldTag);
+      if( subfield==null ){
+          throw new NoSuchFieldException("Could not find subfield " + fieldTag);
+      } else {
+          return subfield;
       }
    }
 
@@ -100,7 +100,7 @@ public abstract class AbstractSequence extends CVCObject {
     * @param tag
     * @return AbstractDataField or null if the field hasn't been added
     */
-   CVCObject getOptionalSubfield(CVCTagEnum tag) {
+   CVCObject getOptionalSubfield(final CVCTagEnum tag) {
       return subfields.get(tag);
    }
 
@@ -108,7 +108,7 @@ public abstract class AbstractSequence extends CVCObject {
     * Returns all added subfields
     * @return
     */
-   Collection<CVCObject> getSubfields() {
+   protected Collection<CVCObject> getSubfields() {
       return subfields.values();
    }
 

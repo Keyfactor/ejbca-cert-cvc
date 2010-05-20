@@ -25,8 +25,9 @@ import java.nio.ByteBuffer;
  * @version $Id$
  *
  */
-public abstract class CVCObject 
-   implements Serializable {
+public abstract class CVCObject implements Serializable {
+
+   private static final long serialVersionUID = 1L;
 
    public static final int CVC_VERSION = 0;
 
@@ -36,14 +37,14 @@ public abstract class CVCObject
    private static final int LONG_LENGTH = 8;
    
 
-   private CVCTagEnum tag;
+   final private CVCTagEnum tag;
    private AbstractSequence parent;
 
    /**
     * Constructor taking a tag
     * @param tag
     */
-   public CVCObject(CVCTagEnum tag){
+   public CVCObject(final CVCTagEnum tag){
       this.tag = tag;
    }
 
@@ -67,7 +68,7 @@ public abstract class CVCObject
     * Sets the parent
     * @param parent
     */
-   public void setParent(AbstractSequence parent) {
+   public void setParent(final AbstractSequence parent) {
       this.parent = parent;
    }
 
@@ -83,7 +84,7 @@ public abstract class CVCObject
     * @param lenValue
     * @return
     */
-   protected static byte[] encodeLength(int lenValue){
+   protected static byte[] encodeLength(final int lenValue){
       byte lenBytes = 0;
       if( lenValue>0x7F ){
          // Assume that one byte is sufficient for representing the length
@@ -93,7 +94,7 @@ public abstract class CVCObject
             lenBytes = 2;
          }
       }
-      ByteBuffer bb = ByteBuffer.allocate(1 + lenBytes);
+      final ByteBuffer bb = ByteBuffer.allocate(1 + lenBytes);
       if( lenBytes==0 ){
          // One byte is enough - write the length value directly
          bb.put(0, (byte)lenValue);
@@ -118,10 +119,10 @@ public abstract class CVCObject
     * @param in
     * @return
     */
-   protected static int decodeLength(DataInputStream in) throws IOException {
+   protected static int decodeLength(final DataInputStream in) throws IOException {
       int lenBytes = 1;
       int length = 0;
-      int b1 = in.read();
+      final int b1 = in.read();
       if( b1>0x7F ) {  // If the MSB is set then the number of bytes is stored here
          lenBytes = b1 & 0xF;
          if( lenBytes==1 ) {
@@ -145,8 +146,8 @@ public abstract class CVCObject
     * @return
     * @see trimByteArray(byte[]
     */
-   protected static byte[] toByteArray(Integer intVal) {
-      ByteBuffer bb = ByteBuffer.allocate(INT_LENGTH);
+   protected static byte[] toByteArray(final Integer intVal) {
+      final ByteBuffer bb = ByteBuffer.allocate(INT_LENGTH);
       bb.putInt(intVal);
       return trimByteArray(bb.array());
    }
@@ -158,7 +159,7 @@ public abstract class CVCObject
     * @see trimByteArray(byte[]
     */
    protected static byte[] toByteArray(Long longVal) {
-      ByteBuffer bb = ByteBuffer.allocate(LONG_LENGTH);
+      final ByteBuffer bb = ByteBuffer.allocate(LONG_LENGTH);
       bb.putLong(longVal);
       return trimByteArray(bb.array());
    }
@@ -175,19 +176,19 @@ public abstract class CVCObject
       // Locate the first position of a non-zero
       for( pos=0; pos<data.length; pos++ ){
          numberFound = data[pos] != 0;
-         if( numberFound )
+         if ( numberFound ) {
             break;
+         }
       }
 
       byte[] result = null;
-      if( !numberFound ){
-         // Only zeroes were found - return one zero
-         result = new byte[]{ 0x00 };
-      }
-      else {
-         // Non-zero was found - remove leading zeroes
-         result = new byte[data.length-pos];
-         System.arraycopy(data, pos, result, 0, data.length-pos);
+      if ( numberFound ) {
+          // Non-zero was found - remove leading zeroes
+          result = new byte[data.length-pos];
+          System.arraycopy(data, pos, result, 0, data.length-pos);
+      } else {
+          // Only zeroes were found - return one zero
+          result = new byte[]{ 0x00 };
       }
       return result;
    }
@@ -229,11 +230,11 @@ public abstract class CVCObject
     * @return
     */
    public String getAsText(String tab, boolean showTagNo) {
-      StringBuffer sb = new StringBuffer();
+      final StringBuffer sb = new StringBuffer();
       sb.append(tab);
       if( showTagNo ){
          // Creates the string [TAB]0xFF[SPACE]TAG_NAME[SPACE]
-         sb.append(Integer.toHexString(getTag().getValue())).append(" ");
+         sb.append(Integer.toHexString(getTag().getValue())).append(' ');
       }
       sb.append(getTag().name()).append("  ");
       return sb.toString();

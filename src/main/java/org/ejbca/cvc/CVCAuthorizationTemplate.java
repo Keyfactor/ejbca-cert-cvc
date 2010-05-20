@@ -22,16 +22,17 @@ import org.ejbca.cvc.exception.ConstructionException;
  * @version $Id$
  * 
  */
-public class CVCAuthorizationTemplate
-      extends AbstractSequence {
+public class CVCAuthorizationTemplate extends AbstractSequence {
 
+   private static final long serialVersionUID = 1L;
+	
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
       CVCTagEnum.OID, 
       CVCTagEnum.ROLE_AND_ACCESS_RIGHTS
    };
 
    @Override
-   CVCTagEnum[] getAllowedFields() {
+   protected CVCTagEnum[] getAllowedFields() {
       return allowedFields;
    }
 

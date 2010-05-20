@@ -53,7 +53,7 @@ public class PublicKeyEC
    
 
    @Override
-   CVCTagEnum[] getAllowedFields() {
+   protected CVCTagEnum[] getAllowedFields() {
       return allowedFields;
    }
 

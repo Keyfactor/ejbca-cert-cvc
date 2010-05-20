@@ -25,15 +25,17 @@ import java.io.IOException;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class FileHelper {
+public final class FileHelper {
 
+	private FileHelper() {}
+	
    /**
     * Loads a file
     * @param path
     * @return
     * @throws IOException
     */
-   public static byte[] loadFile(String path) throws IOException {
+   public static byte[] loadFile(final String path) throws IOException {
       return loadFile(new File(path));
    }
 
@@ -43,12 +45,12 @@ public class FileHelper {
     * @return
     * @throws IOException
     */
-   public static byte[] loadFile(File file) throws IOException {
+   public static byte[] loadFile(final File file) throws IOException {
       byte[] dataBuffer = null;
       FileInputStream inStream = null;
       try {
          // Simple file loader...
-         int length = (int)file.length();
+         final int length = (int)file.length();
          dataBuffer = new byte[length];
          inStream = new FileInputStream(file);
 
@@ -63,11 +65,11 @@ public class FileHelper {
       }
       finally {
          try {
-            if (inStream != null)
+            if (inStream != null) {
                inStream.close();
-         }
-         catch (IOException e1) {
-            System.out.println("loadFile - error when closing: " + e1);
+            }
+         } catch (IOException e1) {
+            System.out.println("loadFile - error when closing: " + e1); 
          }
       }
       return dataBuffer;
@@ -79,7 +81,7 @@ public class FileHelper {
     * @param data
     * @throws IOException
     */
-   public static void writeFile(File file, byte[] data) throws IOException {
+   public static void writeFile(final File file, final byte[] data) throws IOException {
       FileOutputStream outStream = null;
       BufferedOutputStream bout = null;
       try {
@@ -88,8 +90,9 @@ public class FileHelper {
          bout.write(data);
       }
       finally {
-         if( bout!=null )
+         if( bout!=null ) {
             bout.close();
+         }
       }
    }
 

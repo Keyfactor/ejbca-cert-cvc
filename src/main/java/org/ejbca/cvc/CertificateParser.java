@@ -28,7 +28,7 @@ import org.ejbca.cvc.exception.ParseException;
  * @version $Id$
  *
  */
-public class CertificateParser {
+public final class CertificateParser {
 
    // Only static methods...
    private CertificateParser(){

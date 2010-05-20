@@ -35,25 +35,26 @@ import org.ejbca.cvc.HolderReferenceField;
  * @version $Id$
  *
  */
-public class GenerateCert {
+public final class GenerateCert {
 
+	private GenerateCert() {}
 
-   public static void main(String[] args) {
+   public static void main(final String[] args) {
       try {
          // Install BC as security provider 
          Security.addProvider(new BouncyCastleProvider());
 
          // Create a new key pair
-         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+         final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
          keyGen.initialize(1024, new SecureRandom());
-         KeyPair keyPair = keyGen.generateKeyPair();
+         final KeyPair keyPair = keyGen.generateKeyPair();
 
-         CAReferenceField caRef = new CAReferenceField("SE","PASS-CVCA","00111");
+         final CAReferenceField caRef = new CAReferenceField("SE","PASS-CVCA","00111");
          // Here we set CA_REF to the same value as HOLDER_REF since we want a self-signed CVCA-certificate
-         HolderReferenceField holderRef = new HolderReferenceField(caRef.getCountry(), caRef.getMnemonic(), caRef.getSequence());
+         final HolderReferenceField holderRef = new HolderReferenceField(caRef.getCountry(), caRef.getMnemonic(), caRef.getSequence());
 
          // Use the simpler method CertificateGenerator for this test purpose
-         CVCertificate cvc = 
+         final CVCertificate cvc = 
             CertificateGenerator.createTestCertificate(keyPair.getPublic(), keyPair.getPrivate(), caRef, holderRef, "SHA1WithRSA", AuthorizationRoleEnum.IS);
 
          byte[] certData = cvc.getDEREncoded();
@@ -65,10 +66,10 @@ public class GenerateCert {
          // Test - read the file again and parse its contents
          certData = FileHelper.loadFile(new File(filename));
          CVCObject parsedObject = CertificateParser.parseCertificate(certData);
-         System.out.println(parsedObject.getAsText(""));
+         System.out.println(parsedObject.getAsText("")); // NOPMD
       }
       catch( Exception e ){
-         e.printStackTrace();
+         e.printStackTrace(); // NOPMD
       }
    }
 

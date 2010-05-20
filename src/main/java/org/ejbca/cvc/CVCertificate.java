@@ -33,13 +33,15 @@ import org.ejbca.cvc.util.BCECUtil;
  */
 public class CVCertificate extends AbstractSequence implements Signable {
 
+   private static final long serialVersionUID = 1L;
+	
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
       CVCTagEnum.CERTIFICATE_BODY, 
       CVCTagEnum.SIGNATURE 
    };
 
    @Override
-   CVCTagEnum[] getAllowedFields() {
+   protected CVCTagEnum[] getAllowedFields() {
       return allowedFields;
    }
 

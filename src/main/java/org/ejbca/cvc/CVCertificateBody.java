@@ -24,9 +24,10 @@ import org.ejbca.cvc.exception.ConstructionException;
  * @version $Id$
  *
  */
-public class CVCertificateBody
-      extends AbstractSequence {
+public class CVCertificateBody extends AbstractSequence {
 
+   private static final long serialVersionUID = 1L;
+	
    private static CVCTagEnum[] allowedFields = new CVCTagEnum[] {
       CVCTagEnum.PROFILE_IDENTIFIER, 
       CVCTagEnum.CA_REFERENCE,
@@ -38,7 +39,7 @@ public class CVCertificateBody
    };
 
    @Override
-   CVCTagEnum[] getAllowedFields() {
+   protected CVCTagEnum[] getAllowedFields() {
       return allowedFields;
    }
 

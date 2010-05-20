@@ -34,7 +34,7 @@ public class PublicKeyRSA
    };
 
    @Override
-   CVCTagEnum[] getAllowedFields() {
+   protected CVCTagEnum[] getAllowedFields() {
       return allowedFields;
    }
 

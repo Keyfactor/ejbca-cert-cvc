@@ -24,19 +24,20 @@ import org.ejbca.cvc.CertificateParser;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class Parse {
+public final class Parse {
 
+	private Parse() {}
 
-   public static void main(String[] args) {
+   public static void main(final String[] args) {
       File file = new File("C:/cv_certs/mycert1.cvcert");
       
       try {
-         byte[] certData = FileHelper.loadFile(file);
-         CVCObject cvc = CertificateParser.parseCVCObject(certData);
-         System.out.println(cvc.getAsText());
+         final byte[] certData = FileHelper.loadFile(file);
+         final CVCObject cvc = CertificateParser.parseCVCObject(certData);
+         System.out.println(cvc.getAsText()); // NOPMD
       }
       catch (Exception e) {
-         e.printStackTrace();
+         e.printStackTrace(); // NOPMD
       }
    }
 

@@ -1,3 +1,7 @@
+1.2.12 (to be released)
+-----
+- Code cleanup fixing PMD warnings
+
 1.2.11
 -----
 - Fixed slight chance that EC public points would still be wrongly encoded (1 out of 2^16). Patch from Mark Baaijens of Ministerie van Binnenlandse Zaken en Koninkrijksrelaties, Netherlands.

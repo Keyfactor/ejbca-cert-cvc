@@ -1,6 +1,6 @@
 <project name="cert-cvc" default="cert-cvc" basedir=".">
 
-    <property name="version" value="1.2.11"/>
+    <property name="version" value="1.2.12"/>
     
     <path id="compile.classpath">
     	<fileset dir="lib" includes="bcprov-jdk15-141b04.jar"/>

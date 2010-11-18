@@ -1,6 +1,7 @@
-1.2.12 (to be released)
+1.2.12
 -----
 - Code cleanup fixing PMD warnings
+- Relaxed testing of country codes to allow testing with fake countries like XX
 
 1.2.11
 -----

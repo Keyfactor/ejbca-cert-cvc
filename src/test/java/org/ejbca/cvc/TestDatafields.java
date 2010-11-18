@@ -148,6 +148,35 @@ public class TestDatafields
       }
 
       try {
+          new HolderReferenceField("S",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+          throw new Exception("Too short countryCode should throw IllegalArgumentException!");
+       }
+       catch( IllegalArgumentException e ){
+          // This is expected
+       }
+
+       try {
+           new HolderReferenceField("A1",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+           throw new Exception("Bad countryCode should throw IllegalArgumentException!");
+        }
+        catch( IllegalArgumentException e ){
+           // This is expected
+        }
+
+        try {
+            new HolderReferenceField("aa",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+            throw new Exception("Bad countryCode should throw IllegalArgumentException!");
+         }
+         catch( IllegalArgumentException e ){
+            // This is expected
+         }
+
+       new HolderReferenceField("AA",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+       new HolderReferenceField("AZ",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+       new HolderReferenceField("ZA",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+       new HolderReferenceField("ZZ",HR_HOLDER_MNEMONIC,HR_SEQUENCE_NO);
+
+      try {
          new HolderReferenceField(HR_COUNTRY_CODE,"",HR_SEQUENCE_NO);
          throw new Exception("Empty mnemonic should throw IllegalArgumentException!");
       }

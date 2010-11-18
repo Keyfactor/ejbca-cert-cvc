@@ -121,10 +121,16 @@ public abstract class ReferenceField
    protected byte[] getEncoded() {
       return getConcatenated().getBytes();
    }
+   
+   private boolean okChar (char c)
+   {
+	   return c >= 'A' && c <= 'Z';
+   }
 
-   // Validates country code according to ISO 3166
+   // Validates country code according to ISO 3166.  AR: Not anymore :-)  Testing needs "unusual" countries
    private boolean isValidCountry(String countryCode) {
-      return Arrays.asList(Locale.getISOCountries()).contains(countryCode);
+	  return okChar (countryCode.charAt(0)) && okChar (countryCode.charAt(1));
+	  
    }
 
    @Override

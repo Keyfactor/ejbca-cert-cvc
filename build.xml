@@ -6,6 +6,31 @@
     	<fileset dir="lib" includes="bcprov-jdk15-141b04.jar"/>
     </path>
 
+	<path id="junit.compile.classpath">
+	    <fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir="lib/test">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir=".">
+	      <include name="*.jar"/>
+	    </fileset>
+	</path>
+
+	<path id="junit.run.classpath">
+	    <fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir="lib/test">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir=".">
+	      <include name="*.jar"/>
+	    </fileset>
+        <pathelement path="build"/>
+	</path>
+
 	<target name="init">
             <mkdir dir="build"/>
 	</target>
@@ -21,6 +46,24 @@
             <src path="src/main" />
         </javac>
     </target>
+
+	<!-- =======================================================================    -->
+    <!-- Run the test suite                                                         -->
+    <!-- =======================================================================    -->
+	<target name="test">
+        <delete dir="build"/>
+        <mkdir dir="build"/>
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="1.5">
+            <classpath refid="junit.compile.classpath" />
+            <src path="src/test" />
+        </javac>
+	    <junit fork="yes" haltonfailure="yes">
+	      <test name="org.ejbca.cvc.CVCTestSuite"/>
+	      <formatter type="plain" usefile="false" />
+	      <classpath refid="junit.run.classpath" />
+	    </junit>
+        <delete dir="build"/>
+    </target>
 	
     <target name="cert-cvc" depends="compilecvc">
         <jar jarfile="cert-cvc.jar">
@@ -34,7 +77,8 @@
         </jar>
     </target>
 
-    <!-- =======================================================================    -->
+
+	<!-- =======================================================================    -->
     <!-- Make a ZIP release file of CERT-CVC, and a SHA1 checksum of the release    -->
 	<!-- The ZIP file contains all the files used, but not temporary or compile files etc -->
     <!-- =======================================================================    -->

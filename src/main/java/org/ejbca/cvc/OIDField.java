@@ -14,8 +14,10 @@ package org.ejbca.cvc;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERTags;
 
 /**
  * Represents Object Identifier
@@ -47,7 +49,24 @@ public class OIDField extends AbstractDataField {
     */
    OIDField(byte[] data) {
       this();
-      this.id = DERObjectIdentifier.getInstance(new DEROctetString(data)).getId();
+      // For BC 1.46
+      //this.id = ASN1ObjectIdentifier.getInstance(new DERTaggedObject(true, 0, new DEROctetString(data)), false).getId();
+      // For BC 1.45
+      //this.id = DERObjectIdentifier.getInstance(new DEROctetString(data)).getId();
+      
+      // For all BC versions
+      // Create an octet string, generate it's encoding and replace the tag at
+      // the start with the object identifier tag. You could then recover the OID
+      // using ASN1Object.fromByteArray().
+      try {
+          DEROctetString derstr = new DEROctetString(data);
+    	  byte[] bytes = derstr.getEncoded();
+    	  bytes[0] = DERTags.OBJECT_IDENTIFIER;
+    	  ASN1Object obj = ASN1Object.fromByteArray(bytes);
+    	  this.id = DERObjectIdentifier.getInstance(obj).getId();
+      } catch (IOException e) {
+		  throw new RuntimeException(e);
+      }
    }
 
    public String getValue() {

@@ -244,6 +244,9 @@ public class TestDatafields
       String s2 = FORMAT_PRINTABLE.format(cal2.getTime());
       assertEquals(s1, s2);
       // Also test the time part, should be all zeroes
+      assertEquals(2011, cal2.get(Calendar.YEAR));
+      assertEquals(0, cal2.get(Calendar.MONTH));
+      assertEquals(31, cal2.get(Calendar.DAY_OF_MONTH));
       assertEquals(0, cal2.get(Calendar.HOUR_OF_DAY));
       assertEquals(0, cal2.get(Calendar.MINUTE));
       assertEquals(0, cal2.get(Calendar.SECOND));
@@ -252,6 +255,9 @@ public class TestDatafields
       Calendar cal3 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
       cal3.setTime(date3.getDate());
       // The time part should be 'maximum' in this case
+      assertEquals(2011, cal2.get(Calendar.YEAR));
+      assertEquals(0, cal2.get(Calendar.MONTH));
+      assertEquals(31, cal2.get(Calendar.DAY_OF_MONTH));
       assertEquals(23, cal3.get(Calendar.HOUR_OF_DAY));
       assertEquals(59, cal3.get(Calendar.MINUTE));
       assertEquals(59, cal3.get(Calendar.SECOND));

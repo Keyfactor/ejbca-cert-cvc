@@ -17,6 +17,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
@@ -237,7 +239,7 @@ public class TestDatafields
 
       // Compare strings to avoid problems with seconds, minutes from current time etc
       DateField date2 = new DateField(CVCTagEnum.EFFECTIVE_DATE, enc);
-      Calendar cal2 = Calendar.getInstance();
+      Calendar cal2 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
       cal2.setTime(date2.getDate());
       String s2 = FORMAT_PRINTABLE.format(cal2.getTime());
       assertEquals(s1, s2);
@@ -247,12 +249,28 @@ public class TestDatafields
       assertEquals(0, cal2.get(Calendar.SECOND));
 
       DateField date3 = new DateField(CVCTagEnum.EXPIRATION_DATE, enc);
-      Calendar cal3 = Calendar.getInstance();
+      Calendar cal3 = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
       cal3.setTime(date3.getDate());
       // The time part should be 'maximum' in this case
       assertEquals(23, cal3.get(Calendar.HOUR_OF_DAY));
       assertEquals(59, cal3.get(Calendar.MINUTE));
       assertEquals(59, cal3.get(Calendar.SECOND));
+      
+      // Check GMT timezone
+      Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+      Date date = new Date();
+      cal.setTimeInMillis(date.getTime());
+      // Remove time part
+      int year  = cal.get(Calendar.YEAR);
+      int month = cal.get(Calendar.MONTH);
+      int day   = cal.get(Calendar.DAY_OF_MONTH);
+      cal.clear();
+      cal.set(year, month, day);
+      long millis = cal.getTime().getTime(); // the millis from GMT (with only the date) that we want in a decoded time
+      DateField date4 = new DateField(CVCTagEnum.EFFECTIVE_DATE, date);
+      DateField date5 = new DateField(CVCTagEnum.EXPIRATION_DATE, date);
+      assertEquals(millis, date4.getDate().getTime());
+      assertEquals(millis, date5.getDate().getTime());
    }
 
  

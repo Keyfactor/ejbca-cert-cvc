@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Represents a CVC field of type Date
@@ -26,13 +27,18 @@ import java.util.Date;
  */
 public class DateField extends AbstractDataField {
 
-   /* The length of the array is always the same */
+   /** The length of the array is always the same */
    private static final int  DATE_ARRAY_SIZE = 6;
    
-   /* Date format when returning this object as text */
+   /** Time Zone GMT must be used for effective and expiration dates */
+   private static final TimeZone GMTTIMEZONE = TimeZone.getTimeZone("GMT");
+   
+   /** Date format when returning this object as text */
    private static final DateFormat FORMAT_PRINTABLE    = new SimpleDateFormat("yyyy-MM-dd");
-
-
+   static {
+	   FORMAT_PRINTABLE.setTimeZone(GMTTIMEZONE);
+   }
+   
    private Date date;
 
    DateField(CVCTagEnum type){
@@ -46,9 +52,9 @@ public class DateField extends AbstractDataField {
     */
    DateField(CVCTagEnum type, Date date){
       this(type);
-      
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(date);
+
+      Calendar cal = Calendar.getInstance(GMTTIMEZONE);
+      cal.setTimeInMillis(date.getTime());
 
       // Remove time part
       int year  = cal.get(Calendar.YEAR);
@@ -72,9 +78,8 @@ public class DateField extends AbstractDataField {
       int year  = 2000 + data[0]*10 + data[1];
       int month = data[2]*10 + data[3] - 1; // Java month index starts with 0...
       int day   = data[4]*10 + data[5];
-
       // Now create a Date instance using the decoded values
-      Calendar cal = Calendar.getInstance();
+      Calendar cal = Calendar.getInstance(GMTTIMEZONE);
       cal.clear();
       if( type==CVCTagEnum.EFFECTIVE_DATE ){
     	  cal.set(year, month, day, 0, 0, 0);
@@ -106,12 +111,11 @@ public class DateField extends AbstractDataField {
    protected byte[] getEncoded() {
       byte[] dateArr = new byte[DATE_ARRAY_SIZE];
       
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(date);
+      Calendar cal = Calendar.getInstance(GMTTIMEZONE);
+      cal.setTimeInMillis(date.getTime());
       int year  = cal.get(Calendar.YEAR) - 2000; // Year is encoded as 08, 09, 10 ...
       int month = cal.get(Calendar.MONTH) + 1;   // Month is encoded as 1,2, ... ,12
       int day   = cal.get(Calendar.DAY_OF_MONTH);
-
       dateArr[0] = (byte)(year / 10);
       dateArr[1] = (byte)(year % 10);
       dateArr[2] = (byte)(month / 10);

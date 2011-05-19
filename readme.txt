@@ -2,8 +2,8 @@ Dependencies
 ------------
 Cert-cvc depends on the Bouncycastle JCE provider (www.bouncycastle.org).
 The provider is used for DER encoding and some crypto stuff. 
-The version available in svn is 1.41, but cert-cvc will work just as fine with other versions that
-are API compatible.
+The version available in svn is 1.46, but cert-cvc will work just as fine with other versions that
+are API compatible, for example 1.45.
 
 Bouncycastle is licensed under a BSD-like license.
 
@@ -11,6 +11,9 @@ Building
 --------
 Having java and ant installed, simply run 'ant' to build the cert-cvc jar, cert-cvc.jar will be placed
 in the root directory.
+
+Note that the produced cert-cvc.jar is built against the BouncyCastle version included in the lib directory. 
+To build against a different BouncyCastle version you must replace the bc jar in lib.
 
 Using
 -----

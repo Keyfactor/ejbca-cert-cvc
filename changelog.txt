@@ -1,4 +1,4 @@
-1.2.13 (to be released)
+1.2.13
 - Fixed version number in pom.xml
 - Fixed to work with latest versions of BC provider (both 1.45 and 1.46)
 - ECA-2154: Fixed encoding/decoding of effective and expire date fields to always use GMT time zone

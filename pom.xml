@@ -18,8 +18,8 @@
 		</dependency>
 		<dependency>
 			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<version>1.46</version>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.47</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

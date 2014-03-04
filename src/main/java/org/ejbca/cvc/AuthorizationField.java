@@ -72,7 +72,13 @@ public class AuthorizationField
       return (AuthorizationRoleEnum)this.role;
    }
    
-   public AuthorizationRole getRoles() {
+   /**
+    * Returns the role. The return value is one of the AuthorizationRole* types.
+    * @see AuthorizationRoleEnum
+    * @see AuthorizationRoleAuthTermEnum
+    * @see AuthorizationRoleSignTermEnum
+    */
+   public AuthorizationRole getAuthRole() {
       return this.role;
    }
 
@@ -92,7 +98,7 @@ public class AuthorizationField
    /**
     * Returns access rights. The return value is one of the AccessRight* types.
     * @see AccessRightEnum
-    * @see AccessRighAuthTerm
+    * @see AccessRightAuthTerm
     * @see AccessRightSignTermEnum
     */
    public AccessRights getAccessRights() {

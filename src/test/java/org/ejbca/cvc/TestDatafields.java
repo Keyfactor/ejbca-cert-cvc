@@ -124,7 +124,7 @@ public class TestDatafields
       AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // This means CVCA/DG3+DG4
       auth1.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
       assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRights());
-      assertTrue("role was not CVCA", auth1.getRoles().isCVCA());
+      assertTrue("role was not CVCA", auth1.getAuthRole().isCVCA());
       
       // Deprecated methods should continue working as well
       assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRight());
@@ -133,7 +133,7 @@ public class TestDatafields
       AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
       auth2.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
       assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRights());
-      assertTrue("role was not Foreign DV", auth2.getRoles().isForeignDV());
+      assertTrue("role was not Foreign DV", auth2.getAuthRole().isForeignDV());
       
       assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRight());
       assertEquals(AuthorizationRoleEnum.DV_F, auth2.getRole());
@@ -146,13 +146,13 @@ public class TestDatafields
       assertFalse("rights incorrectly included bit 36", rightsAT.getFlag(AccessRightAuthTerm.BIT_WRITE_DG18));
       assertFalse("rights incorrectly included bit 2", rightsAT.getFlag(AccessRightAuthTerm.BIT_COMMUNITY_ID_VERIFICATION));
       assertTrue("rights did not include Age Verification", rightsAT.getFlag(AccessRightAuthTerm.BIT_AGE_VERIFICATION));
-      assertTrue("role was not Domestic DV", auth3.getRoles().isDomesticDV());
+      assertTrue("role was not Domestic DV", auth3.getAuthRole().isDomesticDV());
       
       // Test signature terminal
       AuthorizationField auth4 = new AuthorizationField(new byte[] {(byte) 0x01});  // This means SignatureTerminal / Signature
       auth4.fixEnumTypes(CVCObjectIdentifiers.id_EAC_roles_ST);
       assertEquals(AccessRightSignTermEnum.ACCESS_SIGN, auth4.getAccessRights());
-      assertTrue("role was not Signature Terminal", auth4.getRoles().isSignatureTerminal());
+      assertTrue("role was not Signature Terminal", auth4.getAuthRole().isSignatureTerminal());
    }
 
    

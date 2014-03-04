@@ -141,7 +141,7 @@ public class PublicKeyEC
                   else {
                      // HOLDER_AUTH_TEMPLATE exists, so it should be a CVCertificate. Check if role is CVCA
                      AuthorizationField authField = ((CVCAuthorizationTemplate)cvcObj).getAuthorizationField();
-                     addAllParams = (authField!=null && authField.getRoles().isCVCA());
+                     addAllParams = (authField!=null && authField.getAuthRole().isCVCA());
                   }
                }
                catch( NoSuchFieldException e ){

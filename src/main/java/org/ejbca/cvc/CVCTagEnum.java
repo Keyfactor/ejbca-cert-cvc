@@ -36,7 +36,7 @@ public enum CVCTagEnum {
    CA_REFERENCE           (0x42),
    REQ_AUTHENTICATION     (0x67,   true),
 
-   // Fields for Holder Authorization Template
+   // Fields for Holder Authorization Template (actually, it's "Arbitrary data" according to the spec)
    ROLE_AND_ACCESS_RIGHTS (0x53),
 
    // Fields for Public Key

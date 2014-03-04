@@ -51,5 +51,7 @@ public interface CVCObjectIdentifiers {
 //      bsi-de applications(3) mrtd(1) roles(2) 1
 //  }   
    public static final OIDField id_EAC_ePassport         = new OIDField(bsi_de + ".3.1.2.1");
+   public static final OIDField id_EAC_roles_AT     = new OIDField(bsi_de + ".3.1.2.2");
+   public static final OIDField id_EAC_roles_ST     = new OIDField(bsi_de + ".3.1.2.3");
 
 }

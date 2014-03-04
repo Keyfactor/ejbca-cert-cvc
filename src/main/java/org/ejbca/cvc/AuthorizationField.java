@@ -24,8 +24,8 @@ import org.ejbca.cvc.util.StringConverter;
 public class AuthorizationField
       extends AbstractDataField {
 
-   private AuthorizationRoleEnum role;
-   private AccessRightEnum rights;
+   private AuthorizationRole role;
+   private AccessRights rights;
    
    
    AuthorizationField(){
@@ -33,79 +33,102 @@ public class AuthorizationField
    }
 
    /**
-    * Constructor taking AuthorizationRoleEnum and AccessRightEnum 
+    * Constructor taking an AuthorizationRole and an AccessRight.
+    * The parameters should be of matching types (e.g. AuthorizationRoleAuthTermEnum and AccessRightAuthTerm) 
     * @param role
     * @param rights
     */
-   AuthorizationField(AuthorizationRoleEnum role, AccessRightEnum rights){
+   AuthorizationField(AuthorizationRole role, AccessRights rights){
       this();
       this.role = role;
-      this.rights = rights;
+      this.rights = rights; 
    }
 
    /**
-    * Constructor for decoding DER-encoded data
+    * Constructor for decoding DER-encoded data.
+    * The fixEnumTypes method must be called as soon as the OID is known
+    * (CVCObjectIdentifiers.id_EAC_ePassport, etc.)
     * @param data
     */
    AuthorizationField(byte[] data){
       this();
-      if( data.length!=1 ){
-         throw new IllegalArgumentException("byte array length must be 1");
+      if( data.length<1 ){
+         throw new IllegalArgumentException("byte array length must be at least 1");
       }
-      this.role = getRoleFromByte(data[0]);
-      this.rights = getRightsFromByte(data[0]);
+      this.role = new AuthorizationRoleRawValue(data[0]);
+      this.rights = new AccessRightsRawValue(data);
    }
 
    /**
     * Returns role
+    * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
     * @return
     */
+   @Deprecated
    public AuthorizationRoleEnum getRole() {
+      if (!(role instanceof AuthorizationRoleEnum)) {
+         throw new UnsupportedOperationException("Attempted to use deprecated getRole method with in an AT or ST certificate chain. It handles IS only.");
+      }
+      return (AuthorizationRoleEnum)this.role;
+   }
+   
+   public AuthorizationRole getRoles() {
       return this.role;
    }
 
    /**
     * Returns access rights
+    * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
     * @return
     */
+   @Deprecated
    public AccessRightEnum getAccessRight() {
+      if (!(rights instanceof AccessRightEnum)) {
+         throw new UnsupportedOperationException("Attempted to use deprecated getAccessRight method with an AT or ST certificate chain. It handles IS only.");
+      }
+      return (AccessRightEnum)this.rights;
+   }
+   
+   /**
+    * Returns access rights. The return value is one of the AccessRight* types.
+    * @see AccessRightEnum
+    * @see AccessRighAuthTerm
+    * @see AccessRightSignTermEnum
+    */
+   public AccessRights getAccessRights() {
       return this.rights;
    }
 
    @Override
    protected byte[] getEncoded() {
-      return new byte[]{ (byte)(role.getValue() | rights.getValue()) };
+      byte[] encoded = rights.getEncoded();
+      encoded[0] |= role.getValue();
+      return encoded;
    }
 
    @Override
    protected String valueAsText() {
-      String txt = StringConverter.byteToHex(getEncoded()) + ": ";
-      switch( role ){
-         case CVCA : txt += "CVCA";  break;
-         case DV_D : txt += "DV-domestic"; break;
-         case DV_F : txt += "DV-foreign"; break;
-         case IS   : txt += "IS"; break;
-         default : txt += " ? ";
-      }
-      txt += "/";
-      
-      switch( rights ){
-         case READ_ACCESS_DG3_AND_DG4 : txt += "DG3+DG4"; break;
-         case READ_ACCESS_DG4  : txt += "DG4";  break;
-         case READ_ACCESS_DG3  : txt += "DG3";  break;
-         case READ_ACCESS_NONE : txt += "none"; break;
-         default : txt = " ? ";
-      }
-      
-      return txt;
+      return StringConverter.byteToHex(getEncoded()) + ": " + role + "/" + rights;
    }
 
    
-   /* Translates a byte to AuthorizationRole */
-   private AuthorizationRoleEnum getRoleFromByte(byte b){
+   /** Translates a byte to AuthorizationRole */
+   private static AuthorizationRole getRoleFromByte(OIDField oid, byte b){
       byte testVal = (byte)(b & 0xC0);
-      AuthorizationRoleEnum foundRole = null;
-      for( AuthorizationRoleEnum aRole : AuthorizationRoleEnum.values() ){
+      
+      AuthorizationRole values[];
+      if (CVCObjectIdentifiers.id_EAC_ePassport.equals(oid)) {
+         values = AuthorizationRoleEnum.values();
+      } else if (CVCObjectIdentifiers.id_EAC_roles_ST.equals(oid)) {
+         values = AuthorizationRoleSignTermEnum.values();
+      } else if (CVCObjectIdentifiers.id_EAC_roles_AT.equals(oid)) {
+         values = AuthorizationRoleAuthTermEnum.values();
+      } else {
+         throw new IllegalArgumentException("incorrect or unsupported OID");
+      }
+      
+      AuthorizationRole foundRole = null;
+      for( AuthorizationRole aRole : values ){
          if( testVal == aRole.getValue() ) {
             foundRole = aRole;
             break;
@@ -114,17 +137,51 @@ public class AuthorizationField
       return foundRole;
    }
 
-   /* Translates a byte to AccessRight */
-   private AccessRightEnum getRightsFromByte(byte b){
-      byte testVal = (byte)(b & 0x03);
-      AccessRightEnum foundRight = null;
-      for( AccessRightEnum right : AccessRightEnum.values() ){
-         if( testVal == right.getValue() ) {
-            foundRight = right;
-            break;
+   /** Translates a byte array to AccessRights */
+   private static AccessRights getRightsFromBytes(OIDField oid, byte[] data){
+      if (CVCObjectIdentifiers.id_EAC_ePassport.equals(oid)) {
+         if (data.length!=1) {
+            throw new IllegalArgumentException("byte array length must be 1, was "+data.length);
          }
+         byte testVal = (byte)(data[0] & 0x03);
+         AccessRightEnum foundRight = null;
+         for( AccessRightEnum right : AccessRightEnum.values() ){
+            if( testVal == right.getValue() ) {
+               foundRight = right;
+               break;
+            }
+         }
+         return foundRight;
+      } else if (CVCObjectIdentifiers.id_EAC_roles_ST.equals(oid)) {
+         if (data.length!=1) {
+            throw new IllegalArgumentException("byte array length must be 1, was "+data.length);
+         }
+         byte testVal = (byte)(data[0] & 0x03);
+         AccessRightSignTermEnum foundRight = null;
+         for( AccessRightSignTermEnum right : AccessRightSignTermEnum.values() ){
+            if( testVal == right.getValue() ) {
+               foundRight = right;
+               break;
+            }
+         }
+         return foundRight;
+      } if (CVCObjectIdentifiers.id_EAC_roles_AT.equals(oid)) {
+         if (data.length!=5) {
+            throw new IllegalArgumentException("byte array length must be 5, was "+data.length);
+         }
+         return new AccessRightAuthTerm(data);
+      } else {
+         throw new IllegalArgumentException("incorrect or unsupported OID");
       }
-      return foundRight;
+   }
+
+   /**
+    * Re-creates the role/rights objects as the correct classes.
+    * This is necessary when deserializing from DER data.
+    */
+   void fixEnumTypes(OIDField oid) {
+      role = getRoleFromByte(oid, role.getValue());
+      rights = getRightsFromBytes(oid, rights.getEncoded());
    }
 
 }

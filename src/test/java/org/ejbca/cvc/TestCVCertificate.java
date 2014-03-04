@@ -28,15 +28,6 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.ejbca.cvc.AuthorizationRoleEnum;
-import org.ejbca.cvc.CAReferenceField;
-import org.ejbca.cvc.CVCObject;
-import org.ejbca.cvc.CVCProvider;
-import org.ejbca.cvc.CVCertificate;
-import org.ejbca.cvc.CardVerifiableCertificate;
-import org.ejbca.cvc.CertificateGenerator;
-import org.ejbca.cvc.CertificateParser;
-import org.ejbca.cvc.HolderReferenceField;
 import org.ejbca.cvc.example.FileHelper;
 
 /**
@@ -168,6 +159,18 @@ public class TestCVCertificate
 	      cvcacert.verify(cvc.getCertificateBody().getPublicKey(), "BC");
 
 	}
+	
+	public void testEncodeAuthTermCert() throws Exception {
+	      byte[] bytes = FileHelper.loadFile(new File("./src/test/resources/at_cert_19a.cvcert"));
+          CVCertificate cvc = (CVCertificate)CertificateParser.parseCVCObject(bytes);
+          CardVerifiableCertificate atcert = new CardVerifiableCertificate(cvc);
+          
+          // Only CVCA certs have the full information needed to verify them,
+          // so just check that the bytes are encoded correctly
+          assertTrue("re-encoded data was not equal", Arrays.equals(cvc.getDEREncoded(), bytes));
+          assertTrue("re-encoded data was not equal", Arrays.equals(atcert.getEncoded(), bytes));
+          //atcert.verify(atcert.getPublicKey(), "BC");
+    }
 
    // Helper for creating a test certificate
    private CVCertificate createTestCertificate() throws Exception {

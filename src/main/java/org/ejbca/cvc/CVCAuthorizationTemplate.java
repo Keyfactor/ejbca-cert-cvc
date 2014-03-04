@@ -12,7 +12,10 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
+import java.io.IOException;
+
 import org.ejbca.cvc.exception.ConstructionException;
+import org.ejbca.cvc.util.StringConverter;
 
 
 /**
@@ -43,18 +46,47 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
       super(CVCTagEnum.HOLDER_AUTH_TEMPLATE);
    }
    
+   @Override
+   void addSubfield(final CVCObject field) throws ConstructionException {
+       super.addSubfield(field);
+       // Determine OID and change role/rights enums to the right type
+       if (field instanceof AuthorizationField) {
+           try {
+               AuthorizationField authfield = (AuthorizationField)field;
+               OIDField oid = (OIDField)getSubfield(CVCTagEnum.OID);
+               authfield.fixEnumTypes(oid);
+           } catch (NoSuchFieldException e) {
+              return;
+           }
+       }
+   }
+   
    /**
     * Constructor taking the individual fields
     * @param role
     * @param rights
     */
-   public CVCAuthorizationTemplate(AuthorizationRoleEnum role, AccessRightEnum rights) throws ConstructionException {
+   public CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights) throws ConstructionException {
       this();
       
-      addSubfield(CVCObjectIdentifiers.id_EAC_ePassport);
+      addSubfield(getOIDForEnums(role, rights));
       addSubfield(new AuthorizationField(role, rights));
    }
 
+   /**
+    * Determines the OID to use for the types of the given role/rights objects.
+    */
+   public static OIDField getOIDForEnums(AuthorizationRole role, AccessRights rights) {
+      if (role instanceof AuthorizationRoleEnum && rights instanceof AccessRightEnum) {
+         return CVCObjectIdentifiers.id_EAC_ePassport;
+      } else if (role instanceof AuthorizationRoleAuthTermEnum && rights instanceof AccessRightAuthTerm) {
+         return CVCObjectIdentifiers.id_EAC_roles_AT;
+      } else if (role instanceof AuthorizationRoleSignTermEnum && rights instanceof AccessRightSignTermEnum) {
+         return CVCObjectIdentifiers.id_EAC_roles_ST;
+      } else {
+         throw new IllegalArgumentException("Unsupported roles/rights type (or mismatch)");
+      }
+   }
 
    /**
     * Returns the Object Identifier as a String

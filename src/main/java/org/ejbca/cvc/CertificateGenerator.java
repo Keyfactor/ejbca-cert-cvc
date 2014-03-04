@@ -114,8 +114,8 @@ public final class CertificateGenerator {
          String                 algorithmName, 
          CAReferenceField       caRef, 
          HolderReferenceField   holderRef, 
-         AuthorizationRoleEnum  authRole,
-         AccessRightEnum        rights,
+         AuthorizationRole      authRole,
+         AccessRights           rights,
          Date                   validFrom,
          Date                   validTo,
          String                 provider ) 

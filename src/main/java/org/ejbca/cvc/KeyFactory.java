@@ -34,7 +34,7 @@ public class KeyFactory {
     * @param authRole role of certificate holder (affects creation of PublicKeyEC instances)
     * @return
     */
-   public static CVCPublicKey createInstance(PublicKey pubKey, String algorithmName, AuthorizationRoleEnum authRole) throws ConstructionException {
+   public static CVCPublicKey createInstance(PublicKey pubKey, String algorithmName, AuthorizationRole authRole) throws ConstructionException {
       
       if( pubKey instanceof CVCPublicKey ){
          // Object is already of the expected type

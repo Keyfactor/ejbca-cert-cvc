@@ -13,26 +13,26 @@
 package org.ejbca.cvc;
 
 /**
- * Represents Access Rights for Authentication Terminals.
- * Use with OID CVCObjectIdentifiers.id_EAC_AuthTerm.
- * Described in the EAC 1.11 spec page 36.
+ * Represents Access Rights for Inspection Systems.
+ * Use with OID CVCObjectIdentifiers.id_EAC_ST.
+ * Described in the EAC 2.1 spec part 3 page 70.
  * 
- * @author Keijo Kurkinen, Swedish National Police Board
+ * @author Samuel Lidén Borell, PrimeKey Solutions AB
  * @version $Id$
  *
  */
-public enum AccessRightEnum implements AccessRights {
+public enum AccessRightSignTermEnum implements AccessRights {
 
-   READ_ACCESS_NONE        (0x00),
-   READ_ACCESS_DG3         (0x01),
-   READ_ACCESS_DG4         (0x02),
-   READ_ACCESS_DG3_AND_DG4 (0x03);
+   ACCESS_NONE        (0x00),
+   ACCESS_SIGN        (0x01),
+   ACCESS_QUALSIGN    (0x02),
+   ACCESS_SIGN_AND_QUALSIGN (0x03);
    // bit 0x4 and 0x8 are Reserved for Future Use
 
    
    private byte value;
 
-   private AccessRightEnum(int value){
+   private AccessRightSignTermEnum(int value){
       this.value = (byte)value;
    }
 
@@ -44,26 +44,27 @@ public enum AccessRightEnum implements AccessRights {
       return value;
    }
    
-   public boolean hasDG3() {
-      return (this.value & READ_ACCESS_DG3.value) != 0;
+   public boolean allowsSignature() {
+      return (this.value & ACCESS_SIGN.value) != 0;
    }
    
-   public boolean hasDG4() {
-      return (this.value & READ_ACCESS_DG4.value) != 0;
+   public boolean allowsQualifiedSignature() {
+      return (this.value & ACCESS_QUALSIGN.value) != 0;
    }
    
    @Override
    public byte[] getEncoded() {
        return new byte[] { value };
    }
+
    
    @Override
    public String toString() {
       switch (this) {
-      case READ_ACCESS_DG3_AND_DG4: return "DG3+DG4";
-      case READ_ACCESS_DG4: return "DG4";
-      case READ_ACCESS_DG3: return "DG3";
-      case READ_ACCESS_NONE: return "none";
+      case ACCESS_SIGN: return "Signature";
+      case ACCESS_QUALSIGN: return "Qualified_Signature";
+      case ACCESS_SIGN_AND_QUALSIGN: return "Signature_and_Qualified_Signature";
+      case ACCESS_NONE: return "none";
       }
       throw new IllegalStateException("Enum case not handled");
    }

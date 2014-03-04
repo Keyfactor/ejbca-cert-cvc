@@ -82,13 +82,13 @@ public class PublicKeyEC
     * @param authRole role of certificate holder. If null or 'CVCA' all subfields are added,
     * otherwise only the required ones.
     */
-   public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC, AuthorizationRoleEnum authRole) throws ConstructionException {
+   public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC, AuthorizationRole authRole) throws ConstructionException {
       super();
 
       addSubfield(oid);
 
       ECParameterSpec ecParameterSpec  = pubKeyEC.getParams();
-      boolean addAllParams = (authRole==null || authRole==AuthorizationRoleEnum.CVCA);
+      boolean addAllParams = (authRole==null || authRole.isCVCA());
       if( addAllParams ){
          ECField ecField = ecParameterSpec.getCurve().getField();
          if( ecField instanceof ECFieldFp ){
@@ -141,7 +141,7 @@ public class PublicKeyEC
                   else {
                      // HOLDER_AUTH_TEMPLATE exists, so it should be a CVCertificate. Check if role is CVCA
                      AuthorizationField authField = ((CVCAuthorizationTemplate)cvcObj).getAuthorizationField();
-                     addAllParams = (authField!=null && authField.getRole()==AuthorizationRoleEnum.CVCA);
+                     addAllParams = (authField!=null && authField.getRoles().isCVCA());
                   }
                }
                catch( NoSuchFieldException e ){

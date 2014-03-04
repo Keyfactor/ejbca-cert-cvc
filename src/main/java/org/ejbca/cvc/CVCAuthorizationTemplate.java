@@ -12,10 +12,7 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-import java.io.IOException;
-
 import org.ejbca.cvc.exception.ConstructionException;
-import org.ejbca.cvc.util.StringConverter;
 
 
 /**

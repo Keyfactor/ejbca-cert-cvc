@@ -43,6 +43,10 @@ public class AuthorizationField
       this.role = role;
       this.rights = rights; 
    }
+   
+   AuthorizationField(AuthorizationRoleEnum role, AccessRightEnum rights) {
+      this((AuthorizationRole)role, (AccessRights)rights);
+   }
 
    /**
     * Constructor for decoding DER-encoded data.

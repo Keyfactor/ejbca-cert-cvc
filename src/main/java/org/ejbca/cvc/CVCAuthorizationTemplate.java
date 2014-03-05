@@ -69,6 +69,13 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
       addSubfield(getOIDForEnums(role, rights));
       addSubfield(new AuthorizationField(role, rights));
    }
+   
+   /**
+    * Constructor taking the individual fields. This overloaded constructor is for binary (.class) backwards compatibility
+    */
+   public CVCAuthorizationTemplate(AuthorizationRoleEnum role, AccessRightEnum rights) throws ConstructionException {
+      this((AuthorizationRole)role, (AccessRights)rights);
+   }
 
    /**
     * Determines the OID to use for the types of the given role/rights objects.

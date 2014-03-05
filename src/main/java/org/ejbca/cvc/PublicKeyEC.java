@@ -109,6 +109,14 @@ public class PublicKeyEC
          addSubfield(new IntegerField(CVCTagEnum.COFACTOR_F,      ecParameterSpec.getCofactor()));
       }
    }
+   
+   /**
+    * Creates an instance from an OIDField and a java.security.interfaces.ECPublicKey.
+    * This overloaded constructor is for binary (.class) backwards compatibility
+    */
+   public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC, AuthorizationRoleEnum authRole) throws ConstructionException {
+      this(oid, pubKeyEC, (AuthorizationRole)authRole);
+   }
 
 
    /**

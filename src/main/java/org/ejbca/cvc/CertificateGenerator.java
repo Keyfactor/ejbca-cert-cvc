@@ -148,6 +148,24 @@ public final class CertificateGenerator {
       return cvc;
    }
    
+   /**
+    * Generates a CVCertificate. This overloaded version is for binary (.class file) backwards compatibility
+    */
+   public static CVCertificate createCertificate(
+         PublicKey              publicKey,
+         PrivateKey             signerKey,
+         String                 algorithmName, 
+         CAReferenceField       caRef, 
+         HolderReferenceField   holderRef, 
+         AuthorizationRoleEnum  authRole,
+         AccessRightEnum        rights,
+         Date                   validFrom,
+         Date                   validTo,
+         String                 provider ) 
+   throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
+      return createCertificate(publicKey, signerKey, algorithmName, caRef, holderRef, 
+         (AuthorizationRole)authRole, (AccessRights)rights, validFrom, validTo, provider);
+   }
 
    /**
     * Generates a CVC-request without an outer signature using BouncyCastle as signature provider

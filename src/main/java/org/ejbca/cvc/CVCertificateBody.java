@@ -120,6 +120,22 @@ public class CVCertificateBody extends AbstractSequence {
       addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
       addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
    }
+   
+   /**
+    * Creates an instance suitable for a CVCertificate. This overloaded constructor is for binary (.class) backwards compatibility
+    */
+   public CVCertificateBody(
+         CAReferenceField      authorityReference, 
+         CVCPublicKey          publicKey, 
+         HolderReferenceField  holderReference, 
+         AuthorizationRoleEnum authRole,
+         AccessRightEnum       accessRight,
+         Date                  validFrom,
+         Date                  validTo) throws ConstructionException
+   {
+      this(authorityReference, publicKey, holderReference, 
+         (AuthorizationRole)authRole, (AccessRights)accessRight, validFrom, validTo);
+   }
 
    /**
     * Returns CVCAuthorizationTemplate

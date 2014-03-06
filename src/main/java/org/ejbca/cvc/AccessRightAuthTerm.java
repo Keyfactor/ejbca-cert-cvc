@@ -12,6 +12,8 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
+import java.io.Serializable;
+
 import org.ejbca.cvc.util.StringConverter;
 
 
@@ -24,7 +26,9 @@ import org.ejbca.cvc.util.StringConverter;
  * @version $Id$
  *
  */
-public class AccessRightAuthTerm implements AccessRights {
+public class AccessRightAuthTerm implements AccessRights, Serializable {
+
+   private static final long serialVersionUID = 1L;
 
    private static final int MAX_BIT = 37;
 

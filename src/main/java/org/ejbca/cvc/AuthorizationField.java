@@ -24,6 +24,8 @@ import org.ejbca.cvc.util.StringConverter;
 public class AuthorizationField
       extends AbstractDataField {
 
+   private static final long serialVersionUID = -5478250843535697147L;
+   
    private AuthorizationRole role;
    private AccessRights rights;
    

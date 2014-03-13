@@ -89,7 +89,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
       } else if (role instanceof AuthorizationRoleSignTermEnum && rights instanceof AccessRightSignTermEnum) {
          return CVCObjectIdentifiers.id_EAC_roles_ST;
       } else {
-         throw new IllegalArgumentException("Unsupported roles/rights type (or mismatch)");
+         throw new IllegalArgumentException("Unsupported roles/rights type (or mismatch). Got role of type "+role.getClass().getSimpleName()+", but rights of type "+rights.getClass().getSimpleName());
       }
    }
 

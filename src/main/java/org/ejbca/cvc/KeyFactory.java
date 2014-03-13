@@ -60,7 +60,9 @@ public class KeyFactory {
    }
    
    /**
-    * Constructs instance from a PublicKey and a hash algorithm. This overloaded method is for binary (.class) backwards compatibility
+    * Constructs instance from a PublicKey and a hash algorithm. This seemingly redundant
+    * overloaded method is for binary (.class file) backwards compatibility.
+    * It is NOT deprecated to use these argument types.
     */
    public static CVCPublicKey createInstance(PublicKey pubKey, String algorithmName, AuthorizationRoleEnum authRole) throws ConstructionException {
       return createInstance(pubKey, algorithmName, (AuthorizationRole)authRole);

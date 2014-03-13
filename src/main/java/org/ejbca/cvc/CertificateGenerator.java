@@ -149,7 +149,8 @@ public final class CertificateGenerator {
    }
    
    /**
-    * Generates a CVCertificate. This overloaded version is for binary (.class file) backwards compatibility
+    * Generates a CVCertificate. This seemingly redundant overloaded method is for binary
+    * (.class file) backwards compatibility. It is NOT deprecated to use these argument types.
     */
    public static CVCertificate createCertificate(
          PublicKey              publicKey,

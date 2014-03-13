@@ -112,7 +112,8 @@ public class PublicKeyEC
    
    /**
     * Creates an instance from an OIDField and a java.security.interfaces.ECPublicKey.
-    * This overloaded constructor is for binary (.class) backwards compatibility
+    * This seemingly redundant overloaded constructor is for binary (.class file) backwards
+    * compatibility. It is NOT deprecated to use these argument types.
     */
    public PublicKeyEC(OIDField oid, ECPublicKey pubKeyEC, AuthorizationRoleEnum authRole) throws ConstructionException {
       this(oid, pubKeyEC, (AuthorizationRole)authRole);

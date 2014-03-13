@@ -122,7 +122,9 @@ public class CVCertificateBody extends AbstractSequence {
    }
    
    /**
-    * Creates an instance suitable for a CVCertificate. This overloaded constructor is for binary (.class) backwards compatibility
+    * Creates an instance suitable for a CVCertificate. This seemingly redundant overloaded
+    * constructor is for binary (.class file) backwards compatibility. It is NOT deprecated to
+    * use these argument types.
     */
    public CVCertificateBody(
          CAReferenceField      authorityReference, 

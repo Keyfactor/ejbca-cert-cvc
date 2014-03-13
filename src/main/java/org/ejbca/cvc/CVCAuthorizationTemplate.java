@@ -71,7 +71,8 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
    }
    
    /**
-    * Constructor taking the individual fields. This overloaded constructor is for binary (.class) backwards compatibility
+    * Constructor taking the individual fields. This seemingly redundant overloaded constructor is for
+    * binary (.class file) backwards compatibility. It is NOT deprecated to use these argument types.
     */
    public CVCAuthorizationTemplate(AuthorizationRoleEnum role, AccessRightEnum rights) throws ConstructionException {
       this((AuthorizationRole)role, (AccessRights)rights);

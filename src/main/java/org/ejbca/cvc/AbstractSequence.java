@@ -51,7 +51,7 @@ public abstract class AbstractSequence extends CVCObject {
    /**
     * Adds a subfield to this sequence. Nothing happens if the argument is null.
     * @param field
-    * @throws IllegalArgumentException if the supplied field is not allowed in this sequence.
+    * @throws ConstructionException if the supplied field is not allowed in this sequence.
     */
    void addSubfield(final CVCObject field) throws ConstructionException {
       if( field!=null ){

@@ -53,7 +53,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
                OIDField oid = (OIDField)getSubfield(CVCTagEnum.OID);
                authfield.fixEnumTypes(oid);
            } catch (NoSuchFieldException e) {
-              return;
+              throw new ConstructionException("Tried to add an AuthorizationField without an OID", e);
            }
        }
    }

@@ -96,7 +96,7 @@ public enum AuthorizationRoleAuthTermEnum implements AuthorizationRole {
       switch (this) {
       case CVCA: return "CVCA";
       case DV_D: return "DV-domestic";
-      case DV_F: return "DV-foriegn";
+      case DV_F: return "DV-foreign";
       case AUTHTERM: return "Authentication-Terminal";
       }
       throw new IllegalStateException("Enum case not handled");

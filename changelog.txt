@@ -1,4 +1,4 @@
-1.3.2
+1.4.0
 -----
 - Added authorization roles and access rights for Authentication Terminals and Signature Terminals, which were added in the EAC 2.10 specification.
 

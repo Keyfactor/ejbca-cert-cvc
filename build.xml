@@ -92,7 +92,9 @@
 		</zip>
         <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" forceOverwrite="yes"/>      
         <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" property="certcvcSHA1"/>      
+        <checksum file="../cert-cvc-${version}.zip" algorithm="SHA-256" property="certcvcSHA256"/>
         <echo message="SHA1 checksum: ${certcvcSHA1}" />     
+        <echo message="SHA256 checksum: ${certcvcSHA256}" />
 	</target>
 
 </project>

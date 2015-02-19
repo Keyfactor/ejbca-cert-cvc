@@ -12,33 +12,37 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-
 /**
  * Represents the CVC field 'Certificate Authority Reference'
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class CAReferenceField
-      extends ReferenceField {
+public class CAReferenceField extends ReferenceField {
 
-   /**
-    * Constructs a new instance from separate fields
-    * 
-    * @param country - CountryCode according to ISO 3166-1 ALPHA-2
-    * @param mnemonic - Holder Mnemonic (up to 9 characters)
-    * @param seq - Sequence Number (exactly 5 alphanumeric characters)
-    */
-   public CAReferenceField(String country, String mnemonic, String seq) {
-      super(CVCTagEnum.CA_REFERENCE, country, mnemonic, seq);
-   }
+    private static final long serialVersionUID = 6311109644238677669L;
 
-   /**
-    * Constructor for decoding DER-encoded data
-    * @param data
-    */
-   public CAReferenceField(byte[] data) {
-      super(CVCTagEnum.CA_REFERENCE, data);
-   }
+    /**
+     * Constructs a new instance from separate fields
+     * 
+     * @param country
+     *            - CountryCode according to ISO 3166-1 ALPHA-2
+     * @param mnemonic
+     *            - Holder Mnemonic (up to 9 characters)
+     * @param seq
+     *            - Sequence Number (exactly 5 alphanumeric characters)
+     */
+    public CAReferenceField(String country, String mnemonic, String seq) {
+        super(CVCTagEnum.CA_REFERENCE, country, mnemonic, seq);
+    }
+
+    /**
+     * Constructor for decoding DER-encoded data
+     * 
+     * @param data
+     */
+    public CAReferenceField(byte[] data) {
+        super(CVCTagEnum.CA_REFERENCE, data);
+    }
 
 }

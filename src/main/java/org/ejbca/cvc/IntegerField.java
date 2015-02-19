@@ -20,51 +20,53 @@ import java.math.BigInteger;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class IntegerField
-      extends AbstractDataField {
+public class IntegerField extends AbstractDataField {
 
-   private int intValue;
+    private static final long serialVersionUID = 1L;
+    private int intValue;
 
-   /**
-    * Constructs a new instance from a tag and an int
-    * @param tag
-    * @param value
-    */
-   IntegerField(CVCTagEnum tag, int value) {
-      super(tag);
-      this.intValue = value;
-   }
+    /**
+     * Constructs a new instance from a tag and an int
+     * 
+     * @param tag
+     * @param value
+     */
+    IntegerField(CVCTagEnum tag, int value) {
+        super(tag);
+        this.intValue = value;
+    }
 
-   /**
-    * Constructs a new instance by parsing DER-encoded data. 
-    * If the length of data is > 4 then IllegalArgumentException is thrown.
-    * @param tag
-    * @param data
-    */
-   IntegerField(CVCTagEnum tag, byte[] data) {
-      super(tag);
-      if( data!=null && data.length>4 ){
-         throw new IllegalArgumentException("Byte array too long, max is 4, was " + data.length);
-      }
-      this.intValue = new BigInteger(1, data).intValue();
-   }
+    /**
+     * Constructs a new instance by parsing DER-encoded data. If the length of
+     * data is > 4 then IllegalArgumentException is thrown.
+     * 
+     * @param tag
+     * @param data
+     */
+    IntegerField(CVCTagEnum tag, byte[] data) {
+        super(tag);
+        if (data != null && data.length > 4) {
+            throw new IllegalArgumentException("Byte array too long, max is 4, was " + data.length);
+        }
+        this.intValue = new BigInteger(1, data).intValue();
+    }
 
-   public void setValue(int intValue){
-      this.intValue = intValue;
-   }
+    public void setValue(int intValue) {
+        this.intValue = intValue;
+    }
 
-   public int getValue(){
-      return intValue;
-   }
+    public int getValue() {
+        return intValue;
+    }
 
-   @Override
-   protected byte[] getEncoded() {
-      return toByteArray(intValue);
-   }
+    @Override
+    protected byte[] getEncoded() {
+        return toByteArray(intValue);
+    }
 
-   @Override
-   protected String valueAsText() {
-      return "" + intValue;
-   }
+    @Override
+    protected String valueAsText() {
+        return "" + intValue;
+    }
 
 }

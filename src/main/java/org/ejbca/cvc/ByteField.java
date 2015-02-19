@@ -27,8 +27,9 @@ import org.ejbca.cvc.util.StringConverter;
 public class ByteField
       extends AbstractDataField {
 
-   private byte[] data;
-   private boolean showBitLength = false;
+    private static final long serialVersionUID = 1L;
+    private byte[] data;
+    private boolean showBitLength = false;
 
    /**
     * Constructor taking tag

@@ -8,8 +8,8 @@ import java.util.Locale;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DERInteger;
 import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.asn1.DERSequence;
 
@@ -23,36 +23,39 @@ public final class BCECUtil
 	/** private constructor this is a static utility class */
 	private BCECUtil() {}
 	
-	   public static byte[] convertX962SigToCVC(final String algorithmName, final byte[] xsig) throws IOException {
-		   // Only do this if it's an ECDSA algorithm
-		   if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
-			   return xsig;
-		   }
-		   // Read r and s from asn.1 encoded x9.62 signature
-	       final ASN1InputStream aIn = new ASN1InputStream(xsig);
-	       final ASN1Sequence seq = (ASN1Sequence)aIn.readObject();
-	       final BigInteger r = ((DERInteger)seq.getObjectAt(0)).getValue();
-	       final BigInteger s = ((DERInteger)seq.getObjectAt(1)).getValue();
+    public static byte[] convertX962SigToCVC(final String algorithmName, final byte[] xsig) throws IOException {
+        // Only do this if it's an ECDSA algorithm
+        if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
+            return xsig;
+        }
+        // Read r and s from asn.1 encoded x9.62 signature
+        final ASN1InputStream aIn = new ASN1InputStream(xsig);
+        final ASN1Sequence seq;
+        try {
+            seq = (ASN1Sequence) aIn.readObject();
+        } finally {
+            aIn.close();
+        }
+        final BigInteger r = ((ASN1Integer) seq.getObjectAt(0)).getValue();
+        final BigInteger s = ((ASN1Integer) seq.getObjectAt(1)).getValue();
 
-	       // Write r and s to not asn.1 encoded cvc signature
-	       final byte[] first = makeUnsigned(r);
-	       final byte[] second = makeUnsigned(s);
-	       byte[] res;
+        // Write r and s to not asn.1 encoded cvc signature
+        final byte[] first = makeUnsigned(r);
+        final byte[] second = makeUnsigned(s);
+        byte[] res;
 
-	       if (first.length > second.length)
-	       {
-	           res = new byte[first.length * 2];
-	       }
-	       else
-	       {
-	           res = new byte[second.length * 2];
-	       }
+        if (first.length > second.length) {
+            res = new byte[first.length * 2];
+        } else {
+            res = new byte[second.length * 2];
+        }
 
-	       System.arraycopy(first, 0, res, res.length / 2 - first.length, first.length);
-	       System.arraycopy(second, 0, res, res.length - second.length, second.length);
+        System.arraycopy(first, 0, res, res.length / 2 - first.length, first.length);
+        System.arraycopy(second, 0, res, res.length - second.length, second.length);
 
-	       return res;
-	   }
+        return res;
+
+    }
 
 	   public static byte[] convertCVCSigToX962(final String algorithmName, final byte[] xsig) throws SignatureException {
 		   // Only do this if it's an ECDSA algorithm
@@ -74,8 +77,8 @@ public final class BCECUtil
            final DEROutputStream dOut = new DEROutputStream(bOut);
            final ASN1EncodableVector v = new ASN1EncodableVector();
 
-           v.add(new DERInteger(r));
-           v.add(new DERInteger(s));
+           v.add(new ASN1Integer(r));
+           v.add(new ASN1Integer(s));
 
            try {
                dOut.writeObject(new DERSequence(v));        	   

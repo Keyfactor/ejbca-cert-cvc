@@ -20,34 +20,34 @@ import java.security.PublicKey;
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
- *
+ * 
  */
-public abstract class CVCPublicKey
-      extends AbstractSequence implements PublicKey {
+public abstract class CVCPublicKey extends AbstractSequence implements PublicKey {
 
+    private static final long serialVersionUID = 5330644668163139836L;
 
-   CVCPublicKey() {
-      super(CVCTagEnum.PUBLIC_KEY);
-   }
+    CVCPublicKey() {
+        super(CVCTagEnum.PUBLIC_KEY);
+    }
 
-   // Implements java.security.PublicKey
-   public byte[] getEncoded() {
-      byte[] data = null;
-      try {
-         data = getDEREncoded();
-      }
-      catch (IOException e) {
-         e.printStackTrace();
-      }
-      return data;
-   }
+    // Implements java.security.PublicKey
+    public byte[] getEncoded() {
+        byte[] data = null;
+        try {
+            data = getDEREncoded();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
 
-   /**
-    * Returns Object Identifier
-    * @return
-    */
-   public OIDField getObjectIdentifier() throws NoSuchFieldException {
-      return (OIDField)getSubfield(CVCTagEnum.OID);
-   }
+    /**
+     * Returns Object Identifier
+     * 
+     * @return
+     */
+    public OIDField getObjectIdentifier() throws NoSuchFieldException {
+        return (OIDField) getSubfield(CVCTagEnum.OID);
+    }
 
 }

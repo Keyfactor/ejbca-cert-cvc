@@ -127,16 +127,16 @@ public class TestDatafields
       assertTrue("role was not CVCA", auth1.getAuthRole().isCVCA());
       
       // Deprecated methods should continue working as well
-      assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRight());
-      assertEquals(AuthorizationRoleEnum.CVCA, auth1.getRole());
+      assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRights());
+      assertEquals(AuthorizationRoleEnum.CVCA, auth1.getAuthRole());
 
       AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
       auth2.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
       assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRights());
       assertTrue("role was not Foreign DV", auth2.getAuthRole().isForeignDV());
       
-      assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRight());
-      assertEquals(AuthorizationRoleEnum.DV_F, auth2.getRole());
+      assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRights());
+      assertEquals(AuthorizationRoleEnum.DV_F, auth2.getAuthRole());
       
       // Test authentication and signature terminals
       AuthorizationField auth3 = new AuthorizationField(new byte[] {(byte) 0xA0, 0, 0, 0, 1});  // This means CV-d / Write-DG17 + Age Verification (first and last bits)

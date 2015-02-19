@@ -12,35 +12,43 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
-
 /**
- * Factory for creating sequences, that is certificate objects containing subfields
+ * Factory for creating sequences, that is certificate objects containing
+ * subfields
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
- *
+ * 
  */
 public class SequenceFactory {
 
-   /**
-    * Constructs a new instance of a subclass to AbstractSequence
-    * @param tag
-    * @return
-    * @throws IllegalArgumentException if the supplied tag does not represent a sequence
-    */
-   public static AbstractSequence createSequence(CVCTagEnum tag) {
-      if( !tag.isSequence() ) {
-         throw new IllegalArgumentException("Tag " + tag + " is not a sequence");
-      }
-      
-      switch( tag ){
-         case CV_CERTIFICATE       : return new CVCertificate();
-         case CERTIFICATE_BODY     : return new CVCertificateBody();
-         case PUBLIC_KEY           : return new GenericPublicKeyField();
-         case HOLDER_AUTH_TEMPLATE : return new CVCAuthorizationTemplate();
-         case REQ_AUTHENTICATION   : return new CVCAuthenticatedRequest();
-      }
-      throw new IllegalArgumentException("Unsupported type " + tag);
-   }
+    /**
+     * Constructs a new instance of a subclass to AbstractSequence
+     * 
+     * @param tag
+     * @return
+     * @throws IllegalArgumentException
+     *             if the supplied tag does not represent a sequence
+     */
+    public static AbstractSequence createSequence(CVCTagEnum tag) {
+        if (!tag.isSequence()) {
+            throw new IllegalArgumentException("Tag " + tag + " is not a sequence");
+        }
+
+        switch (tag) {
+        case CV_CERTIFICATE:
+            return new CVCertificate();
+        case CERTIFICATE_BODY:
+            return new CVCertificateBody();
+        case PUBLIC_KEY:
+            return new GenericPublicKeyField();
+        case HOLDER_AUTH_TEMPLATE:
+            return new CVCAuthorizationTemplate();
+        case REQ_AUTHENTICATION:
+            return new CVCAuthenticatedRequest();
+        default:
+        }
+        throw new IllegalArgumentException("Unsupported type " + tag);
+    }
 
 }

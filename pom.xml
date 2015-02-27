@@ -6,8 +6,8 @@
 	<groupId>org.ejbca.cvc</groupId>
 	<artifactId>cert-cvc</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4.0</version>
-	<name>EAC 1.11 Card Verifiable Certificate Library</name>
+	<version>1.4.1</version>
+	<name>EAC 2.10 Card Verifiable Certificate Library</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>

@@ -1,9 +1,9 @@
 <project name="cert-cvc" default="cert-cvc" basedir=".">
 
-    <property name="version" value="1.4.1"/>
+    <property name="version" value="1.4.2"/>
     
     <path id="compile.classpath">
-    	<fileset dir="lib" includes="bcprov-jdk15on-151.jar"/>
+    	<fileset dir="lib" includes="bcprov-jdk15on-152.jar"/>
     </path>
 
 	<path id="junit.compile.classpath">
@@ -66,7 +66,7 @@
     </target>
 	
     <target name="cert-cvc" depends="compilecvc" description="Build cert-cvc.jar">
-        <jar jarfile="cert-cvc.jar">
+        <jar jarfile="cert-cvc-${version}.jar">
         	<manifest>
         	    <attribute name="Implementation-Title" value="EAC 1.11 Card Verifiable Certificate Library"/>
         	    <attribute name="Implementation-Version" value="${version}"/>

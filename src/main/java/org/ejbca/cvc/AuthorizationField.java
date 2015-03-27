@@ -69,6 +69,9 @@ public class AuthorizationField
     * Returns role
     * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
     * @return
+    * 
+    * @deprecated Use {@link #getAuthRole()} instead
+    * 
     */
    @Deprecated
    public AuthorizationRoleEnum getRole() {
@@ -92,6 +95,8 @@ public class AuthorizationField
     * Returns access rights
     * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
     * @return
+    * 
+    * @deprecated Use {@link #getAccessRights()} instead
     */
    @Deprecated
    public AccessRightEnum getAccessRight() {

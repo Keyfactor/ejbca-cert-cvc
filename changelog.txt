@@ -1,3 +1,7 @@
+1.4.4
+-----
+- Using BouncyCastle provider v1.54
+
 1.4.3
 -----
 - Using BouncyCastle provider v1.53

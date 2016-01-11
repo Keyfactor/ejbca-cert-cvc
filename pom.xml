@@ -6,7 +6,7 @@
 	<groupId>org.ejbca.cvc</groupId>
 	<artifactId>cert-cvc</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4.3</version>
+	<version>1.4.4</version>
 	<name>EAC 2.10 Card Verifiable Certificate Library</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.53</version>
+			<version>1.54</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

@@ -23,7 +23,7 @@ public interface AccessRights {
    /** @return the encoded byte value */
    byte[] getEncoded();
 
-   /** @see Enum.name() */
+   /** @see Enum#name() */
    String name();
 
 }

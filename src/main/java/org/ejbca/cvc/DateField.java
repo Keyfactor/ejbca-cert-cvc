@@ -109,8 +109,7 @@ public class DateField extends AbstractDataField {
     /**
      * Encodes the date value so that every number in '080407' is stored as an
      * individual byte
-     * 
-     * @param date
+     *
      * @return
      */
     @Override

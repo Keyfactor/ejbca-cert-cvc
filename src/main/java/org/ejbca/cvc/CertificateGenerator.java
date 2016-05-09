@@ -49,10 +49,12 @@ public final class CertificateGenerator {
     * 
     *   TODO: Move this method to the test cases!
     * 
-    * @param keyPair
+    * @param publicKey
+    * @param privateKey
     * @param caRef
     * @param holderRef
     * @param algorithm SHA1WithRSA, SHA256WithECDSA etc
+    * @param role
     * @return
     * @throws IOException
     * @throws NoSuchAlgorithmException

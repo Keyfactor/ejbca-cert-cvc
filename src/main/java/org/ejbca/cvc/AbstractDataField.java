@@ -44,7 +44,7 @@ public abstract class AbstractDataField
 
    /**
     * Generates a DER-encoded byte array from this object, including tag and length
-    * @param outstream to write to
+    * @param out to write to
     * @return number of bytes written
     */
    @Override

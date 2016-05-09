@@ -142,9 +142,9 @@ public abstract class CVCObject implements Serializable {
    
    /**
     * Converts an Integer to a trimmed byte array.
-    * @param val
+    * @param intVal
     * @return
-    * @see trimByteArray(byte[]
+    * @see #trimByteArray(byte[])
     */
    protected static byte[] toByteArray(final Integer intVal) {
       final ByteBuffer bb = ByteBuffer.allocate(INT_LENGTH);
@@ -154,9 +154,9 @@ public abstract class CVCObject implements Serializable {
 
    /**
     * Converts a Long to a trimmed byte array.
-    * @param val
+    * @param longVal
     * @return
-    * @see trimByteArray(byte[]
+    * @see #trimByteArray(byte[])
     */
    protected static byte[] toByteArray(Long longVal) {
       final ByteBuffer bb = ByteBuffer.allocate(LONG_LENGTH);
@@ -167,7 +167,7 @@ public abstract class CVCObject implements Serializable {
    /**
     * Trims a byte array meaning that leading bytes containing zeros have been removed. 
     * However, if 'longVal' is zero then the array contains one zero.
-    * @param val
+    * @param data
     * @return
     */
    protected static byte[] trimByteArray(byte[] data) {
@@ -196,7 +196,6 @@ public abstract class CVCObject implements Serializable {
 
    /**
     * Same as getAsText("", true). 
-    * @param tab
     * @return
     */
    public String getAsText() {
@@ -205,7 +204,7 @@ public abstract class CVCObject implements Serializable {
 
    /**
     * Same as getAsText("", boolean). 
-    * @param tab
+    * @param showTagNo
     * @return
     */
    public String getAsText(boolean showTagNo) {

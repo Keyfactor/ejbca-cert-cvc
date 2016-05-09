@@ -49,6 +49,6 @@ public interface AuthorizationRole {
    /** @return the encoded bitmap value */
    byte getValue();
 
-   /** @see Enum.name() */
+   /** @see Enum#name() */
    String name();
 }

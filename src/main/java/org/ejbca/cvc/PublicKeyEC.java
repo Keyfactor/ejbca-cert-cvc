@@ -78,7 +78,7 @@ public class PublicKeyEC
    /**
     * Creates an instance from an OIDField and a java.security.interfaces.ECPublicKey
     * @param oid
-    * @param pubKey
+    * @param pubKeyEC
     * @param authRole role of certificate holder. If null or 'CVCA' all subfields are added,
     * otherwise only the required ones.
     */

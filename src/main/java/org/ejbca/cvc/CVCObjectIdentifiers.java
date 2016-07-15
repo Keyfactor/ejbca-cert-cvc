@@ -38,13 +38,17 @@ public interface CVCObjectIdentifiers {
 
    public static final OIDField id_TA_RSA_v1_5_SHA_1    = new OIDField(id_TA_RSA + ".1");
    public static final OIDField id_TA_RSA_v1_5_SHA_256  = new OIDField(id_TA_RSA + ".2");
+   public static final OIDField id_TA_RSA_v1_5_SHA_512  = new OIDField(id_TA_RSA + ".5");
    public static final OIDField id_TA_RSA_PSS_SHA_1     = new OIDField(id_TA_RSA + ".3");
    public static final OIDField id_TA_RSA_PSS_SHA_256   = new OIDField(id_TA_RSA + ".4");
+   public static final OIDField id_TA_RSA_PSS_SHA_512   = new OIDField(id_TA_RSA + ".6");
    
    static final String id_TA_ECDSA = id_TA + ".2";
    public static final OIDField id_TA_ECDSA_SHA_1        = new OIDField(id_TA_ECDSA + ".1");
    public static final OIDField id_TA_ECDSA_SHA_224      = new OIDField(id_TA_ECDSA + ".2");
    public static final OIDField id_TA_ECDSA_SHA_256      = new OIDField(id_TA_ECDSA + ".3");
+   public static final OIDField id_TA_ECDSA_SHA_384      = new OIDField(id_TA_ECDSA + ".4");
+   public static final OIDField id_TA_ECDSA_SHA_512      = new OIDField(id_TA_ECDSA + ".5");
 
 
 //  id-EAC-ePassport OBJECT IDENTIFIER ::= {

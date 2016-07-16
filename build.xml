@@ -68,7 +68,7 @@
     <target name="cert-cvc" depends="compilecvc" description="Build cert-cvc.jar">
         <jar jarfile="cert-cvc-${version}.jar">
         	<manifest>
-        	    <attribute name="Implementation-Title" value="EAC 1.11 Card Verifiable Certificate Library"/>
+        	    <attribute name="Implementation-Title" value="EAC 2.10 Card Verifiable Certificate Library"/>
         	    <attribute name="Implementation-Version" value="${version}"/>
            	    <attribute name="Implementation-Vendor" value="Swedish National Police Board, PrimeKey Solutions AB"/>
         	    <attribute name="License" value="LGPL"/>

@@ -1,3 +1,7 @@
+1.4.6
+-----
+- Using BouncyCastle provider v1.54
+
 1.4.5
 - ECA-4379: Add additional CVC OIDs for SHA512 and SHA384
 

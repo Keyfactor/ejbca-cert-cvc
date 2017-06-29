@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/test/junit-3.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/bcprov-jdk15on-156.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-157.jar"/>
 	<classpathentry kind="output" path="build/eclipse/classes"/>
 </classpath>

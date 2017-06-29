@@ -11,7 +11,7 @@
             <developerConnection>scm:svn:https://svn.cesecore.eu/svn/ejbca-restricted/trunk/cert-cvc/</developerConnection>
             <url>http://fisheye.primekey.se/browse/EJBCA/trunk/cert-cvc</url>
         </scm>
-	<version>1.4.6</version>
+	<version>1.4.7alpha</version>
 	<name>EAC 2.10 Card Verifiable Certificate Library</name>
         <description>Library supporting the creation and parsing of CVC certificates.</description>
 	<url>https://www.ejbca.org</url>

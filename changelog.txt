@@ -1,3 +1,8 @@
+1.4.7
+-----
+- Using BouncyCastle provider v1.57
+- TODO: more
+
 1.4.6
 -----
 - Using BouncyCastle provider v1.56

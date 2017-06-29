@@ -1,9 +1,9 @@
 <project name="cert-cvc" default="cert-cvc" basedir=".">
 
-    <property name="version" value="1.4.6"/>
+    <property name="version" value="1.4.7alpha"/>
     
     <path id="compile.classpath">
-    	<fileset dir="lib" includes="bcprov-jdk15on-156.jar"/>
+    	<fileset dir="lib" includes="bcprov-jdk15on-157.jar"/>
     </path>
 
 	<path id="junit.compile.classpath">

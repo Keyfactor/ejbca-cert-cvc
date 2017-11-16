@@ -12,6 +12,7 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
+import java.util.Collection;
 import java.util.Date;
 
 import org.ejbca.cvc.exception.ConstructionException;
@@ -35,7 +36,8 @@ public class CVCertificateBody extends AbstractSequence {
       CVCTagEnum.HOLDER_REFERENCE,
       CVCTagEnum.HOLDER_AUTH_TEMPLATE,
       CVCTagEnum.EFFECTIVE_DATE,
-      CVCTagEnum.EXPIRATION_DATE
+      CVCTagEnum.EXPIRATION_DATE,
+      CVCTagEnum.CERTIFICATE_EXTENSIONS
    };
 
    @Override
@@ -146,6 +148,33 @@ public class CVCertificateBody extends AbstractSequence {
    public CVCAuthorizationTemplate getAuthorizationTemplate() throws NoSuchFieldException {
       return (CVCAuthorizationTemplate)getSubfield(CVCTagEnum.HOLDER_AUTH_TEMPLATE);
    }
+   
+   /**
+    * Creates an instance suitable for a CVCertificate
+    * @param authorityReference Contains country code, holder mnemonic, and sequence number for the issuer.
+    * @param publicKey Public key of holder.
+    * @param holderReference Contains country code, holder mnemonic, and sequence number for the certificate holder.
+    * @param authRole Authorization role, specifies whether the holder is a CVCA, domestic DVCA, foreign DVCA, or AT/ST/IS.
+    * @param accessRight Access rights
+    * @param validFrom Validity from
+    * @param validTo Validity to
+    * @param extensions Certificate extensions, or null to not add a "Certificate Extensions" object to the certificate.
+    */
+   public CVCertificateBody(
+         CAReferenceField      authorityReference, 
+         CVCPublicKey          publicKey, 
+         HolderReferenceField  holderReference, 
+         AuthorizationRole     authRole,
+         AccessRights          accessRight,
+         Date                  validFrom,
+         Date                  validTo,
+         Collection<CVCDiscretionaryDataTemplate> extensions) throws ConstructionException
+   {
+      this(authorityReference, publicKey, holderReference, authRole, accessRight, validFrom, validTo);
+      if (extensions != null) {
+          addSubfield(new CVCertificateExtensions(extensions));
+      }
+   }
 
    /**
     * Returns 'Effective Date' 
@@ -186,6 +215,14 @@ public class CVCertificateBody extends AbstractSequence {
     */
    public HolderReferenceField getHolderReference() throws NoSuchFieldException {
       return (HolderReferenceField)getSubfield(CVCTagEnum.HOLDER_REFERENCE);
-   } 
+   }
+
+   /**
+    * Returns 'Certificate Extensions'
+    * @return
+    */
+   public CVCertificateExtensions getCertificateExtensions() throws NoSuchFieldException {
+      return (CVCertificateExtensions)getSubfield(CVCTagEnum.CERTIFICATE_EXTENSIONS);
+   }
 
 }

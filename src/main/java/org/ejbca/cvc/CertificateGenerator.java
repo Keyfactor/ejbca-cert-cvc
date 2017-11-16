@@ -22,6 +22,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import org.ejbca.cvc.exception.ConstructionException;
@@ -101,6 +102,7 @@ public final class CertificateGenerator {
     * @param authRole
     * @param validFrom
     * @param validTo
+    * @param extensions Certificate extensions, or null to not add a "Certificate Extensions" object to the certificate.
     * @param provider
     * @return
     * @throws IOException
@@ -120,6 +122,7 @@ public final class CertificateGenerator {
          AccessRights           rights,
          Date                   validFrom,
          Date                   validTo,
+         Collection<CVCDiscretionaryDataTemplate> extensions,
          String                 provider ) 
    throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
 
@@ -133,7 +136,8 @@ public final class CertificateGenerator {
             authRole,
             rights,
             validFrom,
-            validTo );
+            validTo,
+            extensions);
 
       CVCertificate cvc = new CVCertificate(body);
       
@@ -148,6 +152,25 @@ public final class CertificateGenerator {
       // Save the signature and return the certificate
       cvc.setSignature(sig);
       return cvc;
+   }
+   
+   /**
+    * Generates a CVCertificate
+    */
+   public static CVCertificate createCertificate(
+         PublicKey              publicKey,
+         PrivateKey             signerKey,
+         String                 algorithmName, 
+         CAReferenceField       caRef, 
+         HolderReferenceField   holderRef, 
+         AuthorizationRole      authRole,
+         AccessRights           rights,
+         Date                   validFrom,
+         Date                   validTo,
+         String                 provider ) 
+   throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
+       return createCertificate(publicKey, signerKey, algorithmName, caRef, holderRef, authRole, rights,
+               validFrom, validTo, null, provider);
    }
    
    /**

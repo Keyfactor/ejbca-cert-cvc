@@ -21,9 +21,12 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -39,6 +42,7 @@ import org.ejbca.cvc.example.FileHelper;
 public class TestCVCertificate
       extends TestCase implements CVCTest {
 
+   private static final byte[] TEST_EXTENSION_VALUE = new byte[] { (byte)0xf0, (byte)0xe1, (byte)0xd2 };
 
    protected void setUp() throws Exception {
       // Install Bouncy Castle as security provider 
@@ -171,6 +175,57 @@ public class TestCVCertificate
           assertTrue("re-encoded data was not equal", Arrays.equals(atcert.getEncoded(), bytes));
           //atcert.verify(atcert.getPublicKey(), "BC");
     }
+
+   public void testCertificateExtensions() throws Exception {
+      // Create new key pair
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+      keyGen.initialize(1024, new SecureRandom());
+      KeyPair keyPair = keyGen.generateKeyPair();
+
+      CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
+      HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
+
+      // Generate certificates
+      final Calendar cal = Calendar.getInstance();
+      cal.add(Calendar.MONTH, 3);
+      final Date validTo = cal.getTime();
+      CVCertificate cert;
+      byte[] encoded;
+      CVCertificate decodedCert;
+
+      cert = CertificateGenerator.createCertificate(keyPair.getPublic(), keyPair.getPrivate(), "SHA256WithRSA", caRef, holderRef, AuthorizationRoleEnum.IS,
+              AccessRightEnum.READ_ACCESS_DG3_AND_DG4, new Date(), validTo, null, "BC");
+      encoded = cert.getDEREncoded();
+      decodedCert = CertificateParser.parseCertificate(encoded);
+      try {
+          decodedCert.getCertificateBody().getCertificateExtensions();
+          fail("Should throw when trying to get extensions while none are present");
+      } catch (NoSuchFieldException e) {
+          // NOPMD expected
+      }
+
+      final Collection<CVCDiscretionaryDataTemplate> extensions = new ArrayList<CVCDiscretionaryDataTemplate>();
+      final CVCDiscretionaryDataTemplate ext1 = new CVCDiscretionaryDataTemplate("2.999.1.2.3", TEST_EXTENSION_VALUE);
+      final CVCDiscretionaryDataTemplate ext2 = new CVCDiscretionaryDataTemplate("2.999.4", new byte[] { });
+      extensions.add(ext1);
+      extensions.add(ext2);
+      cert = CertificateGenerator.createCertificate(keyPair.getPublic(), keyPair.getPrivate(), "SHA256WithRSA", caRef, holderRef, AuthorizationRoleEnum.IS,
+              AccessRightEnum.READ_ACCESS_DG3_AND_DG4, new Date(), validTo, extensions, "BC");
+
+      encoded = cert.getDEREncoded();
+      decodedCert = CertificateParser.parseCertificate(encoded);
+      System.out.println("DECODED CERT: "+decodedCert.getAsText());
+      assertNotNull("Certificate extensions was null when decoding certificate.", decodedCert.getCertificateBody().getCertificateExtensions());
+      List<CVCDiscretionaryDataTemplate> decodedExts = decodedCert.getCertificateBody().getCertificateExtensions().getExtensions();
+      assertEquals("Wrong number of extensions in decoded certificate.", 2, decodedExts.size());
+      assertEquals("2.999.1.2.3", decodedExts.get(0).getObjectIdentifier());
+      assertEquals("2.999.4", decodedExts.get(1).getObjectIdentifier());
+      assertEquals(3, decodedExts.get(0).getExtensionData().length);
+      assertEquals(TEST_EXTENSION_VALUE[0], decodedExts.get(0).getExtensionData()[0]);
+      assertEquals(TEST_EXTENSION_VALUE[1], decodedExts.get(0).getExtensionData()[1]);
+      assertEquals(TEST_EXTENSION_VALUE[2], decodedExts.get(0).getExtensionData()[2]);
+      assertEquals(0, decodedExts.get(1).getExtensionData().length);
+   }
 
    // Helper for creating a test certificate
    private CVCertificate createTestCertificate() throws Exception {

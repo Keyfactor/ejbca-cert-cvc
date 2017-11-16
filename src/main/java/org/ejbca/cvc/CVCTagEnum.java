@@ -36,7 +36,7 @@ public enum CVCTagEnum {
    CA_REFERENCE           (0x42),
    REQ_AUTHENTICATION     (0x67,   true),
 
-   // Fields for Holder Authorization Template (actually, it's "Arbitrary data" according to the spec)
+   // Field for Holder Authorization Template (actually, it's "Arbitrary data" according to the spec)
    ROLE_AND_ACCESS_RIGHTS (0x53),
 
    // Fields for Public Key
@@ -48,7 +48,12 @@ public enum CVCTagEnum {
    BASE_POINT_G           (0x84),
    BASE_POINT_R_ORDER     (0x85),
    PUBLIC_POINT_Y         (0x86),
-   COFACTOR_F             (0x87);
+   COFACTOR_F             (0x87),
+   
+   // Certificate Extensions
+   CERTIFICATE_EXTENSIONS      (0x65, true),
+   DISCRETIONARY_DATA_TEMPLATE (0x73, true), // each extension consists of a pair of OID and ARBITRARY_DATA
+   ARBITRARY_DATA              (0x53); // same value as ROLE_AND_ACCESS_RIGHTS above
 
    
    private int value;

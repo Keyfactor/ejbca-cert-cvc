@@ -95,7 +95,6 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
 
    /**
     * Returns the Object Identifier as a String
-    * @return
     */
    public String getObjectIdentifier() throws NoSuchFieldException {
       return ((OIDField)getSubfield(CVCTagEnum.OID)).getValue();
@@ -103,7 +102,6 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
 
    /**
     * Returns AuthorizationField
-    * @return
     */
    public AuthorizationField getAuthorizationField() throws NoSuchFieldException {
       return (AuthorizationField)getSubfield(CVCTagEnum.ROLE_AND_ACCESS_RIGHTS);

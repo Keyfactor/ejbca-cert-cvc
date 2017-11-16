@@ -68,7 +68,6 @@ public class AuthorizationField
    /**
     * Returns role
     * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
-    * @return
     * 
     * @deprecated Use {@link #getAuthRole()} instead
     * 
@@ -94,7 +93,6 @@ public class AuthorizationField
    /**
     * Returns access rights
     * @throws UnsupportedOperationException if the rights is of authentication or signing terminal type.
-    * @return
     * 
     * @deprecated Use {@link #getAccessRights()} instead
     */
@@ -194,7 +192,7 @@ public class AuthorizationField
 
    /**
     * Re-creates the role/rights objects as the correct classes.
-    * This is necessary when deserializing from DER data.
+    * This is necessary when deserializing from binary data.
     */
    void fixEnumTypes(OIDField oid) {
       role = getRoleFromByte(oid, role.getValue());

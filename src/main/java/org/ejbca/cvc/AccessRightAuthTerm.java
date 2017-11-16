@@ -32,14 +32,14 @@ public class AccessRightAuthTerm implements AccessRights, Serializable {
 
    private static final int MAX_BIT = 37;
 
-   // Read access (eID)
+   // Write access
    public static final int BIT_WRITE_DG17 = 37;
    public static final int BIT_WRITE_DG18 = 36;
    public static final int BIT_WRITE_DG19 = 35;
    public static final int BIT_WRITE_DG20 = 34;
    public static final int BIT_WRITE_DG21 = 33;
 
-   // Write access (eID)
+   // Read access
    public static final int BIT_READ_DG21 = 28;
    public static final int BIT_READ_DG20 = 27;
    public static final int BIT_READ_DG19 = 26;

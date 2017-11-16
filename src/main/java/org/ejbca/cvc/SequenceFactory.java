@@ -46,6 +46,10 @@ public class SequenceFactory {
             return new CVCAuthorizationTemplate();
         case REQ_AUTHENTICATION:
             return new CVCAuthenticatedRequest();
+        case CERTIFICATE_EXTENSIONS:
+            return new CVCertificateExtensions();
+        case DISCRETIONARY_DATA_TEMPLATE:
+            return new CVCDiscretionaryDataTemplate();
         default:
         }
         throw new IllegalArgumentException("Unsupported type " + tag);

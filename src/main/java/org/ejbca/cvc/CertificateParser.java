@@ -60,7 +60,7 @@ public final class CertificateParser {
          try {
             bin = new ByteArrayInputStream(data);
             DataInputStream din = new DataInputStream(bin);
-            return decode(din, expectedTag);
+            return decode(din, expectedTag, null);
          }
          finally {
             if( bin!=null ){
@@ -74,7 +74,7 @@ public final class CertificateParser {
    }
 
    // Performs the actual decoding
-   private static CVCObject decode(DataInputStream din, CVCTagEnum expectedTag) 
+   private static CVCObject decode(DataInputStream din, CVCTagEnum expectedTag, CVCTagEnum tagIfAmbiguous) 
    throws IOException, ConstructionException, ParseException {
       // First chunk to decode is the tag
       int tagValue = decodeTag(din);
@@ -83,6 +83,10 @@ public final class CertificateParser {
       // Validate the tag if a specific one was expected here
       if( expectedTag!=null && tag!=expectedTag ){
          throw new ParseException("Expected first tag " + expectedTag + " but found " + tag);
+      }
+      // Special handling for certain tags that have the same value, e.g. ARBITRARY_DATA and ROLE_AND_ACCESS_RIGHTS
+      if (tagIfAmbiguous != null && tag.getValue() == tagIfAmbiguous.getValue()) {
+          tag = tagIfAmbiguous;
       }
 
       // The second chunk to decode is the field length
@@ -97,7 +101,16 @@ public final class CertificateParser {
          
          // Add this sequence's subfields through recursion
          while( din.available() > sequenceEnd ) {
-            sequence.addSubfield(decode(din, null));
+            // Special handling for ARBITRARY_DATA which has the same value as ROLE_AND_ACCESS_RIGHTS
+            final CVCTagEnum nestedTagIfAmbiguous;
+            switch (tag) {
+            case DISCRETIONARY_DATA_TEMPLATE:
+                nestedTagIfAmbiguous = CVCTagEnum.ARBITRARY_DATA;
+                break;
+            default:
+                nestedTagIfAmbiguous = null;
+            }
+            sequence.addSubfield(decode(din, null, nestedTagIfAmbiguous));
          }
          // If we got a GenericPublicKeyField we must map this 
          // into an instance of CVCPublicKey before continuing

@@ -172,6 +172,7 @@ public abstract class AbstractSequence extends CVCObject {
     * @param tab
     * @return
     */
+   @Override
    public String getAsText(String tab) {
       return getAsText(tab, true);
    }
@@ -179,6 +180,7 @@ public abstract class AbstractSequence extends CVCObject {
    /**
     * {@inheritDoc}
     */
+   @Override
    public String getAsText(String tab, boolean showTagNo) {
       StringBuffer sb = new StringBuffer();
       sb.append(super.getAsText(tab, showTagNo));
@@ -190,8 +192,10 @@ public abstract class AbstractSequence extends CVCObject {
    }
 
    
-   // Returns a List of ordered subfields
-   private List<CVCObject> getOrderedSubfields() {
+   /**
+    * Returns a List of ordered subfields
+    */
+   protected List<CVCObject> getOrderedSubfields() {
       List<CVCObject> orderedList = new ArrayList<CVCObject>();
       for( CVCTagEnum tag : allowedFields ){
          CVCObject subfield = subfields.get(tag);

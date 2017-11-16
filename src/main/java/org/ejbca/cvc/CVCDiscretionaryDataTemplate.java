@@ -20,7 +20,7 @@ import org.ejbca.cvc.exception.ConstructionException;
  * Described in the BSI TR-03110 Part 3 v2.2, page 89.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id: CVCAuthorizationTemplate.java 18602 2014-03-13 13:54:01Z samuellb $
+ * @version $Id$
  * 
  */
 public class CVCDiscretionaryDataTemplate extends AbstractSequence {

@@ -23,7 +23,7 @@ import org.ejbca.cvc.exception.ConstructionException;
  * A "Certificate Extensions" sequence in a CV certificate. It contains CVCDiscretionaryDataTemplate objects.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id: CVCAuthorizationTemplate.java 18602 2014-03-13 13:54:01Z samuellb $
+ * @version $Id$
  * 
  */
 public class CVCertificateExtensions extends AbstractArray {

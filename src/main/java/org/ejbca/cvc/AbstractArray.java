@@ -24,7 +24,7 @@ import org.ejbca.cvc.exception.ConstructionException;
  * This variant allows multiple objects of the same type. It preserves order of the objects.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id: AbstractSequence.java 18597 2014-03-13 09:36:12Z samuellb $
+ * @version $Id$
  *
  */
 public abstract class AbstractArray extends AbstractSequence {

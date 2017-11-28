@@ -1,3 +1,7 @@
+1.4.8
+-----
+- Support for certificate extensions in CSRs
+
 1.4.7
 -----
 - Using BouncyCastle provider v1.57
@@ -8,6 +12,7 @@
 - Using BouncyCastle provider v1.56
 
 1.4.5
+-----
 - ECA-4379: Add additional CVC OIDs for SHA512 and SHA384
 
 1.4.4

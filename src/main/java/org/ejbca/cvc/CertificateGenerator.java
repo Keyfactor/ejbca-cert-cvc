@@ -115,15 +115,15 @@ public final class CertificateGenerator {
    public static CVCertificate createCertificate(
          PublicKey              publicKey,
          PrivateKey             signerKey,
-         String                 algorithmName, 
-         CAReferenceField       caRef, 
-         HolderReferenceField   holderRef, 
+         String                 algorithmName,
+         CAReferenceField       caRef,
+         HolderReferenceField   holderRef,
          AuthorizationRole      authRole,
          AccessRights           rights,
          Date                   validFrom,
          Date                   validTo,
          Collection<CVCDiscretionaryDataTemplate> extensions,
-         String                 provider ) 
+         String                 provider )
    throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
 
       CVCPublicKey cvcPublicKey = KeyFactory.createInstance(publicKey, algorithmName, authRole);
@@ -239,16 +239,7 @@ public final class CertificateGenerator {
    /**
     * Generates a CVC-request without an outer signature using BouncyCastle as signature provider, taking
     * Certificate Authority Reference as argument.
-    * @param keyPair
-    * @param algorithmName
-    * @param holderRef
-    * @param caRef
-    * @return
-    * @throws IOException
-    * @throws NoSuchAlgorithmException
-    * @throws NoSuchProviderException
-    * @throws InvalidKeyException
-    * @throws SignatureException
+    * @see CertificateGenerator#createRequest(KeyPair, String, CAReferenceField, HolderReferenceField, Collection, String)
     */
    public static CVCertificate createRequest(
          KeyPair               keyPair, 
@@ -256,30 +247,47 @@ public final class CertificateGenerator {
          CAReferenceField      caRef,
          HolderReferenceField  holderRef )  
    throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException{
-      return createRequest(keyPair, algorithmName, caRef, holderRef, "BC");
+      return createRequest(keyPair, algorithmName, caRef, holderRef, null, "BC");
    }
-
+   
    /**
-    * Same as above except that signature provider is also an argument
-    * @param keyPair
-    * @param algorithmName
-    * @param caRef
-    * @param holderRef
-    * @param signProvicer
-    * @return
-    * @throws IOException
-    * @throws NoSuchAlgorithmException
-    * @throws NoSuchProviderException
-    * @throws InvalidKeyException
-    * @throws SignatureException
-    * @throws ConstructionException
+    * Generates a CVC-request without an outer signature using BouncyCastle as signature provider, taking
+    * Certificate Authority Reference as argument.
+    * @see CertificateGenerator#createRequest(KeyPair, String, CAReferenceField, HolderReferenceField, Collection, String)
     */
    public static CVCertificate createRequest(
          KeyPair               keyPair, 
          String                algorithmName,
          CAReferenceField      caRef,
          HolderReferenceField  holderRef,
-         String                signProvicer )  
+         String                signProvider )
+   throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
+       return createRequest(keyPair, algorithmName, caRef, holderRef, null, signProvider);
+   }
+
+   /**
+    * Generates a CVC-request without an outer signature using BouncyCastle as signature provider, taking
+    * Certificate Authority Reference as argument.
+    * @param keyPair Key pair
+    * @param algorithmName Algorithm
+    * @param holderRef Holder Reference
+    * @param caRef CA Reference
+    * @param extensions List of certificate extensions, or null to exclude.
+    * @param signProvider Crypto provider to use for proof of possession signature. 
+    * @return A certificate request
+    * @throws IOException
+    * @throws NoSuchAlgorithmException
+    * @throws NoSuchProviderException
+    * @throws InvalidKeyException
+    * @throws SignatureException
+    */
+   public static CVCertificate createRequest(
+         KeyPair               keyPair,
+         String                algorithmName,
+         CAReferenceField      caRef,
+         HolderReferenceField  holderRef,
+         Collection<CVCDiscretionaryDataTemplate> extensions,
+         String                signProvider)
    throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException{
       CVCPublicKey cvcPublicKey = KeyFactory.createInstance(keyPair.getPublic(), algorithmName, null);
 
@@ -287,12 +295,13 @@ public final class CertificateGenerator {
       CVCertificateBody reqBody = new CVCertificateBody(
             caRef,
             cvcPublicKey,
-            holderRef );
+            holderRef,
+            extensions);
       
       CVCertificate cvc = new CVCertificate(reqBody);
       
       // Perform the signing
-      Signature innerSign = Signature.getInstance(AlgorithmUtil.convertAlgorithmNameToCVC(algorithmName), signProvicer);
+      Signature innerSign = Signature.getInstance(AlgorithmUtil.convertAlgorithmNameToCVC(algorithmName), signProvider);
       innerSign.initSign(keyPair.getPrivate());
       innerSign.update(cvc.getTBS());
       byte[] signdata = innerSign.sign();

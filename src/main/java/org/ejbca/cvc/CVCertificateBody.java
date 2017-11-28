@@ -54,15 +54,28 @@ public class CVCertificateBody extends AbstractSequence {
 
    /**
     * Creates an instance suitable for CertificateRequest
-    * @param authorityReference
-    * @param publicKey
-    * @param holderReference
+    */
+   public CVCertificateBody(
+         CAReferenceField      authorityReference, 
+         CVCPublicKey          publicKey, 
+         HolderReferenceField  holderReference) throws ConstructionException
+   {
+       this(authorityReference, publicKey, holderReference, null);
+   }
+   
+   /**
+    * Creates an instance suitable for CertificateRequest
+    * @param authorityReference CA reference
+    * @param publicKey Public key for new certificate.
+    * @param holderReference Holder reference
+    * @param extensions Certificate extensions, or null to exclude.
     * @throws ConstructionException
     */
    public CVCertificateBody(
          CAReferenceField      authorityReference, 
          CVCPublicKey          publicKey, 
-         HolderReferenceField  holderReference ) throws ConstructionException
+         HolderReferenceField  holderReference,
+         Collection<CVCDiscretionaryDataTemplate> extensions) throws ConstructionException
    {
       this();
 
@@ -81,6 +94,9 @@ public class CVCertificateBody extends AbstractSequence {
       
       addSubfield(publicKey);
       addSubfield(holderReference);
+      if (extensions != null) {
+          addSubfield(new CVCertificateExtensions(extensions));
+      }
    }
 
    /**

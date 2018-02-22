@@ -51,12 +51,22 @@ public abstract class AbstractSequence extends CVCObject {
    /**
     * Adds a subfield to this sequence. Nothing happens if the argument is null.
     * @param field
-    * @throws ConstructionException if the supplied field is not allowed in this sequence.
+    * @throws ConstructionException if the supplied field is not allowed in this sequence, or the field already exists.
     */
    void addSubfield(final CVCObject field) throws ConstructionException {
+	   addSubfield(field, false);
+   }
+   /**
+    * Adds a subfield to this sequence, as above, but with the possibility to overwrite an existing
+    * field with a new one.
+    * @param field the field to add
+    * @param override true if an existing field should be overwritten, false if an exception should be thrown if the field already exists
+    * @throws ConstructionException if the supplied field is not allowed in this sequence, or already exists and override == false.
+    */
+   void addSubfield(final CVCObject field, boolean override) throws ConstructionException {
       if( field!=null ){
          if( allowedFields.contains(field.getTag() )) {
-            if( subfields.containsKey(field.getTag()) ){
+            if( subfields.containsKey(field.getTag()) && !override){
                throw new ConstructionException("Field " + field.getTag() + " has already been added to " + getClass().getName());
             }
             else {

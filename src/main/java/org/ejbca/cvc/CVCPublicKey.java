@@ -15,6 +15,8 @@ package org.ejbca.cvc;
 import java.io.IOException;
 import java.security.PublicKey;
 
+import org.ejbca.cvc.exception.ConstructionException;
+
 /**
  * Represents the sequence Public Key
  * 
@@ -48,6 +50,14 @@ public abstract class CVCPublicKey extends AbstractSequence implements PublicKey
      */
     public OIDField getObjectIdentifier() throws NoSuchFieldException {
         return (OIDField) getSubfield(CVCTagEnum.OID);
+    }
+
+    /**
+     * Sets an Object Identifier. Can be used to override an algorithm OID for example:
+     *   cvcNewPubKey.setObjectIdentifier(cvcOldPubKey.getObjectIdentifier());
+     */
+    public void setObjectIdentifier(OIDField oid) throws ConstructionException {
+    	addSubfield(oid, true);
     }
 
 }

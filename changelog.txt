@@ -1,0 +1,54 @@
+1.4.0
+-----
+- Added authorization roles and access rights for Authentication Terminals and Signature Terminals, which were added in the EAC 2.10 specification.
+
+1.3.1
+-----
+- Using BouncyCastle provider v1.49
+
+1.3.0
+-----
+- Using BouncyCastle provider v1.47, now compatible with 1.46 and 1.47.
+
+1.2.13
+------
+- Fixed version number in pom.xml
+- Fixed to work with latest versions of BC provider (both 1.45 and 1.46)
+- ECA-2154: Fixed encoding/decoding of effective and expire date fields to always use GMT time zone
+
+1.2.12
+-----
+- Code cleanup fixing PMD warnings
+- Relaxed testing of country codes to allow testing with fake countries like XX
+
+1.2.11
+-----
+- Fixed slight chance that EC public points would still be wrongly encoded (1 out of 2^16). Patch from Mark Baaijens of Ministerie van Binnenlandse Zaken en Koninkrijksrelaties, Netherlands.
+- parseCertificate() does not throw IllegalArgumentException anymore but throws ParseException instead)
+
+1.2.10
+-----
+- Fixed encoding of EC public points in the edge cases where affineX.length != affineY.length. Cone by adding the required left zero padding.
+- Fixed returning of date field so returning expire date returns <day> 23.59.59, insdead of <day> 00.00.00. 
+  When comparing dates expire date means that the CV certificate is valid for the whole of the <day> (CVC expire date only contains day resolution).
+- Support for OIDs with numbers > 128. 
+
+1.2.9
+-----
+- Changed visibility of constructor CVCertificate(CVCertificateBody, byte[]) to public.
+- Changed visibility of KeyFactory.createInstance to public.
+
+1.2.8
+-----
+- Fix so CVC support works with HSM provider, tested with Sun PKCS#11 provider.
+
+1.2.7
+-----
+- Support for ECC keys and signatures, need BC version 1.41 which is included in svn.
+- Fix bug where outer signature in authenticated requests did not include CARef in TBS
+- Don't add caRef if not passed, or passed as null, to CertificateGenerator.
+- Translations of Swedish javadoc to English.
+
+1.2.6
+-----
+Initial release

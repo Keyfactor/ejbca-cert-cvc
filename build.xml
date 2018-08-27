@@ -1,0 +1,98 @@
+<project name="cert-cvc" default="cert-cvc" basedir=".">
+
+    <property name="version" value="1.4.0"/>
+    
+    <path id="compile.classpath">
+    	<fileset dir="lib" includes="bcprov-jdk15on-149.jar"/>
+    </path>
+
+	<path id="junit.compile.classpath">
+	    <fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir="lib/test">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir=".">
+	      <include name="*.jar"/>
+	    </fileset>
+	</path>
+
+	<path id="junit.run.classpath">
+	    <fileset dir="lib">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir="lib/test">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <fileset dir=".">
+	      <include name="*.jar"/>
+	    </fileset>
+        <pathelement path="build"/>
+	</path>
+
+	<target name="init">
+            <mkdir dir="build"/>
+	</target>
+
+	<target name="clean" description="Clean">
+            <delete dir="build"/>
+            <delete file="cert-cvc.jar"/>
+	</target>
+
+    <target name="compilecvc" depends="init" >
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="1.6" source="1.6">
+            <classpath refid="compile.classpath" />
+            <src path="src/main" />
+        </javac>
+    </target>
+
+	<!-- =======================================================================    -->
+    <!-- Run the test suite                                                         -->
+    <!-- =======================================================================    -->
+	<target name="test">
+        <delete dir="build"/>
+        <mkdir dir="build"/>
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="1.6" source="1.6">
+            <classpath refid="junit.compile.classpath" />
+            <src path="src/test" />
+        </javac>
+	    <junit fork="yes" haltonfailure="yes">
+	      <test name="org.ejbca.cvc.CVCTestSuite"/>
+	      <formatter type="plain" usefile="false" />
+	      <classpath refid="junit.run.classpath" />
+	    </junit>
+        <delete dir="build"/>
+    </target>
+	
+    <target name="cert-cvc" depends="compilecvc" description="Build cert-cvc.jar">
+        <jar jarfile="cert-cvc.jar">
+        	<manifest>
+        	    <attribute name="Implementation-Title" value="EAC 1.11 Card Verifiable Certificate Library"/>
+        	    <attribute name="Implementation-Version" value="${version}"/>
+           	    <attribute name="Implementation-Vendor" value="Keijo Kurkinen, Swedish National Police Board"/>
+        	    <attribute name="License" value="LGPL"/>
+        	</manifest>
+            <fileset dir="build" includes="org/ejbca/**" />            	
+        </jar>
+    </target>
+
+
+	<!-- =======================================================================    -->
+    <!-- Make a ZIP release file of CERT-CVC, and a SHA1 checksum of the release    -->
+	<!-- The ZIP file contains all the files used, but not temporary or compile files etc -->
+    <!-- =======================================================================    -->
+	<target name="ziprelease" description="Build a CERT-CVC zip release files with sources">
+		<antcall target="clean" />
+		<zip destfile="../cert-cvc-${version}.zip">
+		    <zipfileset dir="." prefix="cert-cvc-${version}" filemode="600" dirmode="700"> 
+		    	<include name="**/**" />
+		    	<exclude name="build/**" />
+		    </zipfileset>
+		</zip>
+        <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" forceOverwrite="yes"/>      
+        <checksum file="../cert-cvc-${version}.zip" algorithm="SHA1" property="certcvcSHA1"/>      
+        <echo message="SHA1 checksum: ${certcvcSHA1}" />     
+	</target>
+
+</project>

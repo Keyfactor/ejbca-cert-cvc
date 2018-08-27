@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.ejbca.cvc</groupId>
+	<artifactId>cert-cvc</artifactId>
+	<packaging>jar</packaging>
+        <scm>
+            <connection>scm:svn:https://svn.cesecore.eu/svn/ejbca/trunk/cert-cvc/</connection>
+            <developerConnection>scm:svn:https://svn.cesecore.eu/svn/ejbca-restricted/trunk/cert-cvc/</developerConnection>
+            <url>http://fisheye.primekey.se/browse/EJBCA/trunk/cert-cvc</url>
+        </scm>
+	<version>1.4.5</version>
+	<name>EAC 2.10 Card Verifiable Certificate Library</name>
+        <description>Library supporting the creation and parsing of CVC certificates.</description>
+	<url>https://www.ejbca.org</url>
+        <licenses>
+            <license>
+                <name>LGPL license, Version 2.1</name>
+                <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</url>
+            </license>
+        </licenses>
+        <developers>
+            <developer>
+                <name>Keijo Kurkinen</name>
+                <email>keijo.kurkinen@innograte.com</email>
+                <organization>Swedish National Police Board</organization>
+                <organizationUrl>https://www.polisen.se</organizationUrl>
+            </developer>
+            <developer>
+                <name>Tomas Gustavsson</name>
+                <email>tomas.gustavsson@primekey.se</email>
+                <organization>PrimeKey Solutions AB</organization>
+                <organizationUrl>https://www.primekey.se</organizationUrl>
+            </developer>
+        </developers>
+        <properties>
+            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        </properties>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.54</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>cert-cvc</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+                                <version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+</project>
+

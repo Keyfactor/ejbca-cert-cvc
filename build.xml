@@ -1,9 +1,9 @@
 <project name="cert-cvc" default="cert-cvc" basedir=".">
 
-    <property name="version" value="1.4.9"/>
+    <property name="version" value="1.4.10"/>
     
     <path id="compile.classpath">
-    	<fileset dir="lib" includes="bcprov-jdk15on-157.jar"/>
+    	<fileset dir="lib" includes="bcprov-jdk15on-164.jar"/>
     </path>
 
 	<path id="junit.compile.classpath">
@@ -41,7 +41,7 @@
 	</target>
 
     <target name="compilecvc" depends="init" >
-        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="1.6" source="1.6">
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="8" source="8">
             <classpath refid="compile.classpath" />
             <src path="src/main" />
         </javac>
@@ -53,7 +53,7 @@
 	<target name="test">
         <delete dir="build"/>
         <mkdir dir="build"/>
-        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="1.6" source="1.6">
+        <javac destdir="build" debug="on" includeantruntime="no" encoding="iso8859-1" target="8" source="8">
             <classpath refid="junit.compile.classpath" />
             <src path="src/test" />
         </javac>

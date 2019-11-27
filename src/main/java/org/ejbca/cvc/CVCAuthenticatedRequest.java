@@ -23,6 +23,7 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.ejbca.cvc.exception.ConstructionException;
 import org.ejbca.cvc.util.BCECUtil;
 
@@ -154,7 +155,7 @@ public class CVCAuthenticatedRequest extends AbstractSequence implements Signabl
             CVCPublicKey cvcKey = getRequest().getCertificateBody().getPublicKey();
             algorithm = AlgorithmUtil.getAlgorithmName(cvcKey.getObjectIdentifier());
          }
-         Signature sign = Signature.getInstance(algorithm);
+         Signature sign = Signature.getInstance(algorithm, BouncyCastleProvider.PROVIDER_NAME);
          
          // Now verify the signature
          sign.initVerify(pubKey);

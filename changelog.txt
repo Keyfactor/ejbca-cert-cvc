@@ -1,6 +1,6 @@
 1.4.10
 -----
-- Update BC to 1.64 and pom.xml to build with Java 11
+- Update BC to 1.61 and pom.xml to build with Java 11
 - PublicKeyEC should return algorithm EC instead of ECDSA
 
 1.4.9

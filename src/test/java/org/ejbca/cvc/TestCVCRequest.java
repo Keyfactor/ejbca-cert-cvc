@@ -90,7 +90,7 @@ public class TestCVCRequest
    
    
    /** Check: Verify a request's outer signature */
-   public void testVerifyRequest() throws Exception {
+   public void testVerifyRequestRSA() throws Exception {
       String algName = "SHA256WITHRSA";
 
       // Create key pair 
@@ -102,12 +102,38 @@ public class TestCVCRequest
       authReq.verify(keyPair.getPublic());
    }
    
+   /** Check: Verify a request's outer signature */
+   public void testVerifyRequestECDSA() throws Exception {
+      String algName = "SHA256WITHECDSA";
 
-   // Creates a request (CVCertificate)
+      // Create key pair 
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
+      keyGen.initialize(256, new SecureRandom());
+      KeyPair keyPair = keyGen.generateKeyPair();
+      CVCAuthenticatedRequest authReq = createTestAuthRequestEC(keyPair, algName);
+      
+      authReq.verify(keyPair.getPublic());
+   }
+
+   // Creates a request (CVCertificate) using RSA
    private CVCertificate createTestRequest(String algName) throws Exception {
       // Create key pair
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
       keyGen.initialize(1024, new SecureRandom());
+      KeyPair keyPair = keyGen.generateKeyPair();
+
+      CAReferenceField caRef = new CAReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
+      HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
+
+      // Call CertificateGenerator
+      return CertificateGenerator.createRequest(keyPair, algName, caRef, holderRef);
+   }
+
+   // Creates a request (CVCertificate) using ECDSA
+   private CVCertificate createTestRequestEC(String algName) throws Exception {
+      // Create key pair
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
+      keyGen.initialize(256, new SecureRandom());
       KeyPair keyPair = keyGen.generateKeyPair();
 
       CAReferenceField caRef = new CAReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
@@ -131,7 +157,7 @@ public class TestCVCRequest
       return CertificateGenerator.createRequest(keyPair, algName, caRef, holderRef);
    }
 
-   // Creates a request (CVCAuthenticatedRequest)
+   // Creates a request (CVCAuthenticatedRequest) using RSA
    private CVCAuthenticatedRequest createTestAuthRequest(KeyPair signingKeyPair, String algName) throws Exception {
       CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
 
@@ -143,6 +169,23 @@ public class TestCVCRequest
       if( signKeys==null ){
          KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
          keyGen.initialize(1024, new SecureRandom());
+         signKeys = keyGen.generateKeyPair();
+      }
+      return CertificateGenerator.createAuthenticatedRequest(certReq, signKeys, algName, caRef);
+   }
+
+   // Creates a request (CVCAuthenticatedRequest) using ECDSA
+   private CVCAuthenticatedRequest createTestAuthRequestEC(KeyPair signingKeyPair, String algName) throws Exception {
+      CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
+
+      // Call CertificateGenerator
+      CVCertificate certReq = createTestRequestEC(algName);
+
+      // Create key pair for outer signature (unless sent as an argument)
+      KeyPair signKeys = signingKeyPair;
+      if( signKeys==null ){
+         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("ECDSA", "BC");
+         keyGen.initialize(256, new SecureRandom());
          signKeys = keyGen.generateKeyPair();
       }
       return CertificateGenerator.createAuthenticatedRequest(certReq, signKeys, algName, caRef);

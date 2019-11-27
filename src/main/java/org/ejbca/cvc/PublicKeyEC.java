@@ -191,12 +191,12 @@ public class PublicKeyEC
 
 
    public String getAlgorithm() {
-      return "ECDSA";  // TODO: This OK?
+      return "EC";
    }
 
 
    public String getFormat() {
-      return "CVC";  // TODO: This OK?
+      return "CVC";
    }
 
 

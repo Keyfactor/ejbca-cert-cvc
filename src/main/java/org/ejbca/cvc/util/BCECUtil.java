@@ -25,7 +25,7 @@ public final class BCECUtil
 	
     public static byte[] convertX962SigToCVC(final String algorithmName, final byte[] xsig) throws IOException {
         // Only do this if it's an ECDSA algorithm
-        if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
+        if (!algorithmName.toUpperCase(Locale.getDefault()).contains("EC")) {
             return xsig;
         }
         // Read r and s from asn.1 encoded x9.62 signature
@@ -59,7 +59,7 @@ public final class BCECUtil
 
 	   public static byte[] convertCVCSigToX962(final String algorithmName, final byte[] xsig) throws SignatureException {
 		   // Only do this if it's an ECDSA algorithm
-		   if (!algorithmName.toUpperCase(Locale.getDefault()).contains("ECDSA")) {
+		   if (!algorithmName.toUpperCase(Locale.getDefault()).contains("EC")) {
 			   return xsig;
 		   }
 		   // Read r and s from non asn.1 encoded CVC signature

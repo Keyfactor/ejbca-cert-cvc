@@ -39,10 +39,12 @@ public class TestDatafields
    private static final byte[] ENCODED_LENGTH_128  = new byte[]{ (byte)0x81, (byte)0x80 };
    private static final byte[] ENCODED_LENGTH_1288 = new byte[]{ (byte)0x82, 0x05, 0x08 };
    
+   @Override
    protected void setUp() throws Exception {
       super.setUp();
    }
 
+   @Override
    protected void tearDown() throws Exception {
       super.tearDown();
    }
@@ -251,6 +253,7 @@ public class TestDatafields
       cal1.set(Calendar.YEAR, 2011);
       cal1.set(Calendar.MONTH, 0);   // This should generate a '1' in the byte array
       cal1.set(Calendar.DAY_OF_MONTH, 31);
+      cal1.setTimeZone(TimeZone.getTimeZone("UTC"));
       String s1 = FORMAT_PRINTABLE.format(cal1.getTime());
 
       DateField date1 = new DateField(CVCTagEnum.EFFECTIVE_DATE, cal1.getTime());

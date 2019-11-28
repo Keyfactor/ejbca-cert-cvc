@@ -191,7 +191,7 @@ public class PublicKeyEC
 
 
    public String getAlgorithm() {
-      return "EC";
+      return "ECDSA"; // BC supports both EC and ECDSA, Sun only EC
    }
 
 

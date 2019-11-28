@@ -1,7 +1,7 @@
 1.4.10
 -----
 - Update BC to 1.61 and pom.xml to build with Java 11
-- PublicKeyEC should return algorithm EC instead of ECDSA
+- Use BC provider when verifying signatures CVCAuthenticatedRequest
 
 1.4.9
 -----

@@ -1,3 +1,7 @@
+1.4.11
+-----
+- Use the signature algorithm OID from the verifying public key when verifying certificates, if there is one, fall back to the certificate's own public keys oid.
+
 1.4.10
 -----
 - Update BC to 1.61 and pom.xml to build with Java 11

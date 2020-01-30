@@ -120,9 +120,17 @@ public class CVCertificate extends AbstractSequence implements Signable {
     */
    public void verify(PublicKey key, String provider) throws CertificateException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
       try {
-         // Lookup the OID, the hash-algorithm can be found through it
-         OIDField oid = getCertificateBody().getPublicKey().getObjectIdentifier();
-         String algorithm = AlgorithmUtil.getAlgorithmName(oid);
+          OIDField oid;
+          if (key instanceof CVCPublicKey) {
+              // get algorithm OID from key, the signature algorithm is specified there
+              // See A.1.1.3 in BSI TR-03110_Part 3
+              CVCPublicKey cvckey = (CVCPublicKey) key;
+              oid = cvckey.getObjectIdentifier();
+          } else {
+              // Lookup the OID from the cert
+              oid = getCertificateBody().getPublicKey().getObjectIdentifier();
+          }
+         String algorithm = AlgorithmUtil.getAlgorithmName(oid);              
          Signature sign = Signature.getInstance(algorithm, provider);
          
          // Verify the signature

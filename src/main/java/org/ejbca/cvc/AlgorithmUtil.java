@@ -24,7 +24,22 @@ public class AlgorithmUtil {
 
    private static HashMap<String, OIDField> algorithmMap = new HashMap<String, OIDField>();
    private static HashMap<String, String> conversionMap = new HashMap<String, String>();
-   
+
+   // TR-03110 definitions section A.1.1.3
+   // id-TA-RSA
+   // id-TA-RSA-v1-5-SHA-1
+   // id-TA-RSA-v1-5-SHA-256
+   // id-TA-RSA-PSS-SHA-1
+   // id-TA-RSA-PSS-SHA-256
+   // id-TA-RSA-v1-5-SHA-512
+   // id-TA-RSA-PSS-SHA-512
+   // id-TA-ECDSA
+   // id-TA-ECDSA-SHA-1
+   // id-TA-ECDSA-SHA-224
+   // id-TA-ECDSA-SHA-256
+   // id-TA-ECDSA-SHA-384
+   // id-TA-ECDSA-SHA-512
+
    static {
       algorithmMap.put("SHA1WITHRSA",          CVCObjectIdentifiers.id_TA_RSA_v1_5_SHA_1);
       algorithmMap.put("SHA256WITHRSA",        CVCObjectIdentifiers.id_TA_RSA_v1_5_SHA_256);

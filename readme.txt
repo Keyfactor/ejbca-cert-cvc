@@ -2,9 +2,8 @@ Dependencies
 ------------
 Cert-cvc depends on the Bouncycastle JCE provider (www.bouncycastle.org).
 The provider is used for DER encoding and some crypto stuff. 
-The version available in svn is 1.57. 
 
-Bouncycastle is licensed under a BSD-like license.
+Bouncycastle is licensed under an MIT license.
 
 Building
 --------

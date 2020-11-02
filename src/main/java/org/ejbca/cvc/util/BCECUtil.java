@@ -7,10 +7,11 @@ import java.security.SignatureException;
 import java.util.Locale;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1OutputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.asn1.DERSequence;
 
 /** This is directly copied from org.bouncycastle.jce.provider.asymmetric.ec.Signature
@@ -74,7 +75,7 @@ public final class BCECUtil
 
 	       // Write r and s to asn.1 encoded X9.62 signature
            final ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-           final DEROutputStream dOut = new DEROutputStream(bOut);
+           final ASN1OutputStream dOut = ASN1OutputStream.create(bOut, ASN1Encoding.DER);
            final ASN1EncodableVector v = new ASN1EncodableVector();
 
            v.add(new ASN1Integer(r));

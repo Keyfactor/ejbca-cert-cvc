@@ -1,3 +1,7 @@
+1.4.12
+-----
+- Upgrade to BC 1.67 that removed the deprecated DEROutputStream class
+
 1.4.11
 -----
 - Use the signature algorithm OID from the verifying public key when verifying certificates, if there is one, fall back to the certificate's own public keys oid.

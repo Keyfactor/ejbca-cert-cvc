@@ -109,30 +109,30 @@ public class CVCertificateBody extends AbstractSequence {
     * @param validTo
     */
    public CVCertificateBody(
-           CAReferenceField         authorityReference, 
-           CVCPublicKey             publicKey, 
-           HolderReferenceField     holderReference, 
-           CVCAuthorizationTemplate holderAuthorizationTemplate,
-           Date                     validFrom,
-           Date                     validTo) throws ConstructionException
-     {
-        this(authorityReference, publicKey, holderReference);
+         CAReferenceField         authorityReference, 
+         CVCPublicKey             publicKey, 
+         HolderReferenceField     holderReference, 
+         CVCAuthorizationTemplate holderAuthorizationTemplate,
+         Date                     validFrom,
+         Date                     validTo) throws ConstructionException
+   {
+      this(authorityReference, publicKey, holderReference);
 
-        if( holderAuthorizationTemplate==null ){
-           throw new IllegalArgumentException("holderAuthorizationTemplate is null");
-        }
-        if( validFrom==null ){
-           throw new IllegalArgumentException("validFrom is null");
-        }
-        if( validTo==null ){
-           throw new IllegalArgumentException("validTo is null");
-        }
+      if( holderAuthorizationTemplate==null ){
+         throw new IllegalArgumentException("holderAuthorizationTemplate is null");
+      }
+      if( validFrom==null ){
+         throw new IllegalArgumentException("validFrom is null");
+      }
+      if( validTo==null ){
+         throw new IllegalArgumentException("validTo is null");
+      }
         
-        // Add subfields
-        addSubfield(holderAuthorizationTemplate);
-        addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
-        addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
-     }
+      // Add subfields
+      addSubfield(holderAuthorizationTemplate);
+      addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
+      addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
+   }
    
    /**
     * Creates an instance suitable for a CVCertificate
@@ -153,13 +153,7 @@ public class CVCertificateBody extends AbstractSequence {
          Date                  validFrom,
          Date                  validTo) throws ConstructionException
    {
-       this(
-               authorityReference,
-               publicKey,
-               holderReference,
-               chat( authRole, accessRight ),
-               validFrom,
-               validTo );
+       this(authorityReference, publicKey, holderReference, chat( authRole, accessRight ), validFrom, validTo );
    }
    
    private static CVCAuthorizationTemplate chat( AuthorizationRole authRole, AccessRights accessRight ) throws ConstructionException {

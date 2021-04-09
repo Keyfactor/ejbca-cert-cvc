@@ -64,7 +64,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
     * @param rights
     */
    public CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights) throws ConstructionException {
-      this(role, rights, getOIDForEnums( role, rights ));
+      this(role, rights, getOIDForEnums(role, rights));
    }
    
    /**
@@ -74,7 +74,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
     * @param oid
     */
    public CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights, String oid) throws ConstructionException {
-       this(role, rights, new OIDField( oid ));
+       this(role, rights, new OIDField(oid));
    }
    
    /**

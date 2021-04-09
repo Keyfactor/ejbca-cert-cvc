@@ -59,15 +59,35 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
    }
    
    /**
-    * Constructor taking the individual fields
+    * Constructor taking the individual fields, deriving the OID from role and rights
     * @param role
     * @param rights
     */
    public CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights) throws ConstructionException {
-      this();
-      
-      addSubfield(getOIDForEnums(role, rights));
-      addSubfield(new AuthorizationField(role, rights));
+      this(role, rights, getOIDForEnums( role, rights ));
+   }
+   
+   /**
+    * Constructor taking the individual fields
+    * @param role
+    * @param rights
+    * @param oid
+    */
+   public CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights, String oid) throws ConstructionException {
+       this(role, rights, new OIDField( oid ));
+   }
+   
+   /**
+    * Constructor taking the individual fields
+    * @param role
+    * @param rights
+    * @param oid
+    */
+   CVCAuthorizationTemplate(AuthorizationRole role, AccessRights rights, OIDField oid) throws ConstructionException {
+       this();
+       
+       addSubfield(oid);
+       addSubfield(new AuthorizationField(role, rights));
    }
    
    /**

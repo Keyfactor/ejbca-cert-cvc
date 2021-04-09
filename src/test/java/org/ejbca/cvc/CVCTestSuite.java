@@ -21,21 +21,24 @@ import junit.framework.TestSuite;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @version $Id$
  */
-public class CVCTestSuite {
-
-   public static Test suite() {
-      TestSuite suite = new TestSuite("cert-cvc test suite");
-      
-      suite.addTestSuite(TestAlgorithmUtil.class);
-      suite.addTestSuite(TestFactories.class);
-      suite.addTestSuite(TestDatafields.class);
-      suite.addTestSuite(TestSequences.class);
-      suite.addTestSuite(TestPublicKey.class);
-      suite.addTestSuite(TestECCCVCertificate.class);
-      suite.addTestSuite(TestCVCRequest.class);
-      suite.addTestSuite(TestCVCertificate.class);
-      
-      return suite;
-   }
-
+public class CVCTestSuite
+{
+    
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite( "cert-cvc test suite" );
+        
+        suite.addTestSuite( TestAlgorithmUtil.class );
+        suite.addTestSuite( TestFactories.class );
+        suite.addTestSuite( TestDatafields.class );
+        suite.addTestSuite( TestSequences.class );
+        suite.addTestSuite( TestPublicKey.class );
+        suite.addTestSuite( TestECCCVCertificate.class );
+        suite.addTestSuite( TestCVCRequest.class );
+        suite.addTestSuite( TestCVCertificate.class );
+        suite.addTestSuite( TestNonEacCVC.class );
+        
+        return suite;
+    }
+    
 }

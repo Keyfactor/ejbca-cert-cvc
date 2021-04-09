@@ -104,39 +104,72 @@ public class CVCertificateBody extends AbstractSequence {
     * @param authorityReference
     * @param publicKey
     * @param holderReference
+    * @param holderAuthorizationTemplate
+    * @param validFrom
+    * @param validTo
+    */
+   public CVCertificateBody(
+           CAReferenceField         authorityReference, 
+           CVCPublicKey             publicKey, 
+           HolderReferenceField     holderReference, 
+           CVCAuthorizationTemplate holderAuthorizationTemplate,
+           Date                     validFrom,
+           Date                     validTo) throws ConstructionException
+     {
+        this(authorityReference, publicKey, holderReference);
+
+        if( holderAuthorizationTemplate==null ){
+           throw new IllegalArgumentException("holderAuthorizationTemplate is null");
+        }
+        if( validFrom==null ){
+           throw new IllegalArgumentException("validFrom is null");
+        }
+        if( validTo==null ){
+           throw new IllegalArgumentException("validTo is null");
+        }
+        
+        // Add subfields
+        addSubfield(holderAuthorizationTemplate);
+        addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
+        addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
+     }
+   
+   /**
+    * Creates an instance suitable for a CVCertificate
+    * @param authorityReference
+    * @param publicKey
+    * @param holderReference
     * @param authRole
     * @param accessRight
     * @param validFrom
     * @param validTo
     */
    public CVCertificateBody(
-         CAReferenceField      authorityReference, 
-         CVCPublicKey          publicKey, 
-         HolderReferenceField  holderReference, 
+         CAReferenceField      authorityReference,
+         CVCPublicKey          publicKey,
+         HolderReferenceField  holderReference,
          AuthorizationRole     authRole,
          AccessRights          accessRight,
          Date                  validFrom,
          Date                  validTo) throws ConstructionException
    {
-      this(authorityReference, publicKey, holderReference);
-
+       this(
+               authorityReference,
+               publicKey,
+               holderReference,
+               chat( authRole, accessRight ),
+               validFrom,
+               validTo );
+   }
+   
+   private static CVCAuthorizationTemplate chat( AuthorizationRole authRole, AccessRights accessRight ) throws ConstructionException {
       if( authRole==null ){
          throw new IllegalArgumentException("authRole is null");
       }
       if( accessRight==null ){
          throw new IllegalArgumentException("accessRight is null");
       }
-      if( validFrom==null ){
-         throw new IllegalArgumentException("validFrom is null");
-      }
-      if( validTo==null ){
-         throw new IllegalArgumentException("validTo is null");
-      }
-      
-      // Add subfields
-      addSubfield(new CVCAuthorizationTemplate(authRole, accessRight));
-      addSubfield(new DateField(CVCTagEnum.EFFECTIVE_DATE,  validFrom));
-      addSubfield(new DateField(CVCTagEnum.EXPIRATION_DATE, validTo));
+      return new CVCAuthorizationTemplate(authRole, accessRight);
    }
    
    /**

@@ -12,6 +12,8 @@
  *************************************************************************/
 package org.ejbca.cvc;
 
+import org.bouncycastle.util.encoders.Hex;
+
 /**
  * Internal object representing an access rights value of an unknown type.
  * These objects should be replaced by AuthorizationField.fixEnumTypes
@@ -22,7 +24,6 @@ package org.ejbca.cvc;
  */
 public class AccessRightsRawValue implements AccessRights {
 
-   private static final String EXCEPTION_MSG = "Access Right object does not know its type/OID yet. This is a bug.";
    private final byte[] bytes;
 
    AccessRightsRawValue(byte[] bytes) {
@@ -36,7 +37,12 @@ public class AccessRightsRawValue implements AccessRights {
 
    @Override
    public String name() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+      return "RAW_ACCESS_RIGHTS";
    }
 
+   @Override
+    public String toString()
+    {
+       return "AccessRightsRawValue(" + Hex.toHexString(bytes).toUpperCase() + ")";
+    }
 }

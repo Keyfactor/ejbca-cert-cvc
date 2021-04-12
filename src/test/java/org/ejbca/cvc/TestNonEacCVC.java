@@ -40,8 +40,8 @@ public class TestNonEacCVC extends TestCase implements CVCTest {
       CAReferenceField car = new CAReferenceField( "DE", "TEST", "00001" );
       HolderReferenceField chr = new HolderReferenceField( "DE", "TEST", "00001" );
 
-      AuthorizationRole role = new UnknownAuthorizationRole( (byte)0xC0 );
-      AccessRights rights = new UnknownAccessRights( new byte[] { role.getValue() } );
+      AuthorizationRole role = new AuthorizationRoleRawValue( (byte)0xC0 );
+      AccessRights rights = new AccessRightsRawValue( new byte[] { role.getValue() } );
 
       CVCAuthorizationTemplate chat = new CVCAuthorizationTemplate( role, rights, CC_ROLE_SC_HSM );
 
@@ -60,8 +60,8 @@ public class TestNonEacCVC extends TestCase implements CVCTest {
       assertEquals( oid, chat.getObjectIdentifier());
 
       AuthorizationField authorizationField = chat.getAuthorizationField();
-      assertTrue( authorizationField.getAccessRights() instanceof UnknownAccessRights );
-      assertTrue( authorizationField.getAuthRole() instanceof UnknownAuthorizationRole );
+      assertTrue( authorizationField.getAccessRights() instanceof AccessRightsRawValue );
+      assertTrue( authorizationField.getAuthRole() instanceof AuthorizationRoleRawValue );
 
       assertEquals( authorizationField.getAuthRole().getValue(), role);
       assertEquals( Hex.toHexString( authorizationField.getAccessRights().getEncoded() ), Hex.toHexString( rights ));

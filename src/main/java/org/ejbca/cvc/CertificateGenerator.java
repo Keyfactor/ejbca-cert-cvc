@@ -113,32 +113,12 @@ public final class CertificateGenerator {
     * @throws ConstructionException
     */
    public static CVCertificate createCertificate(
-         PublicKey              publicKey,
          PrivateKey             signerKey,
          String                 algorithmName,
-         CAReferenceField       caRef,
-         HolderReferenceField   holderRef,
-         AuthorizationRole      authRole,
-         AccessRights           rights,
-         Date                   validFrom,
-         Date                   validTo,
-         Collection<CVCDiscretionaryDataTemplate> extensions,
+         CVCertificateBody      body,
          String                 provider )
    throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
-
-      CVCPublicKey cvcPublicKey = KeyFactory.createInstance(publicKey, algorithmName, authRole);
       
-      // Create the CVCertificateBody
-      CVCertificateBody body = new CVCertificateBody(
-            caRef, 
-            cvcPublicKey,
-            holderRef,
-            authRole,
-            rights,
-            validFrom,
-            validTo,
-            extensions);
-
       CVCertificate cvc = new CVCertificate(body);
       
       // Perform signing
@@ -152,6 +132,46 @@ public final class CertificateGenerator {
       // Save the signature and return the certificate
       cvc.setSignature(sig);
       return cvc;
+   }
+   
+   /**
+    * Generates a CVCertificate
+    * @param publicKey
+    * @param signerKey
+    * @param algorithmName
+    * @param caRef
+    * @param holderRef
+    * @param authRole
+    * @param validFrom
+    * @param validTo
+    * @param extensions Certificate extensions, or null to not add a "Certificate Extensions" object to the certificate.
+    * @param provider
+    * @return
+    * @throws IOException
+    * @throws NoSuchAlgorithmException
+    * @throws NoSuchProviderException
+    * @throws InvalidKeyException
+    * @throws SignatureException
+    * @throws ConstructionException
+    */
+   public static CVCertificate createCertificate(
+         PublicKey              publicKey,
+         PrivateKey             signerKey,
+         String                 algorithmName,
+         CAReferenceField       caRef,
+         HolderReferenceField   holderRef,
+         AuthorizationRole      authRole,
+         AccessRights           rights,
+         Date                   validFrom,
+         Date                   validTo,
+         Collection<CVCDiscretionaryDataTemplate> extensions,
+         String                 provider )
+   throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
+       
+      CVCPublicKey cvcPublicKey = KeyFactory.createInstance( publicKey, algorithmName, authRole );
+      CVCertificateBody body = new CVCertificateBody( caRef, cvcPublicKey, holderRef, authRole, rights, validFrom, validTo, extensions );
+
+      return createCertificate( signerKey, algorithmName, body, provider );
    }
    
    /**

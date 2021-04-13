@@ -139,7 +139,7 @@ public class AuthorizationField
       } else if (CVCObjectIdentifiers.id_EAC_roles_AT.equals(oid)) {
          values = AuthorizationRoleAuthTermEnum.values();
       } else {
-         throw new IllegalArgumentException("incorrect or unsupported OID");
+         return new AuthorizationRoleRawValue(b);
       }
       
       AuthorizationRole foundRole = null;
@@ -186,7 +186,7 @@ public class AuthorizationField
          }
          return new AccessRightAuthTerm(data);
       } else {
-         throw new IllegalArgumentException("incorrect or unsupported OID");
+         return new AccessRightsRawValue(data);
       }
    }
 

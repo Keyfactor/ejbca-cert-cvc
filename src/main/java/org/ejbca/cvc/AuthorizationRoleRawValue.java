@@ -22,7 +22,6 @@ package org.ejbca.cvc;
  */
 public class AuthorizationRoleRawValue implements AuthorizationRole {
    
-   private static final String EXCEPTION_MSG = "Authorization Role object does not know its type/OID yet. This is a bug.";
    private final byte value;
    
    AuthorizationRoleRawValue(byte value) {
@@ -31,47 +30,47 @@ public class AuthorizationRoleRawValue implements AuthorizationRole {
    
    @Override
    public boolean isCVCA() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+      return false;
    }
    
    @Override
    public boolean isDV() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isDomesticDV() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isForeignDV() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isAccreditationBodyDV() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isCertificationServiceProviderDV() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isIS() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isAuthenticationTerminal() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
    public boolean isSignatureTerminal() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+       return false;
    }
    
    @Override
@@ -81,7 +80,12 @@ public class AuthorizationRoleRawValue implements AuthorizationRole {
    
    @Override
    public String name() {
-      throw new IllegalStateException(EXCEPTION_MSG);
+      return "RAW_AUTHORIZATION_ROLE";
    }
    
+   @Override
+    public String toString()
+    {
+       return "AuthorizationRoleRawValue(" + Integer.toString( value & 0xFF, 16 ).toUpperCase() + ")";
+    }
 }

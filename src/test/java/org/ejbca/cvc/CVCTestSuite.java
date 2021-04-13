@@ -22,19 +22,20 @@ import junit.framework.TestSuite;
  * @version $Id$
  */
 public class CVCTestSuite {
-
+    
    public static Test suite() {
-      TestSuite suite = new TestSuite("cert-cvc test suite");
-      
-      suite.addTestSuite(TestAlgorithmUtil.class);
-      suite.addTestSuite(TestFactories.class);
-      suite.addTestSuite(TestDatafields.class);
-      suite.addTestSuite(TestSequences.class);
-      suite.addTestSuite(TestPublicKey.class);
-      suite.addTestSuite(TestECCCVCertificate.class);
-      suite.addTestSuite(TestCVCRequest.class);
-      suite.addTestSuite(TestCVCertificate.class);
-      
+      TestSuite suite = new TestSuite( "cert-cvc test suite" );
+
+      suite.addTestSuite( TestAlgorithmUtil.class );
+      suite.addTestSuite( TestFactories.class );
+      suite.addTestSuite( TestDatafields.class );
+      suite.addTestSuite( TestSequences.class );
+      suite.addTestSuite( TestPublicKey.class );
+      suite.addTestSuite( TestECCCVCertificate.class );
+      suite.addTestSuite( TestCVCRequest.class );
+      suite.addTestSuite( TestCVCertificate.class );
+      suite.addTestSuite( TestNonEacCVC.class );
+
       return suite;
    }
 

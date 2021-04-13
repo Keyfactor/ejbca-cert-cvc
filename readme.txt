@@ -13,6 +13,14 @@ in the root directory.
 Note that the produced cert-cvc.jar is built against the BouncyCastle version included in the lib directory. 
 To build against a different BouncyCastle version you must replace the bc jar in lib.
 
+Building and testing with Maven
+--------
+You can also build, and run JUnit tests with maven.
+
+mvn install
+
+will build, run tests and place the artefact in 'target'.
+
 Using
 -----
 There are example and test code which demonstrates the use of cert-cvc.jar. 

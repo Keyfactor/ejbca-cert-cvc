@@ -1,6 +1,7 @@
 1.4.13
 -----
 - Enable custom CHAT (Certificate Holder Authorization Template), contributed by Max Fichtelmann of Procilon
+- Upgrade to BC 1.68
 
 1.4.12
 -----

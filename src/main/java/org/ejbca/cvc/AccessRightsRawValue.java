@@ -26,7 +26,7 @@ public class AccessRightsRawValue implements AccessRights {
 
    private final byte[] bytes;
 
-   AccessRightsRawValue(byte[] bytes) {
+   public AccessRightsRawValue(byte[] bytes) {
       this.bytes = bytes;
    }
 

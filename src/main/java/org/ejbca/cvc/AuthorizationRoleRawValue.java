@@ -24,7 +24,7 @@ public class AuthorizationRoleRawValue implements AuthorizationRole {
    
    private final byte value;
    
-   AuthorizationRoleRawValue(byte value) {
+   public AuthorizationRoleRawValue(byte value) {
       this.value = value;
    }
    

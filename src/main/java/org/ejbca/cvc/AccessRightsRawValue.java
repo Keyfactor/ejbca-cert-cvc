@@ -20,13 +20,12 @@ import org.bouncycastle.util.encoders.Hex;
  * and should never occur outside of CERT-CVC.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id$
  */
 public class AccessRightsRawValue implements AccessRights {
 
    private final byte[] bytes;
 
-   AccessRightsRawValue(byte[] bytes) {
+   public AccessRightsRawValue(byte[] bytes) {
       this.bytes = bytes;
    }
 

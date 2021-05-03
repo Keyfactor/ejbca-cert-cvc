@@ -18,13 +18,12 @@ package org.ejbca.cvc;
  * and should never occur outside of CERT-CVC.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id$
  */
 public class AuthorizationRoleRawValue implements AuthorizationRole {
    
    private final byte value;
    
-   AuthorizationRoleRawValue(byte value) {
+   public AuthorizationRoleRawValue(byte value) {
       this.value = value;
    }
    

@@ -53,20 +53,25 @@ public class DateField extends AbstractDataField {
      * @param type
      * @param date
      */
-    DateField(CVCTagEnum type, Date date) {
-        this(type);
+	DateField(CVCTagEnum type, Date date) {
+		this(type);
 
-        Calendar cal = Calendar.getInstance(GMTTIMEZONE);
-        cal.setTimeInMillis(date.getTime());
+		Calendar cal = Calendar.getInstance(GMTTIMEZONE);
+		cal.setTimeInMillis(date.getTime());
 
-        // Remove time part
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        cal.clear();
-        cal.set(year, month, day);
-        this.date = cal.getTime();
-    }
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH);
+		int day = cal.get(Calendar.DAY_OF_MONTH);
+
+		cal.clear();
+
+		if (type == CVCTagEnum.EFFECTIVE_DATE) {
+			cal.set(year, month, day, 0, 0, 0);
+		} else {
+			cal.set(year, month, day, 23, 59, 59);
+		}
+		this.date = cal.getTime();
+	}
 
     /**
      * Constructs instance by decoding DER-encoded data

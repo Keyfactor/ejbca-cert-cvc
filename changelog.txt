@@ -1,3 +1,8 @@
+1.5.0
+-----
+
+- Added support for setting the four access rights bits reserved for future use, defined in BSI TR-03110-3, C.4.1.
+
 1.4.13
 -----
 - Enable custom CHAT (Certificate Holder Authorization Template), contributed by Max Fichtelmann of Procilon

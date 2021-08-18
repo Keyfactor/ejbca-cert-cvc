@@ -94,7 +94,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
     * Constructor taking the individual fields. This seemingly redundant overloaded constructor is for
     * binary (.class file) backwards compatibility. It is NOT deprecated to use these argument types.
     */
-   public CVCAuthorizationTemplate(AuthorizationRoleEnum role, AccessRightEnum rights) throws ConstructionException {
+   public CVCAuthorizationTemplate(AuthorizationRoleEnum role, AccessRightsIS rights) throws ConstructionException {
       this((AuthorizationRole)role, (AccessRights)rights);
    }
 
@@ -102,7 +102,7 @@ public class CVCAuthorizationTemplate extends AbstractSequence {
     * Determines the OID to use for the types of the given role/rights objects.
     */
    public static OIDField getOIDForEnums(AuthorizationRole role, AccessRights rights) {
-      if (role instanceof AuthorizationRoleEnum && rights instanceof AccessRightEnum) {
+      if (role instanceof AuthorizationRoleEnum && rights instanceof AccessRightsIS) {
          return CVCObjectIdentifiers.id_EAC_ePassport;
       } else if (role instanceof AuthorizationRoleAuthTermEnum && rights instanceof AccessRightAuthTerm) {
          return CVCObjectIdentifiers.id_EAC_roles_AT;

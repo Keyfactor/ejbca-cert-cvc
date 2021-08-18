@@ -13,17 +13,14 @@
 package org.ejbca.cvc;
 
 /**
- * Represents Access Rights regarding ePassport data groups DG3, DG4.
+ * Represents Access Rights for ePassport data groups.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id$
  */
 public interface AccessRights {
-
    /** @return the encoded byte value */
    byte[] getEncoded();
 
    /** @see Enum#name() */
    String name();
-
 }

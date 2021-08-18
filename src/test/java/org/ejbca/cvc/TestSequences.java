@@ -19,14 +19,6 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.ejbca.cvc.AbstractDataField;
-import org.ejbca.cvc.AccessRightEnum;
-import org.ejbca.cvc.AuthorizationRoleEnum;
-import org.ejbca.cvc.ByteField;
-import org.ejbca.cvc.CVCAuthorizationTemplate;
-import org.ejbca.cvc.CVCTagEnum;
-import org.ejbca.cvc.DateField;
-import org.ejbca.cvc.GenericPublicKeyField;
 import org.ejbca.cvc.exception.ConstructionException;
 
 
@@ -93,7 +85,7 @@ public class TestSequences
 
    /** Check: DER-encoded CVCAuthorizationTemplate byte array should have specific contents */
    public void testEncodeAuthorizationTemplate() throws Exception {
-      CVCAuthorizationTemplate authTemplate = new CVCAuthorizationTemplate(AuthorizationRoleEnum.IS, AccessRightEnum.READ_ACCESS_DG3);
+      CVCAuthorizationTemplate authTemplate = new CVCAuthorizationTemplate(AuthorizationRoleEnum.IS, AccessRightsIS.DG3());
       byte[] der = authTemplate.getDEREncoded();
       
       // Compare byte by byte

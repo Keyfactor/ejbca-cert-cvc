@@ -120,24 +120,26 @@ public class TestDatafields
       assertEquals("Array length", 10, CVCObject.trimByteArray(data4).length);
    }
 
+   public void testRfuBits() {
+      final AuthorizationField authorizationField = new AuthorizationField(new byte[] { (byte) 0b00111100 });
+      authorizationField.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
+      assertEquals("RFU1+RFU2+RFU3+RFU4", authorizationField.getAccessRights().toString());
+   }
 
    /** Check: Decoding of AuthorizationField  */
    public void testAuthorizationField() throws Exception {
       AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // This means CVCA/DG3+DG4
       auth1.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-      assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRights());
       assertTrue("role was not CVCA", auth1.getAuthRole().isCVCA());
-      
-      // Deprecated methods should continue working as well
-      assertEquals(AccessRightEnum.READ_ACCESS_DG3_AND_DG4, auth1.getAccessRights());
+      assertEquals(AccessRightsIS.DG3_AND_DG4(), auth1.getAccessRights());
       assertEquals(AuthorizationRoleEnum.CVCA, auth1.getAuthRole());
 
       AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
       auth2.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-      assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRights());
+      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
       assertTrue("role was not Foreign DV", auth2.getAuthRole().isForeignDV());
       
-      assertEquals(AccessRightEnum.READ_ACCESS_DG4, auth2.getAccessRights());
+      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
       assertEquals(AuthorizationRoleEnum.DV_F, auth2.getAuthRole());
       
       // Test authentication and signature terminals

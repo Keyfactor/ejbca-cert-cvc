@@ -46,7 +46,7 @@ public class AuthorizationField
       this.rights = rights; 
    }
    
-   AuthorizationField(AuthorizationRoleEnum role, AccessRightEnum rights) {
+   AuthorizationField(AuthorizationRoleEnum role, AccessRightsIS rights) {
       this((AuthorizationRole)role, (AccessRights)rights);
    }
 
@@ -97,16 +97,16 @@ public class AuthorizationField
     * @deprecated Use {@link #getAccessRights()} instead
     */
    @Deprecated
-   public AccessRightEnum getAccessRight() {
-      if (!(rights instanceof AccessRightEnum)) {
+   public AccessRightsIS getAccessRight() {
+      if (!(rights instanceof AccessRightsIS)) {
          throw new UnsupportedOperationException("Attempted to use deprecated getAccessRight method with an AT or ST certificate chain. It handles IS only.");
       }
-      return (AccessRightEnum)this.rights;
+      return (AccessRightsIS)this.rights;
    }
    
    /**
     * Returns access rights. The return value is one of the AccessRight* types.
-    * @see AccessRightEnum
+    * @see AccessRightsIS
     * @see AccessRightAuthTerm
     * @see AccessRightSignTermEnum
     */
@@ -155,18 +155,11 @@ public class AuthorizationField
    /** Translates a byte array to AccessRights */
    private static AccessRights getRightsFromBytes(OIDField oid, byte[] data){
       if (CVCObjectIdentifiers.id_EAC_ePassport.equals(oid)) {
-         if (data.length!=1) {
-            throw new IllegalArgumentException("byte array length must be 1, was "+data.length);
+         if (data.length != 1) {
+            throw new IllegalArgumentException("EAC access rights for a ePassport application must consists " +
+                    "of a single byte, but was " + StringConverter.byteToHex(data));
          }
-         byte testVal = (byte)(data[0] & 0x03);
-         AccessRightEnum foundRight = null;
-         for( AccessRightEnum right : AccessRightEnum.values() ){
-            if( testVal == right.getValue() ) {
-               foundRight = right;
-               break;
-            }
-         }
-         return foundRight;
+         return new AccessRightsIS(data[0]);
       } else if (CVCObjectIdentifiers.id_EAC_roles_ST.equals(oid)) {
          if (data.length!=1) {
             throw new IllegalArgumentException("byte array length must be 1, was "+data.length);

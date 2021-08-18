@@ -1,3 +1,7 @@
+1.4.14
+-----
+- Fix the time format of cvc certs.
+
 1.4.13
 -----
 - Enable custom CHAT (Certificate Holder Authorization Template), contributed by Max Fichtelmann of Procilon

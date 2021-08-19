@@ -1,7 +1,12 @@
 1.5.0
 -----
 
-- Added support for setting the four access rights bits reserved for future use, defined in BSI TR-03110-3, C.4.1.
+- Add support for setting the four access rights bits reserved for future use, defined in BSI TR-03110-3, C.4.1.
+
+1.4.14
+------
+
+- Fix the time format of cvc certs.
 
 1.4.13
 -----

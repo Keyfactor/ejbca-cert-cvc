@@ -14,7 +14,9 @@ package org.ejbca.cvc;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
 
@@ -22,8 +24,6 @@ import org.bouncycastle.asn1.DERTaggedObject;
  * Represents Object Identifier
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
- * 
  */
 public class OIDField extends AbstractDataField {
 
@@ -65,7 +65,15 @@ public class OIDField extends AbstractDataField {
         // using ASN1Object.fromByteArray().
         // BC 1.47 changed to ASN1Primitive though, so no reason to keep BC 1.45
         // compatibility, since it will not work anyway.
-        this.id = ASN1ObjectIdentifier.getInstance(new DERTaggedObject(true, 0, new DEROctetString(data)), false).getId();
+        //this.id = ASN1ObjectIdentifier.getInstance(new DERTaggedObject(true, 0, new DEROctetString(data)), false).getId();
+        // Suggested by Peter Dettman of BC to avoid future issues. https://github.com/primekeydevs/cert-cvc/issues/3
+        ASN1TaggedObject pseudo = new DERTaggedObject(false, 0, new DEROctetString(data));
+        try {
+            ASN1TaggedObject parsed = ASN1TaggedObject.getInstance(pseudo.getEncoded(ASN1Encoding.DER));
+            this.id = ASN1ObjectIdentifier.getInstance(parsed, false).getId();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Data can not be encoded as DER (getEncoded(ASN1Encoding.DER)), this should indicate an internal bug?");
+        }
     }
 
     public String getValue() {

@@ -1,6 +1,10 @@
+1.4.15
+-----
+- Fix OIDField ASN.1 decoding to avoid future issues, https://github.com/primekeydevs/cert-cvc/issues/3. No functional changes.
+
 1.4.14
 -----
-- Fix the time format of cvc certs.
+- Fix the validity time format of cvc certs to use only full days 00.00.00->23.59.59.
 
 1.4.13
 -----

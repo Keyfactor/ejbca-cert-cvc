@@ -28,7 +28,6 @@ import org.ejbca.cvc.exception.ParseException;
  * Tests basic functionality for AbstractDataField
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
  */
 public class TestDatafields
       extends TestCase implements CVCTest {
@@ -290,20 +289,24 @@ public class TestDatafields
       assertEquals(59, cal3.get(Calendar.MINUTE));
       assertEquals(59, cal3.get(Calendar.SECOND));
       
+      Date date = new Date();
+      DateField date4 = new DateField(CVCTagEnum.EFFECTIVE_DATE, date);
+      DateField date5 = new DateField(CVCTagEnum.EXPIRATION_DATE, date);
+
+      // Validity dates in EAC CVC is only full days, therefore DateField sets EFFECTIVE_DATE to 0,0,0 and EXPIRATION_DATE to 23,59,59
       // Check GMT timezone
       Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-      Date date = new Date();
       cal.setTimeInMillis(date.getTime());
       // Remove time part
       int year  = cal.get(Calendar.YEAR);
       int month = cal.get(Calendar.MONTH);
       int day   = cal.get(Calendar.DAY_OF_MONTH);
       cal.clear();
-      cal.set(year, month, day);
+      cal.set(year, month, day, 0, 0, 0);
       long millis = cal.getTime().getTime(); // the millis from GMT (with only the date) that we want in a decoded time
-      DateField date4 = new DateField(CVCTagEnum.EFFECTIVE_DATE, date);
-      DateField date5 = new DateField(CVCTagEnum.EXPIRATION_DATE, date);
       assertEquals(millis, date4.getDate().getTime());
+      cal.set(year, month, day, 23, 59, 59);
+      millis = cal.getTime().getTime(); // the millis from GMT (with only the date) that we want in a decoded time
       assertEquals(millis, date5.getDate().getTime());
    }
 

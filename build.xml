@@ -1,5 +1,4 @@
 <project name="cert-cvc" default="cert-cvc" basedir=".">
-
     <property name="version" value="1.5.0"/>
     
     <path id="compile.classpath">

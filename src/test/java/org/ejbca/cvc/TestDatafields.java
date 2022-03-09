@@ -28,7 +28,6 @@ import org.ejbca.cvc.exception.ParseException;
  * Tests basic functionality for AbstractDataField
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
  */
 public class TestDatafields
       extends TestCase implements CVCTest {
@@ -119,44 +118,44 @@ public class TestDatafields
       assertEquals("Array length", 4, CVCObject.trimByteArray(data3).length);
       assertEquals("Array length", 10, CVCObject.trimByteArray(data4).length);
    }
-
+   
    public void testRfuBits() {
-      final AuthorizationField authorizationField = new AuthorizationField(new byte[] { (byte) 0b00111100 });
-      authorizationField.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-      assertEquals("RFU1+RFU2+RFU3+RFU4", authorizationField.getAccessRights().toString());
+	      final AuthorizationField authorizationField = new AuthorizationField(new byte[] { (byte) 0b00111100 });
+	      authorizationField.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
+	      assertEquals("RFU1+RFU2+RFU3+RFU4", authorizationField.getAccessRights().toString());
    }
 
-   /** Check: Decoding of AuthorizationField  */
+	   /** Check: Decoding of AuthorizationField  */
    public void testAuthorizationField() throws Exception {
-      AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // This means CVCA/DG3+DG4
-      auth1.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-      assertTrue("role was not CVCA", auth1.getAuthRole().isCVCA());
-      assertEquals(AccessRightsIS.DG3_AND_DG4(), auth1.getAccessRights());
-      assertEquals(AuthorizationRoleEnum.CVCA, auth1.getAuthRole());
+	      AuthorizationField auth1 = new AuthorizationField(new byte[] {(byte) 0xC3});  // This means CVCA/DG3+DG4
+	      auth1.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
+	      assertTrue("role was not CVCA", auth1.getAuthRole().isCVCA());
+	      assertEquals(AccessRightsIS.DG3_AND_DG4(), auth1.getAccessRights());
+	      assertEquals(AuthorizationRoleEnum.CVCA, auth1.getAuthRole());
 
-      AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
-      auth2.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
-      assertTrue("role was not Foreign DV", auth2.getAuthRole().isForeignDV());
-      
-      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
-      assertEquals(AuthorizationRoleEnum.DV_F, auth2.getAuthRole());
-      
-      // Test authentication and signature terminals
-      AuthorizationField auth3 = new AuthorizationField(new byte[] {(byte) 0xA0, 0, 0, 0, 1});  // This means CV-d / Write-DG17 + Age Verification (first and last bits)
-      auth3.fixEnumTypes(CVCObjectIdentifiers.id_EAC_roles_AT);
-      AccessRightAuthTerm rightsAT = (AccessRightAuthTerm)auth3.getAccessRights();
-      assertTrue("rights did not include Write-DG17", rightsAT.getFlag(AccessRightAuthTerm.BIT_WRITE_DG17));
-      assertFalse("rights incorrectly included bit 36", rightsAT.getFlag(AccessRightAuthTerm.BIT_WRITE_DG18));
-      assertFalse("rights incorrectly included bit 2", rightsAT.getFlag(AccessRightAuthTerm.BIT_COMMUNITY_ID_VERIFICATION));
-      assertTrue("rights did not include Age Verification", rightsAT.getFlag(AccessRightAuthTerm.BIT_AGE_VERIFICATION));
-      assertTrue("role was not Domestic DV", auth3.getAuthRole().isDomesticDV());
-      
-      // Test signature terminal
-      AuthorizationField auth4 = new AuthorizationField(new byte[] {(byte) 0x01});  // This means SignatureTerminal / Signature
-      auth4.fixEnumTypes(CVCObjectIdentifiers.id_EAC_roles_ST);
-      assertEquals(AccessRightSignTermEnum.ACCESS_SIGN, auth4.getAccessRights());
-      assertTrue("role was not Signature Terminal", auth4.getAuthRole().isSignatureTerminal());
+	      AuthorizationField auth2 = new AuthorizationField(new byte[] {(byte) 0x42});  // This means CV-f/DG4
+	      auth2.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
+	      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
+	      assertTrue("role was not Foreign DV", auth2.getAuthRole().isForeignDV());
+	      
+	      assertEquals(AccessRightsIS.DG4(), auth2.getAccessRights());
+	      assertEquals(AuthorizationRoleEnum.DV_F, auth2.getAuthRole());
+	      
+	      // Test authentication and signature terminals
+	      AuthorizationField auth3 = new AuthorizationField(new byte[] {(byte) 0xA0, 0, 0, 0, 1});  // This means CV-d / Write-DG17 + Age Verification (first and last bits)
+	      auth3.fixEnumTypes(CVCObjectIdentifiers.id_EAC_roles_AT);
+	      AccessRightAuthTerm rightsAT = (AccessRightAuthTerm)auth3.getAccessRights();
+	      assertTrue("rights did not include Write-DG17", rightsAT.getFlag(AccessRightAuthTerm.BIT_WRITE_DG17));
+	      assertFalse("rights incorrectly included bit 36", rightsAT.getFlag(AccessRightAuthTerm.BIT_WRITE_DG18));
+	      assertFalse("rights incorrectly included bit 2", rightsAT.getFlag(AccessRightAuthTerm.BIT_COMMUNITY_ID_VERIFICATION));
+	      assertTrue("rights did not include Age Verification", rightsAT.getFlag(AccessRightAuthTerm.BIT_AGE_VERIFICATION));
+	      assertTrue("role was not Domestic DV", auth3.getAuthRole().isDomesticDV());
+	      
+	      // Test signature terminal
+	      AuthorizationField auth4 = new AuthorizationField(new byte[] {(byte) 0x01});  // This means SignatureTerminal / Signature
+	      auth4.fixEnumTypes(CVCObjectIdentifiers.id_EAC_roles_ST);
+	      assertEquals(AccessRightSignTermEnum.ACCESS_SIGN, auth4.getAccessRights());
+	      assertTrue("role was not Signature Terminal", auth4.getAuthRole().isSignatureTerminal());
    }
 
    
@@ -292,20 +291,24 @@ public class TestDatafields
       assertEquals(59, cal3.get(Calendar.MINUTE));
       assertEquals(59, cal3.get(Calendar.SECOND));
       
+      Date date = new Date();
+      DateField date4 = new DateField(CVCTagEnum.EFFECTIVE_DATE, date);
+      DateField date5 = new DateField(CVCTagEnum.EXPIRATION_DATE, date);
+
+      // Validity dates in EAC CVC is only full days, therefore DateField sets EFFECTIVE_DATE to 0,0,0 and EXPIRATION_DATE to 23,59,59
       // Check GMT timezone
       Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-      Date date = new Date();
       cal.setTimeInMillis(date.getTime());
       // Remove time part
       int year  = cal.get(Calendar.YEAR);
       int month = cal.get(Calendar.MONTH);
       int day   = cal.get(Calendar.DAY_OF_MONTH);
       cal.clear();
-      cal.set(year, month, day);
+      cal.set(year, month, day, 0, 0, 0);
       long millis = cal.getTime().getTime(); // the millis from GMT (with only the date) that we want in a decoded time
-      DateField date4 = new DateField(CVCTagEnum.EFFECTIVE_DATE, date);
-      DateField date5 = new DateField(CVCTagEnum.EXPIRATION_DATE, date);
       assertEquals(millis, date4.getDate().getTime());
+      cal.set(year, month, day, 23, 59, 59);
+      millis = cal.getTime().getTime(); // the millis from GMT (with only the date) that we want in a decoded time
       assertEquals(millis, date5.getDate().getTime());
    }
 

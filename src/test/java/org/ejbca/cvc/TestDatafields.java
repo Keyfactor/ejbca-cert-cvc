@@ -120,9 +120,9 @@ public class TestDatafields
    }
    
    public void testRfuBits() {
-	      final AuthorizationField authorizationField = new AuthorizationField(new byte[] { (byte) 0b00111100 });
-	      authorizationField.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
-	      assertEquals("RFU1+RFU2+RFU3+RFU4", authorizationField.getAccessRights().toString());
+	   final AuthorizationField authorizationField = new AuthorizationField(new byte[] { (byte) 0b00111100 });
+	   authorizationField.fixEnumTypes(CVCObjectIdentifiers.id_EAC_ePassport);
+	   assertEquals("RFU1+RFU2+RFU3+RFU4", authorizationField.getAccessRights().toString());
    }
 
 	   /** Check: Decoding of AuthorizationField  */

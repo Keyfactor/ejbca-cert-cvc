@@ -176,7 +176,7 @@ public class CVCertificateBody extends AbstractSequence {
          CVCPublicKey          publicKey, 
          HolderReferenceField  holderReference, 
          AuthorizationRoleEnum authRole,
-         AccessRightEnum       accessRight,
+         AccessRightsIS accessRight,
          Date                  validFrom,
          Date                  validTo) throws ConstructionException
    {

@@ -156,7 +156,7 @@ extends TestCase implements CVCTest {
 				caRef, 
 				holderRef,
 				AuthorizationRoleEnum.IS,
-				AccessRightEnum.READ_ACCESS_DG3_AND_DG4,
+				AccessRightsIS.DG3_AND_DG4(),
 				dateFrom,
 				dateTo,
 				"BC"); 

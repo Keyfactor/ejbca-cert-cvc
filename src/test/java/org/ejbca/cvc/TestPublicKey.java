@@ -228,7 +228,7 @@ public class TestPublicKey
             ecKey,
             new HolderReferenceField("SE", "KLMNOPQ", "00001"),
             roleEnum,
-            AccessRightEnum.READ_ACCESS_DG3,
+            AccessRightsIS.DG3(),
             new Date(),
             new Date() 
       );

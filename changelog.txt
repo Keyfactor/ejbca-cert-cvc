@@ -1,3 +1,8 @@
+1.5.0
+-----
+
+- Add support for setting the four access rights bits reserved for future use, defined in BSI TR-03110-3, C.4.1.
+
 1.4.15
 -----
 - Fix OIDField ASN.1 decoding to avoid future issues, https://github.com/primekeydevs/cert-cvc/issues/3. No functional changes.

@@ -79,15 +79,15 @@ public final class CertificateGenerator {
       cal2.add(Calendar.MONTH, 3);
       Date validTo = cal2.getTime();
       return createCertificate(
-            publicKey, 
-            privateKey, 
-            algorithm, 
-            caRef, 
-            holderRef, 
+            publicKey,
+            privateKey,
+            algorithm,
+            caRef,
+            holderRef,
             role,
-            AccessRightEnum.READ_ACCESS_DG3_AND_DG4,
-            validFrom, 
-            validTo, 
+            AccessRightsIS.DG3_AND_DG4(),
+            validFrom,
+            validTo,
             "BC" );
    }
 
@@ -204,7 +204,7 @@ public final class CertificateGenerator {
          CAReferenceField       caRef, 
          HolderReferenceField   holderRef, 
          AuthorizationRoleEnum  authRole,
-         AccessRightEnum        rights,
+         AccessRightsIS rights,
          Date                   validFrom,
          Date                   validTo,
          String                 provider ) 

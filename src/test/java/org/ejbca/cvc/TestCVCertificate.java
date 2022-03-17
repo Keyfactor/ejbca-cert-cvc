@@ -119,7 +119,7 @@ public class TestCVCertificate
             caRef, 
             holderRef,
             AuthorizationRoleEnum.IS,
-            AccessRightEnum.READ_ACCESS_DG3_AND_DG4,
+            AccessRightsIS.DG3_AND_DG4(),
             dateFrom,
             dateTo,
             "BC"); 
@@ -194,7 +194,7 @@ public class TestCVCertificate
       CVCertificate decodedCert;
 
       cert = CertificateGenerator.createCertificate(keyPair.getPublic(), keyPair.getPrivate(), "SHA256WithRSA", caRef, holderRef, AuthorizationRoleEnum.IS,
-              AccessRightEnum.READ_ACCESS_DG3_AND_DG4, new Date(), validTo, null, "BC");
+              AccessRightsIS.DG3_AND_DG4(), new Date(), validTo, null, "BC");
       encoded = cert.getDEREncoded();
       decodedCert = CertificateParser.parseCertificate(encoded);
       try {
@@ -210,7 +210,7 @@ public class TestCVCertificate
       extensions.add(ext1);
       extensions.add(ext2);
       cert = CertificateGenerator.createCertificate(keyPair.getPublic(), keyPair.getPrivate(), "SHA256WithRSA", caRef, holderRef, AuthorizationRoleEnum.IS,
-              AccessRightEnum.READ_ACCESS_DG3_AND_DG4, new Date(), validTo, extensions, "BC");
+              AccessRightsIS.DG3_AND_DG4(), new Date(), validTo, extensions, "BC");
 
       encoded = cert.getDEREncoded();
       decodedCert = CertificateParser.parseCertificate(encoded);

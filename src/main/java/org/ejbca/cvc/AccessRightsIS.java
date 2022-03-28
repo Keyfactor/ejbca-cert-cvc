@@ -14,9 +14,8 @@
 package org.ejbca.cvc;
 
 import org.ejbca.cvc.util.StringConverter;
-
 import java.util.Arrays;
-
+import java.io.Serializable;
 /**
  * Represents access rights for an IS, CVCA or DVCA as specified in "BSI TR-03110-3 Advanced Security
  * Mechanisms for Machine Readable Travel Documents – Part 3 - Version 2.10".
@@ -27,7 +26,10 @@ import java.util.Arrays;
  * @author Keijo Kurkinen, Swedish National Police Board
  * @author Bastian Fredriksson, PrimeKey Solutions AB
  */
-public class AccessRightsIS implements AccessRights {
+public class AccessRightsIS implements AccessRights, Serializable {
+   
+   private static final long serialVersionUID = 1L;
+	
    private static final byte READ_ACCESS_DG3 = 0x01;
    private static final byte READ_ACCESS_DG4 = 0x02;
    private static final byte READ_ACCESS_RFU1 = 0x04;

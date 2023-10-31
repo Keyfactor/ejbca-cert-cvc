@@ -10,13 +10,13 @@ The provider is used for DER encoding and some crypto stuff.
 
 Bouncycastle is licensed under an MIT license.
 
-# Building
+# Building and testing with Maven
 
-Having java and ant installed, simply run 'ant' to build the cert-cvc jar, cert-cvc.jar will be placed
-in the root directory.
+You build, and run JUnit tests with maven.
 
-Note that the produced cert-cvc.jar is built against the BouncyCastle version included in the lib directory. 
-To build against a different BouncyCastle version you must replace the bc jar in lib.
+mvn package
+
+will build, run tests and place the artefact in 'target'.
 
 # Using
 

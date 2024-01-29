@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: release
+spec:
+  pipelineSpec:
+    tasks:
+      - name: release
+        taskSpec:
+          steps:
+            - image: uses:lighthouse:devops/jx3-pipeline-catalog-keyfactor/tasks/maven/release.yaml@main
+              name: ""
+  serviceAccountName: tekton-bot
+  timeout: 1h

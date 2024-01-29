@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pullrequest
+spec:
+  pipelineSpec:
+    tasks:
+      - name: pr
+        taskSpec:
+          steps:
+            - image: uses:lighthouse:devops/jx3-pipeline-catalog-keyfactor/tasks/maven/pullrequest.yaml@main
+              name: ""
+  serviceAccountName: tekton-bot
+  timeout: 15m

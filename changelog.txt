@@ -1,3 +1,9 @@
+1.5.1 (to be released)
+-----
+
+- Upgrade to BC 1.76 (no changes to code)
+- Mvn build using JDK 11 level
+
 1.5.0
 -----
 

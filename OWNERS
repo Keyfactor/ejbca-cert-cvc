@@ -1,5 +1,5 @@
 approvers:
-- bastian
+- ejbca-approvers
 options: {}
 reviewers:
-- bastian
+- ejbca-reviewers

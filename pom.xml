@@ -11,14 +11,6 @@
 	<description>Library supporting the creation and parsing of CVC certificates.</description>
 	<url>https://www.ejbca.org</url>
 
-	<repositories>
-		<repository>
-			<id>keyfactor</id>
-			<name>Keyfactor Artifactory</name>
-			<url>https://artifactory.primekey.com/artifactory/maven-develop/</url>
-		</repository>
-	</repositories>
-
 	<properties>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>

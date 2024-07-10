@@ -1,12 +1,3 @@
-<!--EJBCA Community logo -->
-<a href="https://ejbca.org">
-    <img src=".github/images/community-ejbca.png?raw=true)" alt="EJBCA logo" title="EJBCA" height="70" />
-</a>
-<!--EJBCA Enterprise logo -->
-<a href="https://www.keyfactor.com/products/ejbca-enterprise/">
-    <img src=".github/images/keyfactor-ejbca-enterprise.png?raw=true)" alt="EJBCA logo" title="EJBCA" height="70" />
-</a>
-
 # EJBCA Cert CVC
 
 EJBCA Cert CVC is a Java library for parsing, creating, and using cv certificates defined for Extended Access Control (EAC) in BSI TR-03110.

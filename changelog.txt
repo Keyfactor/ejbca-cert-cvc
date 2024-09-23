@@ -1,4 +1,12 @@
-1.5.1 (to be released)
+1.6.2
+-----
+- Fix for EC signatures where both sides are short
+
+1.6.0
+-----
+- Upgrade to BC 1.78 (no code changes)
+
+1.5.1
 -----
 
 - Upgrade to BC 1.76 (no changes to code)

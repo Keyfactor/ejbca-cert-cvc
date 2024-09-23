@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SignatureException;
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -15,15 +16,19 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DERSequence;
 
 /** This is directly copied from org.bouncycastle.jce.provider.asymmetric.ec.Signature
- *  BC version 1.41b04 was the base of the copy-paste operation.
- *  
- * @version $Id$
+ *  BC version 1.41b04 was the base of the copy-paste operation, slightly updated from
+ *  BC 1.79Beta with fix for "if both sides are short".
+ *
  */
 public final class BCECUtil
 {
 	/** private constructor this is a static utility class */
 	private BCECUtil() {}
-	
+
+    public static int max(int el1, int el2) {
+        return el1 > el2 ? el1 : el2;
+    }
+
     public static byte[] convertX962SigToCVC(final String algorithmName, final byte[] xsig) throws IOException {
         // Only do this if it's an ECDSA algorithm
         if (!algorithmName.toUpperCase(Locale.getDefault()).contains("EC")) {
@@ -40,22 +45,22 @@ public final class BCECUtil
         final BigInteger r = ((ASN1Integer) seq.getObjectAt(0)).getValue();
         final BigInteger s = ((ASN1Integer) seq.getObjectAt(1)).getValue();
 
-        // Write r and s to not asn.1 encoded cvc signature
+        // Write r and s to raw (not asn.1 encoded) cvc signature. See BSI TR 03111.
         final byte[] first = makeUnsigned(r);
         final byte[] second = makeUnsigned(s);
-        byte[] res;
 
-        if (first.length > second.length) {
-            res = new byte[first.length * 2];
-        } else {
-            res = new byte[second.length * 2];
+        int len = max(first.length, second.length);
+        // if both sides are short, len might be short
+        if ((len & 0x01) != 0) {
+            len++;
         }
+        byte[] res = new byte[len * 2];
+        Arrays.fill(res, (byte)0);
 
         System.arraycopy(first, 0, res, res.length / 2 - first.length, first.length);
         System.arraycopy(second, 0, res, res.length - second.length, second.length);
 
         return res;
-
     }
 
 	   public static byte[] convertCVCSigToX962(final String algorithmName, final byte[] xsig) throws SignatureException {
@@ -82,7 +87,7 @@ public final class BCECUtil
            v.add(new ASN1Integer(s));
 
            try {
-               dOut.writeObject(new DERSequence(v));        	   
+               dOut.writeObject(new DERSequence(v));
            } catch (IOException e) {
         	   throw new SignatureException(e);
            }

@@ -33,7 +33,6 @@ import org.ejbca.cvc.util.BCECUtil;
  * Generates CV-certificates and CVC-requests
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
  *
  */
 public final class CertificateGenerator {
@@ -212,6 +211,22 @@ public final class CertificateGenerator {
       return createCertificate(publicKey, signerKey, algorithmName, caRef, holderRef, 
          (AuthorizationRole)authRole, (AccessRights)rights, validFrom, validTo, provider);
    }
+   
+   public static CVCertificate createCertificateAT(
+	         PublicKey              publicKey,
+	         PrivateKey             signerKey,
+	         String                 algorithmName, 
+	         CAReferenceField       caRef, 
+	         HolderReferenceField   holderRef, 
+	         AuthorizationRoleAuthTermEnum  authRole,
+	         AccessRightAuthTerm 	rights,
+	         Date                   validFrom,
+	         Date                   validTo,
+	         String                 provider ) 
+	   throws IOException, NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException, ConstructionException {
+	      return createCertificate(publicKey, signerKey, algorithmName, caRef, holderRef, 
+	         (AuthorizationRole) authRole, (AccessRights) rights, validFrom, validTo, provider);
+	   }
 
    /**
     * Generates a CVC-request without an outer signature using BouncyCastle as signature provider

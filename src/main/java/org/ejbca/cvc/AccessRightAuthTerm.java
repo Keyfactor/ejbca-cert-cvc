@@ -23,7 +23,6 @@ import org.ejbca.cvc.util.StringConverter;
  * Described in the EAC 2.1 spec part 3 page 69.
  * 
  * @author Samuel Lidén Borell, PrimeKey Solutions AB
- * @version $Id$
  *
  */
 public class AccessRightAuthTerm implements AccessRights, Serializable {
@@ -38,8 +37,10 @@ public class AccessRightAuthTerm implements AccessRights, Serializable {
    public static final int BIT_WRITE_DG19 = 35;
    public static final int BIT_WRITE_DG20 = 34;
    public static final int BIT_WRITE_DG21 = 33;
+   public static final int BIT_WRITE_DG22 = 32;
 
    // Read access
+   public static final int BIT_READ_DG22 = 29;
    public static final int BIT_READ_DG21 = 28;
    public static final int BIT_READ_DG20 = 27;
    public static final int BIT_READ_DG19 = 26;
@@ -129,24 +130,34 @@ public class AccessRightAuthTerm implements AccessRights, Serializable {
    }
 
    private static String flagToString(int flag) {
-      if (flag < 0 || flag > MAX_BIT) { throw new ArrayIndexOutOfBoundsException(flag); }
-      // Data groups
-      if (flag >= BIT_WRITE_DG21) { return "W-DG"+(21+BIT_WRITE_DG21-flag); }
-      if (flag > BIT_READ_DG21) { return "RFU-"+flag; } // reserved for future use
-      if (flag >= BIT_READ_DG1) { return "R-DG"+(flag-BIT_READ_DG1+1); }
-      // Special functions
-      switch (flag) {
-      case BIT_INSTALL_QUALIFIED_CERT: return "Install Qualified Certificate";
-      case BIT_INSTALL_CERT: return "Install Certificate";
-      case BIT_PIN_MANAGEMENT: return "PIN Management";
-      case BIT_CAN_ALLOWED: return "CAN Allowed";
-      case BIT_PRIVILEGED_TERMINAL: return "Privileged Terminal";
-      case BIT_RESTRICTED_IDENTIFICATION: return "Restricted Identification";
-      case BIT_COMMUNITY_ID_VERIFICATION: return "Community ID Verification";
-      case BIT_AGE_VERIFICATION: return "Age Verification";
-      default: throw new IllegalStateException();
-      }
-   }
+	    if (flag < 0 || flag > MAX_BIT) {
+	        throw new ArrayIndexOutOfBoundsException(flag);
+	    }
+
+	    // Data groups
+	    if (flag >= BIT_WRITE_DG22) {
+	        return "W-DG"+(22+BIT_WRITE_DG22-flag);
+	    }
+	    if (flag == BIT_READ_DG22 + 1 || flag == BIT_WRITE_DG22 - 1) {
+	        return "RFU-"+flag; // reserved for future use
+	    }
+	    if (flag >= BIT_READ_DG1) {
+	        return "R-DG"+(flag-BIT_READ_DG1+1);
+	    }
+
+	    // Special functions
+	    switch (flag) {
+	        case BIT_INSTALL_QUALIFIED_CERT: return "Install Qualified Certificate";
+	        case BIT_INSTALL_CERT: return "Install Certificate";
+	        case BIT_PIN_MANAGEMENT: return "PIN Management";
+	        case BIT_CAN_ALLOWED: return "CAN Allowed";
+	        case BIT_PRIVILEGED_TERMINAL: return "Privileged Terminal";
+	        case BIT_RESTRICTED_IDENTIFICATION: return "Restricted Identification";
+	        case BIT_COMMUNITY_ID_VERIFICATION: return "Community ID Verification";
+	        case BIT_AGE_VERIFICATION: return "Age Verification";
+	        default: throw new IllegalStateException();
+	    }
+	}
 
    @Override
    public String name() {

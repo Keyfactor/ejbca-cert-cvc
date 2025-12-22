@@ -37,7 +37,6 @@ import org.ejbca.cvc.example.FileHelper;
  * Tests specific for CV Certificates
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
  */
 public class TestCVCertificate
       extends TestCase implements CVCTest {
@@ -135,6 +134,45 @@ public class TestCVCertificate
       }
    }
    
+   /** Check: Verify access rights for Authentication Terminal BSI TR-03110 v2.2 (*-DG 22) and R-DG 21 */
+	public void testVerifyAuthorizationRoleAuthTerm() throws Exception {
+		verifyAuthorizationRoleAuthTerm(new AccessRightAuthTerm(new byte[] { 0x00, 0x10, 0x00, 0x00, 0x00 })); // R-DG 21
+		verifyAuthorizationRoleAuthTerm(new AccessRightAuthTerm(new byte[] { 0x00, 0x20, 0x00, 0x00, 0x00 })); // R-DG 22
+		verifyAuthorizationRoleAuthTerm(new AccessRightAuthTerm(new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00 })); // W-DG 22
+	}
+	
+   /** Check: Verify write and read the access rights for Authentication Terminals (AT) */
+	private void verifyAuthorizationRoleAuthTerm(final AccessRightAuthTerm accessRights) throws Exception {
+		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+		keyGen.initialize(1024, new SecureRandom());
+		KeyPair ca_KeyPair = keyGen.generateKeyPair();
+
+		// Simulate an AT certificate that has been signed by CA
+		// Create new key pair
+		keyGen.initialize(1024, new SecureRandom());
+		KeyPair is_KeyPair = keyGen.generateKeyPair();
+		CAReferenceField caRef = new CAReferenceField(CA_COUNTRY_CODE, CA_HOLDER_MNEMONIC, CA_SEQUENCE_NO);
+		HolderReferenceField holderRef = new HolderReferenceField(HR_COUNTRY_CODE, HR_HOLDER_MNEMONIC, HR_SEQUENCE_NO);
+		Calendar cal = Calendar.getInstance();
+		Date dateFrom = cal.getTime();
+		cal.add(Calendar.DAY_OF_MONTH, 3);
+		Date dateTo = cal.getTime();
+		
+		AuthorizationRoleAuthTermEnum authRole = AuthorizationRoleAuthTermEnum.AUTHTERM; 
+		CVCertificate is_cert = CertificateGenerator.createCertificateAT(is_KeyPair.getPublic(),
+				ca_KeyPair.getPrivate(), "SHA256WithRSA", caRef, holderRef, 
+				authRole, accessRights, dateFrom, dateTo, "BC");
+		
+		System.out.println(is_cert.getAsText());
+		
+		CVCertificateBody body = (CVCertificateBody) is_cert.getSubfield(CVCTagEnum.CERTIFICATE_BODY);
+		CVCAuthorizationTemplate template = (CVCAuthorizationTemplate) body.getSubfield(CVCTagEnum.HOLDER_AUTH_TEMPLATE);
+		AuthorizationField authorization = (AuthorizationField) template.getSubfield(CVCTagEnum.ROLE_AND_ACCESS_RIGHTS);
+		
+		assertEquals("ROLE_AND_ACCESS_RIGTHS authorization role does not match.", authRole.toString(), authorization.getAuthRole().toString());
+		assertEquals("ROLE_AND_ACCESS_RIGTHS access right does not match.", authorization.getAccessRights().toString(), accessRights.toString());
+	}
+		
    
    /** Check: Validate CVCProvider */
    public void testSecurityProvider() throws Exception {

@@ -16,7 +16,6 @@ package org.ejbca.cvc;
  * Definitions of roles in CVC.
  * 
  * @author Keijo Kurkinen, Swedish National Police Board
- * @version $Id$
  *
  */
 public enum AuthorizationRoleEnum implements AuthorizationRole {
@@ -24,6 +23,7 @@ public enum AuthorizationRoleEnum implements AuthorizationRole {
    CVCA  (0xC0),
    DV_D  (0x80),
    DV_F  (0x40),
+   AT    (0x10),
    IS    (0x00);
 
 
@@ -79,7 +79,7 @@ public enum AuthorizationRoleEnum implements AuthorizationRole {
 
    @Override
    public boolean isAuthenticationTerminal() {
-      return false;
+      return this == AT;
    }
 
    @Override
@@ -95,6 +95,7 @@ public enum AuthorizationRoleEnum implements AuthorizationRole {
       case DV_D: return "DV-domestic";
       case DV_F: return "DV-foreign";
       case IS: return "IS";
+      case AT: return "AT";
       }
       throw new IllegalStateException("Enum case not handled");
    }
